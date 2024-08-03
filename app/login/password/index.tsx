@@ -152,7 +152,11 @@ export default function LoginPage() {
                             await AsyncStorage.setItem('isLoggedIn', JSON.stringify(true));
                             await AsyncStorage.setItem('idUser', `${resp.id}`);
                             await login(true);
-                            router.replace('/');  // Redirect to root after login
+                            if (resp.perfilCompleto) {
+                              router.replace('/');  // Redirect to root after login
+                            } else {
+                              router.replace('/complete-profile');  // Redirect to root after login
+                            }
                           }
                         } catch (error) {
                           console.error('Error logging in: ', error);
