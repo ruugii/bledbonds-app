@@ -6,9 +6,10 @@ import { Colors } from "../constants/Colors";
 import Btn from "../ux/Btn";
 import useAuth from "../utilities/login";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import isPerfilCompletoAPI from "../api/login/isPerfilCompleto";
 
 export default function IndexPage() {
-  const { isLoggedIn, login, getIsLoggedIn } = useAuth();
+  const { isLoggedIn, login, getIsLoggedIn, getToken } = useAuth();
 
   const handleLoginGoogle = async () => {
     console.log('Login with Google');
@@ -25,16 +26,18 @@ export default function IndexPage() {
   }, [isLoggedIn]);
 
   useEffect(() => {
-    
     const checkLogin = async () => {
       const value = await getIsLoggedIn();
       console.log(value);
-      if (value) {
+      const token = await getToken() || '';
+      const isPerfilCompleto = await isPerfilCompletoAPI({ token })
+      if (value && isPerfilCompleto?.perfilCompleto) {
         console.log('Usuario logueado');
         router.replace('/matches')
+      } else if (value && !isPerfilCompleto?.perfilCompleto) {
+        router.replace('/complete-profile')
       }
     }
-    
     checkLogin();
   }, [])
 
