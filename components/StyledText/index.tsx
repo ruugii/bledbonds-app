@@ -25,6 +25,7 @@ interface TextProps {
   micro?: boolean;
   full?: boolean;
   center?: boolean;
+  red?: boolean;
 }
 
 export default function StyledText(props: Readonly<TextProps>) {
@@ -92,6 +93,7 @@ export default function StyledText(props: Readonly<TextProps>) {
       props.full ? { width: '100%' } : {},
       props.center ? { textAlign: 'center'} : {},
       props.xsmall ? { fontSize: 15 } : {},
+      props.red ? { color: 'red' } : {},
     ]}>
       {props.children ? props.children : displayText}
     </Text>
