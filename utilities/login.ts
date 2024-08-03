@@ -48,7 +48,19 @@ const useAuth = () => {
     }
   }
 
-  return { isLoggedIn, login, logout, getIsLoggedIn };
+  const getToken = async () => {
+    try {
+      const value = await AsyncStorage.getItem('token');
+      if (value !== null) {
+        return value;
+      }
+      return value
+    } catch (error) {
+      console.error('Error retrieving authentication status: ', error);
+    }
+  }
+
+  return { isLoggedIn, login, logout, getIsLoggedIn, getToken };
 }
 
 export default useAuth;
