@@ -1,8 +1,7 @@
 import { router, Stack } from "expo-router";
-import { ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { Platform, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import { Colors } from "../../constants/Colors";
 import StyledText from "../../components/StyledText";
-import Input from "../../ux/Input";
 import { useEffect, useState } from "react";
 import Radio from "../../components/Radio";
 import getFindAPI from "../../api/find/getFind";
@@ -12,6 +11,8 @@ import Btn from "../../ux/Btn";
 import useAuth from "../../utilities/login";
 import updateUserAPI from "../../api/user/update";
 import getUserData from "../../api/user/getData";
+import UploadImage from "../../components/UploadImage";
+import uploadImage from "../../api/image/uploadImage";
 
 interface FindInterface {
   id: string;
@@ -29,14 +30,13 @@ interface EstadoCivilInterface {
 }
 
 export default function CompleteProfilePage() {
-  const [valueError, setValueError] = useState(false);
-  const [value, setValue] = useState('');
   const [find, setFind] = useState('0');
   const [findOptions, setFindOptions] = useState<FindInterface[]>([]);
   const [sexualidad, setSexualidad] = useState('0');
   const [sexualidadOptions, setSexualidadOptions] = useState<SexualidadInterface[]>([]);
   const [estadoCivil, setEstadoCivil] = useState('0');
   const [estadoCivilOptions, setEstadoCivilOptions] = useState<EstadoCivilInterface[]>([]);
+  const [photo, setPhoto] = useState<any>(null);
   const [bio, setBio] = useState('');
   const [maxCharBio] = useState(200);
 
@@ -69,19 +69,45 @@ export default function CompleteProfilePage() {
 
   useEffect(() => {
     const getData = async () => {
-      const token = await getToken() || '';
+      const token = await getToken() ?? '';
       const data = await getUserData({ token });
-      if (data.user_info) {
-        setFind(data.user_info.id_find);
-        setSexualidad(data.user_info.id_orientation);
-        setEstadoCivil(data.user_info.id_status);
-        setBio(data.user_info.bio);
+      if (data?.user_info) {
+        setFind(data?.user_info.id_find);
+        setSexualidad(data?.user_info.id_orientation);
+        setEstadoCivil(data?.user_info.id_status);
+        setBio(data?.user_info.bio);
       }
     }
     getData();
   }, [])
 
   const { getToken } = useAuth();
+
+  const generatePhoto = () => {
+    return (
+      <View style={{
+        flexDirection: 'column',
+        gap: 10,
+      }}
+      >
+        <StyledText litle bold left>
+          Agrega una imagen para tu perfil
+        </StyledText>
+        <StyledText xsmall bold left>
+          En caso de que quieras mas de una imagen, la puedes agregar desde "tu perfil" una vez hayas completado tu perfil
+        </StyledText>
+        <UploadImage
+          photo={photo}
+          setPhoto={setPhoto}
+        />
+      </View>
+    )
+  }
+
+  const createFileObject = (photo: any) => {
+    const uri = Platform.OS === 'ios' ? photo.uri.replace('file://', '') : photo.uri;
+    return new File([uri], photo.fileName, { type: photo.mimeType });
+  };
 
   return (
     <>
@@ -184,20 +210,34 @@ export default function CompleteProfilePage() {
                 marginVertical: 10,
               }}
               >
-                <StyledText xsmall right red={bio.length > maxCharBio}>
-                  {bio.length}/{maxCharBio}
+                <StyledText xsmall right red={bio?.length > maxCharBio}>
+                  {bio?.length}/{maxCharBio}
                 </StyledText>
               </View>
             </View>
+            {generatePhoto()}
             <Btn title="Completar Perfil" onPress={() => {
               const updateUser = async () => {
-                const token = await getToken() || '';
+                let imageURL = {
+                  url: '',
+                }
+                if (photo) {
+                  const photoData = {
+                    uri: [Platform.OS === 'ios' ? photo.uri.replace('file://', '') : photo.uri],
+                    fileName: photo.fileName,
+                    mimeType: photo.mimeType,
+                  }
+                  const file = createFileObject(photoData);
+                  imageURL = await uploadImage(file);
+                }
+                const token = await getToken() ?? '';
                 const data = await updateUserAPI({
                   token: token,
                   id_find: find,
                   id_orientation: sexualidad,
                   id_status: estadoCivil,
-                  bio: bio
+                  bio: bio,
+                  photo: imageURL.url !== '' ? imageURL.url : undefined
                 })
                 if (data) {
                   router.replace('/')

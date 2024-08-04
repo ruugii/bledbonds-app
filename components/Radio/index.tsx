@@ -7,8 +7,6 @@ interface RadioInterface {
 }
 
 export default function Radio(props: RadioInterface) {
-  console.log(props.checked);
-  
   return (
     <Pressable onPress={props.onPress} style={props.style}>
       <View style={{
