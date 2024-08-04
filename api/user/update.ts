@@ -4,6 +4,7 @@ interface RegisterInterface {
   id_orientation: string;
   id_status: string;
   bio: string;
+  photo?: string;
 }
 
 const updateUserAPI = async (user: RegisterInterface) => {
