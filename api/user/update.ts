@@ -4,7 +4,17 @@ interface RegisterInterface {
   id_orientation: string;
   id_status: string;
   bio: string;
+  height?: string;
+  studyPlace?: string;
+  you_work?: string;
+  charge_work?: string;
+  enterprise?: string;
+  drink?: string;
   photo?: string;
+  language?: string[];
+  id_zodiac?: string;
+  mascotas?: string;
+  id_religion?: string;
 }
 
 const updateUserAPI = async (user: RegisterInterface) => {
