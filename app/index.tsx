@@ -28,9 +28,11 @@ export default function IndexPage() {
   useEffect(() => {
     const checkLogin = async () => {
       const value = await getIsLoggedIn();
-      console.log(value);
+      console.log('value', value);
       const token = await getToken() || '';
       const isPerfilCompleto = await isPerfilCompletoAPI({ token })
+      console.log('isPerfilCompleto', isPerfilCompleto);
+      
       if (value && isPerfilCompleto?.perfilCompleto) {
         console.log('Usuario logueado');
         router.replace('/matches')

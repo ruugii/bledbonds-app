@@ -71,6 +71,8 @@ export default function CompleteProfilePage() {
     const getData = async () => {
       const token = await getToken() ?? '';
       const data = await getUserData({ token });
+      console.log('data', data);
+      
       if (data?.user_info) {
         setFind(data?.user_info.id_find);
         setSexualidad(data?.user_info.id_orientation);

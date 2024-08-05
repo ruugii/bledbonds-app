@@ -2,6 +2,7 @@ import { Pressable, Text, View } from "react-native";
 
 interface RadioInterface {
   checked: boolean;
+  multioption?: boolean;
   onPress: () => void;
   style?: {}
 }
@@ -16,7 +17,7 @@ export default function Radio(props: RadioInterface) {
         height: 30,
         borderColor: props.checked ? 'green' : 'white',
         borderWidth: 2,
-        borderRadius: 100,
+        borderRadius: props.multioption ? 5 : 100,
         backgroundColor: props.checked ? 'green' : 'transparent',
       }}>
         {props.checked ? <Text style={{color: 'white'}}>✓</Text> : null}
