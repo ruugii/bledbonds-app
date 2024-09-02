@@ -1,17 +1,17 @@
 import React from "react";
-import { ScrollView, View, TouchableOpacity } from "react-native";
+import { View } from "react-native";
 import styles from "./Menu.styles";
-import TextStyled from "../Title";
+import StyledText from "../StyledText";
 
 interface CounterFotosProps {
-  fotos: string[];
-  selectedFoto: number;
+  readonly fotos: string[];
+  readonly selectedFoto: number;
 }
 
 export default function CounterFotos(props: CounterFotosProps) {
   return (
     <View style={styles.menu}>
-      <TextStyled light litle mayus>{`${props.selectedFoto + 1}/${props.fotos.length}`}</TextStyled>
+      <StyledText light litle mayus>{`${props.selectedFoto + 1}/${props.fotos.length}`}</StyledText>
     </View>
   );
 }

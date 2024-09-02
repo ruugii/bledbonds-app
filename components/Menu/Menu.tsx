@@ -1,10 +1,10 @@
-import { StatusBar } from "expo-status-bar";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import styles from "./Menu.styles";
-import { Component, ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Link } from "expo-router";
+import StyledText from "../StyledText";
 
-interface options {
+interface Options {
   id: number;
   text: string;
   selected: boolean;
@@ -14,9 +14,9 @@ interface options {
 }
 
 interface MenuProps {
-  options: options[];
-  margin?: boolean;
-  private?: boolean;
+  readonly options: Options[];
+  readonly margin?: boolean;
+  readonly private?: boolean;
 }
 
 export default function Menu(props: MenuProps) {
@@ -37,10 +37,18 @@ export default function Menu(props: MenuProps) {
               <Link href={option.url} key={option.id}>
                 {/* <TouchableOpacity onPress={() => onClick(option.id)}> */}
                 <View key={option.id} style={style.menuItem} >
-                  {option.icon && option.icon}
-                  <Text style={[style.textStyles, (option.active ? {textDecorationLine: 'underline'} : {})]}>{option.text}</Text>
+                  {option.icon ? option.icon : null}
+                  <StyledText litle underline={option.active}>
+                    {option.text}
+                  </StyledText>
                 </View>
-                {index < options.length - 1 && <View style={style.menuItem}><Text style={[style.textStyles, {paddingHorizontal: 10}]}>|</Text></View>}
+                {index < options.length - 1 && <View style={[style.menuItem, {
+                  paddingHorizontal: 10,
+                }]}>
+                  <StyledText litle>
+                    |
+                  </StyledText>
+                </View>}
               </Link>
             
           )

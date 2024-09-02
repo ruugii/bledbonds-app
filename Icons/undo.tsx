@@ -2,7 +2,7 @@ import { Path, Svg } from "react-native-svg";
 
 export default function Undo(props: any) {
   return (
-    <Svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
       <Path d="M14 15L10 19L14 23" stroke="rgb(255, 255, 255)" stroke-width="2"/>
       <Path d="M18.0622 8.5C18.6766 9.56413 19 10.7712 19 12C19 13.2288 18.6766 14.4359 18.0622 15.5C17.4478 16.5641 16.5641 17.4478 15.5 18.0622C14.4359 18.6766 13.2288 19 12 19" stroke="rgb(255, 255, 255)" stroke-width="2" stroke-linecap="round"/>
       <Path d="M10 9L14 5L10 1" stroke="rgb(255, 255, 255)" stroke-width="2"/>

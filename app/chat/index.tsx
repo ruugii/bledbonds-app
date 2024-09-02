@@ -1,8 +1,7 @@
 import { Link, Stack } from "expo-router";
-import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { Colors } from "../../constants/Colors";
 import StyledText from "../../components/StyledText";
-import Calendar from "../../components/Calendar/page";
 import Like from "../../Icons/Like";
 import Party from "../../Icons/Party";
 import CalendarIcon from "../../Icons/CalendarIcon";
@@ -11,13 +10,13 @@ import Menu from "../../components/Menu/Menu";
 import { useEffect, useState } from "react";
 import getAllChats from "../../api/chat/getAllChats";
 import CitasCiegas from "../../Icons/CitasCiegas";
+import useScreenMode from "../../utilities/screenMode";
 
 export default function ChatPage() {
 
   useEffect(() => {
     const fetchChats = async () => {
       const data = await getAllChats()
-      console.log(data);
       setChats(data)
     }
     fetchChats()
@@ -29,6 +28,8 @@ export default function ChatPage() {
     name: string,
   }[]>([])
 
+  const { mode } = useScreenMode()
+
   return (
     <>
       <Stack.Screen
@@ -36,9 +37,15 @@ export default function ChatPage() {
           headerTitle: () => null,
         }}
       />
-      <View style={[styles.container]}>
-        <View style={[styles.box, styles.box2]}>
-          <View style={[styles.mailPage]}>
+      <View style={[styles.container, {
+        backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
+      }]}>
+        <View style={[styles.box, styles.box2, {
+          backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
+        }]}>
+          <View style={[styles.mailPage, {
+            backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"]
+          }]}>
             <ScrollView>
               {chats.map((chat) => (
                 <Link href={`/chat/${chat.ID}`} key={chat.ID} style={{
@@ -46,7 +53,7 @@ export default function ChatPage() {
                   flexDirection: 'row',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  backgroundColor: Colors.light['palette-5'],
+                  backgroundColor: (mode === 'light') ? Colors.light['palette-5'] : Colors.dark['palette-5'],
                   flex: 1,
                   alignContent: 'center',
                   marginBottom: 10,
@@ -113,13 +120,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: Colors.light["palette-3"],
     flexDirection: 'column',
     paddingHorizontal: 20,
   },
   imput: {
     borderWidth: 1,
-    borderColor: Colors.light["palette-1"],
     padding: 10,
     borderRadius: 10,
   },
@@ -136,7 +141,6 @@ const styles = StyleSheet.create({
   },
   mailPage: {
     flex: 1,
-    backgroundColor: Colors.light["palette-3"]
   },
   box: {
     flex: 1,
@@ -149,14 +153,12 @@ const styles = StyleSheet.create({
   box2: {
     flex: 10,
     height: '100%',
-    backgroundColor: Colors.light["palette-3"],
   },
   box3: {
     flex: 0.5,
   },
   button: {
     borderRadius: 15,
-    backgroundColor: Colors.light['palette-6'],
     paddingVertical: 10,
     paddingHorizontal: 20,
     alignItems: 'center',

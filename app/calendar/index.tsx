@@ -11,6 +11,7 @@ import CalendarIcon from "../../Icons/CalendarIcon";
 import Chat from "../../Icons/Chat";
 import Menu from "../../components/Menu/Menu";
 import CitasCiegas from "../../Icons/CitasCiegas";
+import useScreenMode from "../../utilities/screenMode";
 
 export default function CalendarPage () {
 
@@ -26,8 +27,6 @@ export default function CalendarPage () {
   useEffect(() => {
     const fetchEventsData = async () => {
       const data = await getAllEvents()
-      console.log(data);
-
       setEvents(data)
     }
 
@@ -46,6 +45,8 @@ export default function CalendarPage () {
     }
   }, [month, year])
 
+  const { mode } = useScreenMode()
+
   return (
     <>
     <Stack.Screen
@@ -53,9 +54,15 @@ export default function CalendarPage () {
             headerTitle: () => null,
           }}
         />
-        <View style={[styles.container]}>
-          <View style={[styles.box, styles.box2]}>
-            <View style={[styles.mailPage]}>
+        <View style={[styles.container, {
+          backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
+        }]}>
+          <View style={[styles.box, styles.box2, {
+            backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
+          }]}>
+            <View style={[styles.mailPage, {
+              backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"]
+            }]}>
               <StyledText title bold mayus>
                 Calendario de eventos
               </StyledText>
@@ -81,7 +88,7 @@ export default function CalendarPage () {
           <View style={{
             width: "100%",
             flex: 1,
-            backgroundColor: Colors.light["palette-3"],
+            backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
           }}>
             <Menu
               options={[
@@ -137,13 +144,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: Colors.light["palette-3"],
     flexDirection: 'column',
     paddingHorizontal: 20,
   },
   imput: {
     borderWidth: 1,
-    borderColor: Colors.light["palette-1"],
     padding: 10,
     borderRadius: 10,
   },
@@ -160,7 +165,7 @@ const styles = StyleSheet.create({
   },
   mailPage: {
     flex: 1,
-    backgroundColor: Colors.light["palette-3"]
+    
   },
   box: {
     flex: 1,
@@ -173,14 +178,12 @@ const styles = StyleSheet.create({
   box2: {
     flex: 10,
     height: '100%',
-    backgroundColor: Colors.light["palette-3"],
   },
   box3: {
     flex: 0.5,
   },
   button: {
     borderRadius: 15,
-    backgroundColor: Colors.light['palette-6'],
     paddingVertical: 10,
     paddingHorizontal: 20,
     alignItems: 'center',

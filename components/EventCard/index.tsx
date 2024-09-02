@@ -1,20 +1,18 @@
 import { ImageBackground, StyleSheet, TouchableOpacity, View } from "react-native";
 import StyledText from "../StyledText";
-import Aficiones from "../Aficiones";
 import { useEffect, useState } from "react";
-import CounterFotos from "../CounterFotos";
 
 interface CardProps {
-  url: string[];
-  name: string;
-  description: string;
-  location: string;
+  readonly url: string[];
+  readonly name: string;
+  readonly description: string;
+  readonly location: string;
 }
 
 export default function EventCard(props: CardProps) {
   const [option, setOption] = useState<number>(Math.floor(Math.random() * 3)); // Adjusted random range to 0-2
   const [showText, setShowText] = useState<boolean>(false);
-  const [selectedFoto, setSelectedFoto] = useState<string>(props.url[0]);
+  const [selectedFoto] = useState<string>(props.url[0]);
 
   useEffect(() => {
     if (option === 3) {
@@ -57,11 +55,9 @@ export default function EventCard(props: CardProps) {
                   </TouchableOpacity>
                 </>
               ) : (
-                <>
-                  <TouchableOpacity onPress={handleShowText}>
-                    <StyledText light left litle underline>{showText ? "VER MENOS" : "VER MAS"}</StyledText>
-                  </TouchableOpacity>
-                </>
+                <TouchableOpacity onPress={handleShowText}>
+                  <StyledText light left litle underline>{showText ? "VER MENOS" : "VER MAS"}</StyledText>
+                </TouchableOpacity>
               )}
             </View>
           </View>

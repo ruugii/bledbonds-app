@@ -1,6 +1,6 @@
 import { Path, Svg } from "react-native-svg";
 
-export default function Config (props) {
+export default function Config (props: any) {
   return (
     <Svg
       width={24}

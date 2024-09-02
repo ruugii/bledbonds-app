@@ -8,9 +8,9 @@ import { Colors } from "../../../constants/Colors";
 import useAuth from "../../../utilities/login";
 import { Link, router, Stack } from "expo-router";
 import Menu from "../../../components/Menu/Menu";
+import useScreenMode from "../../../utilities/screenMode";
 
 export default function LoginPage() {
-  const [isPendingCode, setIsPendingCode] = useState(false);
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState(false);
   const [hasCode, setHasCode] = useState(false);
@@ -32,7 +32,6 @@ export default function LoginPage() {
       if (value !== null) {
         const isPendingCode = JSON.parse(value);
         if (isPendingCode.isPendingCode && isPendingCode.caducity > new Date().getTime()) {
-          setIsPendingCode(true);
           setHasCode(true);
         }
       }
@@ -51,6 +50,27 @@ export default function LoginPage() {
     );
   }, [email]);
 
+  const { mode } = useScreenMode()
+
+  const generateMenu = () => (
+    <Menu options={[
+      {
+        id: 1,
+        text: 'CODE',
+        selected: true,
+        url: '/login/code',
+        active: true,
+      },
+      {
+        id: 2,
+        text: 'PASSWORD',
+        selected: false,
+        url: '/login/password',
+        active: false,
+      }
+    ]} />
+  )
+
   if (isLoggedIn) {
     return <></>;
   } else {
@@ -58,41 +78,34 @@ export default function LoginPage() {
       <>
         <Stack.Screen
           options={{
-            headerTitle: () => <Menu options={[
-              {
-                id: 1,
-                text: 'CODE',
-                selected: true,
-                url: '/login/code',
-                active: true,
-              },
-              {
-                id: 2,
-                text: 'PASSWORD',
-                selected: false,
-                url: '/login/password',
-                active: false,
-              }
-            ]} />,
-            headerRight: () => <></>,
+            headerTitle: generateMenu ,
+            headerRight: () => null,
             headerLeft: () => null,
           }}
         />
-        <View style={styles.container}>
-          <View style={[styles.box, styles.box2, { marginHorizontal: 20 }]}>
-            <View style={styles.mailPage}>
+        <View style={[styles.container, {
+          backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
+        }]}>
+          <View style={[styles.box, styles.box2, {
+            marginHorizontal: 20,
+            backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
+          }]}>
+            <View style={[styles.mailPage, {
+              backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"]
+            }]}>
               <View>
                 <StyledText subtitle bold mayus>
                   Nos das tu email?
                 </StyledText>
                 <TextInput
-                  style={[styles.imput, emailError ? { borderColor: 'red' } : { borderColor: Colors.light["palette-6"] }]}
+                  style={[styles.imput, emailError ? { borderColor: 'red' } : { borderColor: (mode === 'light') ? Colors.light["palette-6"] : Colors.dark["palette-6"] }, { color: mode === 'light' ? Colors.light["palette-11"] : Colors.dark["palette-11"] }]}
                   onChangeText={setEmail}
                   value={email}
                   placeholder="Email"
                   autoComplete="email"
+                  placeholderTextColor={mode === 'light' ? Colors.light["palette-11"] : Colors.dark["palette-11"]}
                 />
-                {!hasCode && (
+                {!true && (
                   <Btn
                     title="Continuar"
                     clickable
@@ -101,13 +114,11 @@ export default function LoginPage() {
                         try {
                           const data = await loginByCode({ email });
                           if (data) {
-                            console.log('Data: ', data);
                             await AsyncStorage.setItem('isPendingCode', JSON.stringify({
                               isPendingCode: true,
                               caducity: new Date().getTime() + 600000,
                             }));
                             setHasCode(true);
-                            router.replace('/');
                           }
                         } catch (error) {
                           console.error('Error logging in: ', error);
@@ -118,14 +129,15 @@ export default function LoginPage() {
                     disabled={emailError}
                   />
                 )}
-                {hasCode && (
+                {true && (
                   <>
                     <TextInput
-                      style={[styles.imput, styles.imputCode, codeError ? { borderColor: 'red' } : { borderColor: Colors.light["palette-6"] }]}
+                      style={[styles.imput, styles.imputCode, codeError ? { borderColor: 'red' } : { borderColor: (mode === 'light') ? Colors.light["palette-6"] : Colors.dark["palette-6"] }, { color: mode === 'light' ? Colors.light["palette-11"] : Colors.dark["palette-11"] }]}
                       onChangeText={setCode}
                       value={code}
                       placeholder="Código de verificación"
                       keyboardType="numeric"
+                      placeholderTextColor={mode === 'light' ? Colors.light["palette-11"] : Colors.dark["palette-11"]}
                     />
                     <Btn
                       title="Continuar"
@@ -135,7 +147,6 @@ export default function LoginPage() {
                           try {
                             const data = await loginByCode({ email, code });
                             if (data) {
-                              console.log('Data: ', data);
                               await AsyncStorage.setItem('isLoggedIn', JSON.stringify(true));
                               await AsyncStorage.setItem('token', data.token);
                               await login(true);
@@ -174,12 +185,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: Colors.light["palette-3"],
     flexDirection: 'column',
   },
   imput: {
     borderWidth: 1,
-    borderColor: Colors.light["palette-1"],
     padding: 10,
     borderRadius: 10,
   },
@@ -188,8 +197,7 @@ const styles = StyleSheet.create({
   },
   mailPage: {
     flex: 1,
-    justifyContent: 'space-between',
-    backgroundColor: Colors.light["palette-3"]
+    justifyContent: 'space-between'
   },
   box: {
     flex: 1,
@@ -202,14 +210,12 @@ const styles = StyleSheet.create({
   box2: {
     flex: 10,
     height: '100%',
-    backgroundColor: Colors.light["palette-3"],
   },
   box3: {
     flex: 0.5,
   },
   button: {
     borderRadius: 15,
-    backgroundColor: Colors.light['palette-6'],
     paddingVertical: 10,
     paddingHorizontal: 20,
     alignItems: 'center',

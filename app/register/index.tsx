@@ -1,16 +1,22 @@
-import { ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 import StyledText from "../../components/StyledText";
 import Btn from "../../ux/Btn";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Colors } from "../../constants/Colors";
-import { Link, Stack } from "expo-router";
+import { Link, router, Stack } from "expo-router";
 import { SelectList } from "react-native-dropdown-select-list";
 import getGenderAPI from "../../api/gender/getGenders";
 import registerAPI from "../../api/register";
 import useAuth from "../../utilities/login";
+import useScreenMode from "../../utilities/screenMode";
+import EyeOpen from "../../Icons/EyeOpen";
+import EyeClose from "../../Icons/EyeClose";
+import UpArrowIcon from "../../Icons/UpArrow";
+import DownArrowIcon from "../../Icons/DownArrow";
+import DateTimePicker from 'react-native-ui-datepicker';
 
-const getID = (id:string) => {
+
+const getID = (id: string) => {
   switch (id) {
     case 'Enero': return 1;
     case 'Febrero': return 2;
@@ -28,24 +34,39 @@ const getID = (id:string) => {
   }
 }
 
-const DatePicker = ({ setDay, setMonth, setYear, dayOptions, monthOptions, yearOptions }) => (
+interface DatePickerProps {
+  setDay: (int: number) => void;
+  setMonth: (int: number) => void;
+  setYear: (int: number) => void;
+  dayOptions: number[];
+  monthOptions: { id: number, name: string }[];
+  yearOptions: number[];
+}
+
+const DatePicker = ({ setDay, setMonth, setYear, dayOptions, monthOptions, yearOptions }: DatePickerProps) => (
   <View style={{ flexDirection: 'row', gap: 5, width: '100%' }}>
     <View style={{ width: '30%' }}>
       <StyledText xsmall bold mayus left>Día</StyledText>
-      <SelectList setSelected={setDay} data={dayOptions} save="text" />
+      <SelectList
+        setSelected={setDay}
+        data={dayOptions}
+      />
     </View>
     <View style={{ width: '30%' }}>
       <StyledText xsmall bold mayus left>Mes</StyledText>
-      <SelectList setSelected={setMonth} data={monthOptions.map((v) => v.name)} setSelected={(value) => {
-        setMonth(getID(value));
-      }} save="text" />
+      <SelectList setSelected={setMonth} data={monthOptions.map((v) => v.name)} />
     </View>
     <View style={{ width: '30%' }}>
       <StyledText xsmall bold mayus left>Año</StyledText>
-      <SelectList setSelected={setYear} data={yearOptions} save="text" />
+      <SelectList setSelected={setYear} data={yearOptions} />
     </View>
   </View>
 );
+
+interface GenderInterface {
+  id: number;
+  genre_name: string;
+}
 
 export default function LoginPage() {
   const [isMayorEdad, setIsMayorEdad] = useState(false);
@@ -55,17 +76,14 @@ export default function LoginPage() {
   const [phoneError, setPhoneError] = useState(true);
   const [name, setName] = useState('');
   const [nameError, setNameError] = useState(true);
-  const [day, setDay] = useState(0);
-  const [month, setMonth] = useState(0);
-  const [year, setYear] = useState(0);
   const [password, setPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
   const [passwordError, setPasswordError] = useState(true);
-  const [hasCode, setHasCode] = useState(false);
+  const [hasCode] = useState(false);
   const [gender, setGender] = useState('');
   const [genderError, setGenderError] = useState(true);
-  const [genderList, setGenderList] = useState()
-  const { isLoggedIn, login, logout } = useAuth();
+  const [genderList, setGenderList] = useState<GenderInterface[]>([]);
+  const { login } = useAuth();
   useEffect(() => {
     const fetchGender = async () => {
       const data = await getGenderAPI();
@@ -77,14 +95,6 @@ export default function LoginPage() {
   useEffect(() => {
     setGenderError(gender === '');
   }, [gender])
-
-  const [dayOptions] = useState(Array.from({ length: 31 }, (_, i) => i + 1));
-  const [monthOptions] = useState([
-    { id: 1, name: 'Enero' }, { id: 2, name: 'Febrero' }, { id: 3, name: 'Marzo' }, { id: 4, name: 'Abril' },
-    { id: 5, name: 'Mayo' }, { id: 6, name: 'Junio' }, { id: 7, name: 'Julio' }, { id: 8, name: 'Agosto' },
-    { id: 9, name: 'Septiembre' }, { id: 10, name: 'Octubre' }, { id: 11, name: 'Noviembre' }, { id: 12, name: 'Diciembre' }
-  ]);
-  const [yearOptions] = useState(Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i));
 
   useEffect(() => {
     setEmailError(!(email.includes('@') && email.split('@')[1].includes('.')));
@@ -99,123 +109,215 @@ export default function LoginPage() {
   }, [name]);
 
   useEffect(() => {
-    console.log(password, repeatPassword);
-    
     setPasswordError(password !== repeatPassword || password === '');
   }, [password, repeatPassword]);
 
+  const { mode } = useScreenMode()
+
+  const headerTitle = () => <StyledText litle full center bold mayus>REGISTRO</StyledText>
+
+  const [showPassword, setShowPassword] = useState(true)
+  const [showRepeatPassword, setShowRepeatPassword] = useState(true)
+  const [birthdate, setBirthdate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false)
+
   useEffect(() => {
-    console.log(day, month, year);
-    
-    if (day && month && year) {
-      const date = new Date(year, month - 1, day);
+    // calcular si soy mayor de edad
+    if (birthdate) {
       const currentDate = new Date();
-      const monthDifference = currentDate.getMonth() - date.getMonth();
-      let age = currentDate.getFullYear() - date.getFullYear();
+      const monthDifference = currentDate.getMonth() - birthdate.getMonth();
+      let age = currentDate.getFullYear() - birthdate.getFullYear();
       if (monthDifference < 0) {
         age--;
       } else if (monthDifference === 0) {
-        const dayDifference = currentDate.getDate() - date.getDate();
+        const dayDifference = currentDate.getDate() - birthdate.getDate();
         if (dayDifference < 0) {
           age--;
         }
       } else if (age < 18 || (age === 18 && monthDifference >= 0)) {
-        console.log('menor de edad');
-        
         setIsMayorEdad(false)
       } else {
-        console.log('mayor de edad');
         setIsMayorEdad(true)
       }
     }
-  }, [day, month, year]);
+  }, [birthdate])
 
-  useEffect(() => {
-    console.log(emailError, phoneError, nameError, passwordError, genderError, isMayorEdad);
-    console.log(emailError);
-    console.log(phoneError);
-    console.log(nameError);
-    console.log(passwordError);
-    console.log(genderError);
-    console.log(isMayorEdad);
-    console.log((emailError || phoneError || nameError || passwordError|| genderError || !isMayorEdad) ? 'disabled' : 'enabled');
-    
-  }, [emailError, phoneError, nameError, passwordError, genderError, isMayorEdad]);
+  const onChangeDate = useCallback(
+    (params : { date: string }) => {
+      setBirthdate(new Date(
+        params.date
+      ));
+      setShowDatePicker(false);
+    }, []
+  )
 
   return (
     <>
+      {showDatePicker && (
+        <View style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.7)',
+          zIndex: 1000,
+          height: '100%',
+          alignContent: 'center',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+          <View style={{
+            backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
+            width: '90%',
+            borderRadius: 10,
+            padding: 20,
+          }}>
+            <DateTimePicker
+              mode="single"
+              date={new Date()}
+              onChange={onChangeDate}
+              maxDate={new Date()}
+              locale={'es-ES'}
+              firstDayOfWeek={1}
+              selectedItemColor={(mode === 'light') ? Colors.light["palette-1"] : Colors.dark["palette-1"]}
+              selectedTextStyle={(mode === 'light') ? { color: Colors.light["palette-11"] } : { color: Colors.dark["palette-11"] }}
+            />
+          </View>
+        </View>
+      )}
       <Stack.Screen
         options={{
-          headerLeft: () => <StyledText litle full center bold mayus>REGISTRO</StyledText>,
-          headerRight: () => <></>,
+          headerLeft: () => headerTitle(),
+          headerRight: () => null,
         }}
       />
-      <View style={styles.container}>
-        <View style={[styles.box, styles.box2]}>
+      <View style={[styles.container, {
+        backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
+      }]}>
+        <View style={[styles.box, styles.box2, {
+          backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
+        }]}>
           <ScrollView>
             <View style={styles.formGroup}>
               <StyledText litle bold mayus left>Email</StyledText>
               <TextInput
-                style={[styles.input, emailError && { borderColor: 'red' }]}
+                style={[styles.input, {
+                  borderColor: mode === 'light' ? Colors.light['palette-1'] : Colors.dark['palette-1'],
+                  color: mode === 'light' ? Colors.light["palette-11"] : Colors.dark["palette-11"],
+                }, emailError && { borderColor: 'red' }]}
                 onChangeText={setEmail}
                 value={email}
                 placeholder="Email"
                 autoComplete="email"
+                placeholderTextColor={mode === 'light' ? Colors.light["palette-11"] : Colors.dark["palette-11"]}
               />
             </View>
             <View style={styles.formGroup}>
               <StyledText litle bold mayus left>Phone - sin prefijo</StyledText>
               <TextInput
-                style={[styles.input, phoneError && { borderColor: 'red' }]}
+                style={[styles.input, {
+                  borderColor: mode === 'light' ? Colors.light['palette-1'] : Colors.dark['palette-1'],
+                  color: mode === 'light' ? Colors.light["palette-11"] : Colors.dark["palette-11"],
+                }, phoneError && { borderColor: 'red' }]}
                 onChangeText={setPhone}
                 value={phone}
                 placeholder="Phone"
                 autoComplete="tel"
                 keyboardType="numeric"
+                placeholderTextColor={mode === 'light' ? Colors.light["palette-11"] : Colors.dark["palette-11"]}
               />
             </View>
             <View style={styles.formGroup}>
               <StyledText litle bold mayus left>Nombre</StyledText>
               <TextInput
-                style={[styles.input, nameError && { borderColor: 'red' }]}
+                style={[styles.input, {
+                  borderColor: mode === 'light' ? Colors.light['palette-1'] : Colors.dark['palette-1'],
+                  color: mode === 'light' ? Colors.light["palette-11"] : Colors.dark["palette-11"],
+                }, nameError && { borderColor: 'red' }]}
                 onChangeText={setName}
                 value={name}
                 placeholder="Nombre"
                 autoComplete="name"
+                placeholderTextColor={mode === 'light' ? Colors.light["palette-11"] : Colors.dark["palette-11"]}
               />
             </View>
             <View style={styles.formGroup}>
               <StyledText litle bold mayus left>Fecha de nacimiento</StyledText>
-              <DatePicker setDay={setDay} setMonth={setMonth} setYear={setYear} dayOptions={dayOptions} monthOptions={monthOptions} yearOptions={yearOptions} />
+              <TouchableOpacity onPress={() => setShowDatePicker(!showDatePicker)}
+                style={[styles.input, {
+                  borderColor: mode === 'light' ? Colors.light['palette-1'] : Colors.dark['palette-1'],
+                }, !isMayorEdad && { borderColor: 'red' }]}>
+                <StyledText litle bold mayus left>
+                  {birthdate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) ? birthdate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'Fecha de nacimiento'}
+                </StyledText>
+              </TouchableOpacity>
             </View>
             <View style={styles.formGroup}>
+              <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={{
+                position: 'absolute',
+                right: 10,
+                height: '100%',
+                justifyContent: 'center',
+                margin: 0,
+                marginTop: 12,
+                zIndex: 1000,
+              }}>
+                {showPassword ? <EyeOpen /> : <EyeClose />}
+              </TouchableOpacity>
               <StyledText litle bold mayus left>Password</StyledText>
               <TextInput
-                style={[styles.input, passwordError && { borderColor: 'red' }]}
+                style={[styles.input, {
+                  borderColor: mode === 'light' ? Colors.light['palette-1'] : Colors.dark['palette-1'],
+                  color: mode === 'light' ? Colors.light["palette-11"] : Colors.dark["palette-11"],
+                }, passwordError && { borderColor: 'red' }]}
                 onChangeText={setPassword}
                 value={password}
                 placeholder="Password"
                 autoComplete="password"
-                secureTextEntry
+                secureTextEntry={showPassword}
+                placeholderTextColor={mode === 'light' ? Colors.light["palette-11"] : Colors.dark["palette-11"]}
               />
             </View>
             <View style={styles.formGroup}>
+              <TouchableOpacity onPress={() => setShowRepeatPassword(!showRepeatPassword)} style={{
+                position: 'absolute',
+                right: 10,
+                height: '100%',
+                justifyContent: 'center',
+                margin: 0,
+                marginTop: 12,
+                zIndex: 1000
+              }}>
+                {showRepeatPassword ? <EyeOpen /> : <EyeClose />}
+              </TouchableOpacity>
               <StyledText litle bold mayus left>Repeat password</StyledText>
               <TextInput
-                style={[styles.input, passwordError && { borderColor: 'red' }]}
+                style={[styles.input, {
+                  borderColor: mode === 'light' ? Colors.light['palette-1'] : Colors.dark['palette-1'],
+                  color: mode === 'light' ? Colors.light["palette-11"] : Colors.dark["palette-11"],
+                }, passwordError && { borderColor: 'red' }]}
                 onChangeText={setRepeatPassword}
                 value={repeatPassword}
                 placeholder="Repeat password"
                 autoComplete="password"
-                secureTextEntry
+                secureTextEntry={showRepeatPassword}
+                placeholderTextColor={mode === 'light' ? Colors.light["palette-11"] : Colors.dark["palette-11"]}
               />
             </View>
             <View style={styles.formGroup}>
               <StyledText litle bold mayus left>Gender</StyledText>
               <SelectList
-                setSelected={value => setGender(value)}
+                setSelected={setGender}
                 data={genderList?.map((v) => v.genre_name)}
-                save="text"
+                boxStyles={{ borderColor: genderError ? 'red' : mode === 'light' ? Colors.light["palette-1"] : Colors.dark["palette-1"] }}
+                inputStyles={{ color: mode === 'light' ? Colors.light["palette-11"] : Colors.dark["palette-11"] }}
+                searchicon={<></>}
+                closeicon={<UpArrowIcon />}
+                dropdownTextStyles={{ color: mode === 'light' ? Colors.light["palette-11"] : Colors.dark["palette-11"] }}
+                dropdownStyles={{ borderColor: mode === 'light' ? Colors.light["palette-11"] : Colors.dark["palette-11"] }}
+                arrowicon={<DownArrowIcon />}
+                placeholder="Gender"
               />
             </View>
             {!hasCode && (
@@ -228,21 +330,21 @@ export default function LoginPage() {
                     phone: phone,
                     password: password,
                     name: name,
-                    birthDate: `${year}-${month}-${day}`,
+                    birthDate: birthdate.toISOString().split('T')[0],
                     genre: gender,
                   }
                   const register = async () => {
                     const data = await registerAPI(user);
                     if (data) {
-                      login(true)
+                      router.replace('/');
                     }
                   }
                   register();
                 }}
-                disabled={emailError || phoneError || nameError || passwordError|| genderError || !isMayorEdad}
+                disabled={emailError || phoneError || nameError || passwordError || genderError || !isMayorEdad}
               />
             )}
-            <Link href='/login/code' style={{textAlign: 'right', marginBottom: 15}}>
+            <Link href='/login/code' style={{ textAlign: 'right', marginBottom: 15 }}>
               <StyledText litle underline right full>Ya tienes una cuenta? Accede a continuacion</StyledText>
             </Link>
           </ScrollView>
@@ -256,13 +358,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: Colors.light["palette-3"],
     flexDirection: 'column',
     paddingHorizontal: 20,
   },
   input: {
     borderWidth: 1,
-    borderColor: Colors.light["palette-1"],
     padding: 10,
     borderRadius: 10,
   },
@@ -283,6 +383,5 @@ const styles = StyleSheet.create({
   box2: {
     flex: 10,
     height: '100%',
-    backgroundColor: Colors.light["palette-3"],
   },
 });

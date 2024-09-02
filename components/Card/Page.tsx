@@ -2,18 +2,17 @@ import { ImageBackground, StyleSheet, TouchableOpacity, View } from "react-nativ
 import Aficiones from "../Aficiones";
 import { useEffect, useState } from "react";
 import StyledText from "../StyledText";
-import Swiper from "react-native-deck-swiper";
 
 interface CardProps {
-  url: string[];
-  name: string;
-  age: string;
-  aficiones: string[];
-  description: string;
-  location: string;
-  children?: React.ReactNode;
-  like?: boolean;
-  dislike?: boolean;
+  readonly url: string[];
+  readonly name: string;
+  readonly age: string;
+  readonly aficiones: string[];
+  readonly description: string;
+  readonly location: string;
+  readonly children?: React.ReactNode;
+  readonly like?: boolean;
+  readonly dislike?: boolean;
 }
 
 export default function Card(props: CardProps) {
@@ -62,7 +61,6 @@ export default function Card(props: CardProps) {
   }, []);
 
   const handleShowText = () => {
-    console.log('showText');
     setShowText(!showText);
   }
 
@@ -70,101 +68,109 @@ export default function Card(props: CardProps) {
     return "0"
   }
 
+  const calcOptions = () => {
+    /*
+    option === 0 ? (
+      <Aficiones name={aficiones} />
+    ) : option === 1 ? (
+      <Aficiones name={[description]} text showText={showText} handleShowText={handleShowText} />
+    ) : (
+      <Aficiones name={[location]} />
+    )
+    */
+
+    if (option === 0) {
+      return <Aficiones name={aficiones} />;
+    } else if (option === 1) {
+      return <Aficiones name={[description]} text showText={showText} handleShowText={handleShowText} />
+    } else {
+      return <Aficiones name={[location]} />
+    }
+  }
+
   return (
-      <View style={styles.card}>
-        <View style={styles.imageContainer}>
-          {props.like && (
-            <View style={{
-              position: 'absolute',
-              top: 30,
-              left: 0,
-              marginTop: 10,
-              marginRight: 10,
-              paddingHorizontal: 24,
-              zIndex: 100,
-              borderColor: 'green',
-              borderWidth: 4,
-              borderRadius: 10,
-              transform: [{ rotate: '-30deg' }],
-              backgroundColor: 'lightgreen',
-            }}
-            >
-              <StyledText title bold center mayus>
-                LIKE
-              </StyledText>
-            </View>
+    <View style={styles.card}>
+      <View style={styles.imageContainer}>
+        {props.like && (
+          <View style={{
+            position: 'absolute',
+            top: 30,
+            left: 0,
+            marginTop: 10,
+            marginRight: 10,
+            paddingHorizontal: 24,
+            zIndex: 100,
+            borderColor: 'green',
+            borderWidth: 4,
+            borderRadius: 10,
+            transform: [{ rotate: '-30deg' }],
+            backgroundColor: 'lightgreen',
+          }}
+          >
+            <StyledText title bold center mayus>
+              LIKE
+            </StyledText>
+          </View>
+        )}
+        {props.dislike && (
+          <View style={{
+            position: 'absolute',
+            top: 30,
+            right: 0,
+            marginTop: 10,
+            marginRight: 10,
+            paddingHorizontal: 24,
+            zIndex: 100,
+            borderColor: 'red',
+            borderWidth: 4,
+            borderRadius: 10,
+            transform: [{ rotate: '30deg' }],
+            backgroundColor: 'lightpink',
+          }}
+          >
+            <StyledText title bold center mayus>
+              DISLIKE
+            </StyledText>
+          </View>
+        )}
+        <ImageBackground source={{ uri: selectedFoto }} style={styles.image}>
+          {!showText ? (
+            <>
+              <View style={{ position: 'absolute', top: 0, right: 0, padding: 24 }}>
+                <StyledText light litle>
+                  {`${indexSelected + 1} / ${fotos.length}`}
+                </StyledText>
+              </View>
+              <View style={styles.card_filter}>
+                <View style={styles.card_text}>
+                  <StyledText light left title mayus>{props.name}</StyledText>
+                  <StyledText light left litle mayus>{props.age}</StyledText>
+                  <StyledText light left litle mayus>{`${calcularDistancia()} km`}</StyledText>
+                </View>
+                <View style={styles.buttonNext}>
+                  <TouchableOpacity onPress={handlePrevFoto} style={{ padding: 10, borderRadius: 100 }}>
+                    <StyledText light litle mayus>{'<'}</StyledText>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={handleNextFoto} style={{ padding: 10, borderRadius: 100 }}>
+                    <StyledText light litle mayus>{'>'}</StyledText>
+                  </TouchableOpacity>
+                </View>
+                {calcOptions()}
+                <View style={{ marginHorizontal: 20 }}>
+                  {props.children}
+                </View>
+              </View>
+            </>
+          ) : (
+            (
+              <View style={styles.card_filter}>
+                {calcOptions()}
+              </View>
+            )
           )}
-          {props.dislike && (
-            <View style={{
-              position: 'absolute',
-              top: 30,
-              right: 0,
-              marginTop: 10,
-              marginRight: 10,
-              paddingHorizontal: 24,
-              zIndex: 100,
-              borderColor: 'red',
-              borderWidth: 4,
-              borderRadius: 10,
-              transform: [{ rotate: '30deg' }],
-              backgroundColor: 'lightpink',
-            }}
-            >
-              <StyledText title bold center mayus>
-                DISLIKE
-              </StyledText>
-            </View>
-          )}
-          <ImageBackground source={{ uri: selectedFoto }} style={styles.image}>
-            {!showText ? (
-              <>
-                <View style={{ position: 'absolute', top: 0, right: 0, padding: 24 }}>
-                  <StyledText light litle>
-                    {`${indexSelected + 1} / ${fotos.length}`}
-                  </StyledText>
-                </View>
-                <View style={styles.card_filter}>
-                  <View style={styles.card_text}>
-                    <StyledText light left title mayus>{props.name}</StyledText>
-                    <StyledText light left litle mayus>{props.age}</StyledText>
-                    <StyledText light left litle mayus>{`${calcularDistancia()} km`}</StyledText>
-                  </View>
-                  <View style={styles.buttonNext}>
-                    <TouchableOpacity onPress={handlePrevFoto} style={{ padding: 10, borderRadius: 100 }}>
-                      <StyledText light litle mayus>{'<'}</StyledText>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={handleNextFoto} style={{ padding: 10, borderRadius: 100 }}>
-                      <StyledText light litle mayus>{'>'}</StyledText>
-                    </TouchableOpacity>
-                  </View>
-                  {option === 0 ? (
-                    <Aficiones name={aficiones} />
-                  ) : option === 1 ? (
-                    <Aficiones name={[description]} text showText={showText} handleShowText={handleShowText} />
-                  ) : (
-                    <Aficiones name={[location]} />
-                  )}
-                  <View style={{marginHorizontal: 20}}>
-                    {props.children}
-                  </View>
-                </View>
-              </>
-            ) : (
-              (
-                <View style={styles.card_filter}>
-                  {option === 0 ? (
-                    <Aficiones name={aficiones} />
-                  ) : option === 1 ? (
-                    <Aficiones name={[description]} text showText={showText} handleShowText={handleShowText} />
-                  ) : (
-                    <Aficiones name={[location]} />
-                  )}
-                </View>
-              )
-            )}
-          </ImageBackground>
-        </View>
+        </ImageBackground>
       </View>
+    </View>
   );
 }
 

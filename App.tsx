@@ -1,17 +1,12 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Link } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import useAuth from './utilities/login';
+import { enableScreens } from 'react-native-screens';
 
 export default function App() {
-
-  const {
-    isLoggedIn,
-    login,
-    logout
-  } = useAuth();
+  enableScreens();
+  const { isLoggedIn } = useAuth();
 
   return (
     

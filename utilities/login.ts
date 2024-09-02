@@ -15,7 +15,7 @@ const useAuth = () => {
     }
   };
 
-  const login = async (value:boolean) => {
+  const login = async (value: boolean) => {
     try {
       await AsyncStorage.setItem('isLoggedIn', JSON.stringify(value));
       setIsLoggedIn(value);
@@ -26,6 +26,8 @@ const useAuth = () => {
 
   const logout = async () => {
     try {
+      await AsyncStorage.removeItem('isLoggedIn');
+      await AsyncStorage.removeItem('token');
       await AsyncStorage.removeItem('isLoggedIn');
       setIsLoggedIn(false);
     } catch (error) {

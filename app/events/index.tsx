@@ -12,9 +12,10 @@ import Party from "../../Icons/Party";
 import CalendarIcon from "../../Icons/CalendarIcon";
 import Chat from "../../Icons/Chat";
 import CitasCiegas from "../../Icons/CitasCiegas";
+import useScreenMode from "../../utilities/screenMode";
 
 export default function Match() {
-  const { isLoggedIn, login } = useAuth();
+  const { isLoggedIn } = useAuth();
 
   const [events, setEvents] = useState<{ eventImageURL: string, event_name: string, event_date: string, event_location: string, event_description: string, id: number }[]>([{
     eventImageURL: '',
@@ -28,13 +29,13 @@ export default function Match() {
   useEffect(() => {
     const fetchEventsData = async () => {
       const data = await getAllEvents()
-      console.log(data);
-
       setEvents(data)
     }
 
     fetchEventsData()
   }, [])
+
+  const { mode } = useScreenMode()
 
   if (!isLoggedIn) {
     return <></>;
@@ -46,9 +47,15 @@ export default function Match() {
             headerTitle: () => null,
           }}
         />
-        <View style={[styles.container]}>
-          <View style={[styles.box, styles.box2]}>
-            <View style={[styles.mailPage]}>
+        <View style={[styles.container, {
+          backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
+        }]}>
+          <View style={[styles.box, styles.box2, {
+            backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
+          }]}>
+            <View style={[styles.mailPage, {
+              backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"]
+            }]}>
               <GestureHandlerRootView>
                 <FlatList
                   data={events}
@@ -58,7 +65,7 @@ export default function Match() {
                     name={item.event_name || 'No name'}
                     description={item.event_description || 'No description'}
                     location={item.event_location || 'No location'}
-                    url={[item.eventImageURL] || []}
+                    url={[item.eventImageURL]}
                   />)}
                   keyExtractor={(item, index) => index.toString()}
                 />
@@ -68,7 +75,7 @@ export default function Match() {
           <View style={{
             width: "100%",
             flex: 1,
-            backgroundColor: Colors.light["palette-3"],
+            backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
           }}>
             <Menu
               options={[
@@ -125,13 +132,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: Colors.light["palette-3"],
     flexDirection: 'column',
     paddingHorizontal: 20,
   },
   imput: {
     borderWidth: 1,
-    borderColor: Colors.light["palette-1"],
     padding: 10,
     borderRadius: 10,
   },
@@ -148,7 +153,6 @@ const styles = StyleSheet.create({
   },
   mailPage: {
     flex: 1,
-    backgroundColor: Colors.light["palette-3"]
   },
   box: {
     flex: 1,
@@ -161,14 +165,12 @@ const styles = StyleSheet.create({
   box2: {
     flex: 10,
     height: '100%',
-    backgroundColor: Colors.light["palette-3"],
   },
   box3: {
     flex: 0.5,
   },
   button: {
     borderRadius: 15,
-    backgroundColor: Colors.light['palette-6'],
     paddingVertical: 10,
     paddingHorizontal: 20,
     alignItems: 'center',

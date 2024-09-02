@@ -1,4 +1,4 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Appearance } from "react-native";
 import { Link, router } from "expo-router";
 import StyledText from "../components/StyledText";
 import { useEffect } from "react";
@@ -7,48 +7,55 @@ import Btn from "../ux/Btn";
 import useAuth from "../utilities/login";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import isPerfilCompletoAPI from "../api/login/isPerfilCompleto";
+import useScreenMode from "../utilities/screenMode";
 
 export default function IndexPage() {
   const { isLoggedIn, login, getIsLoggedIn, getToken } = useAuth();
 
   const handleLoginGoogle = async () => {
-    console.log('Login with Google');
     await login(true); // Simulamos que el login es exitoso
   }
 
   const handleLoginFacebook = async () => {
-    console.log('Login with Facebook');
     await login(true); // Simulamos que el login es exitoso
   }
 
   useEffect(() => {
-    console.log('IndexPage: ', isLoggedIn);
-  }, [isLoggedIn]);
-
-  useEffect(() => {
     const checkLogin = async () => {
       const value = await getIsLoggedIn();
-      console.log('value', value);
-      const token = await getToken() || '';
-      const isPerfilCompleto = await isPerfilCompletoAPI({ token })
-      console.log('isPerfilCompleto', isPerfilCompleto);
-      
-      if (value && isPerfilCompleto?.perfilCompleto) {
-        console.log('Usuario logueado');
-        router.replace('/matches')
-      } else if (value && !isPerfilCompleto?.perfilCompleto) {
-        router.replace('/complete-profile')
+      const token = await getToken() ?? '';
+      if (value) {
+        const isPerfilCompleto = await isPerfilCompletoAPI({ token }) ?? false;
+        if (isPerfilCompleto?.perfilCompleto) {
+          router.replace('/matches')
+        } else if (!isPerfilCompleto?.perfilCompleto) {
+          router.replace('/complete-profile')
+        }
       }
     }
     checkLogin();
   }, [])
 
+  const { mode } = useScreenMode()
+
+  const calcBackgroundColor = () => {
+    if (mode==='light') {
+      return Colors.light['palette-6'];
+    } else if (mode==='dark') {
+      return Colors.dark['palette-6'];
+    }
+  }
+
   return (
     <GestureHandlerRootView>
     {isLoggedIn ? (
-      <View style={styles.container}>
-        <View style={[styles.box, styles.box2, { marginHorizontal: 20 }]}>
-          <View style={styles.mailPage}>
+      <View style={[styles.container, {
+        backgroundColor: (mode === 'dark') ? Colors.dark['palette-3'] : Colors.light['palette-3'],
+      }]}>
+        <View style={[styles.box, styles.box2, { marginHorizontal: 20, backgroundColor: (mode === 'dark') ? Colors.dark["palette-3"] : Colors.light["palette-3"], }]}>
+          <View style={[styles.mailPage, {
+            backgroundColor: (mode === 'dark') ? Colors.dark["palette-3"] : Colors.light["palette-3"]
+          }]}>
             <StyledText title bold>
               ESTA ES LA PÁGINA DE INICIO CON LOGIN
             </StyledText>
@@ -56,19 +63,25 @@ export default function IndexPage() {
         </View>
       </View>
     ) : (
-      <View style={[styles.container, {paddingHorizontal: 20}]}>
-        <View style={[styles.box, styles.box2]}>
-          <View style={styles.mailPage}>
+      <View style={[styles.container, {paddingHorizontal: 20, backgroundColor: (mode === 'dark') ? Colors.dark['palette-3'] : Colors.light['palette-3'],}]}>
+        <View style={[styles.box, styles.box2, {
+          backgroundColor: (mode === 'dark') ? Colors.dark["palette-3"] : Colors.light["palette-3"],
+        }]}>
+          <View style={[styles.mailPage, {
+            backgroundColor: (mode === 'dark') ? Colors.dark["palette-3"] : Colors.light["palette-3"]
+          }]}>
             <StyledText title bold>
               Todo empieza con un simple <StyledText underline text="ME GUSTA" nextText="LIKE" animationChange />
             </StyledText>
             <View style={{marginBottom: 15}}>
               <StyledText litle bold>
-                Al pulsar "Iniciar sesión", estás aceptando nuestros <StyledText underline>Términos</StyledText>. Obtén más información sobre cómo procesamos tus datos en nuestra <StyledText underline>Política de privacidad</StyledText> y <StyledText underline>Política de cookies</StyledText>.
+                Al pulsar "Iniciar sesión", estás aceptando nuestros <StyledText underline><Link href='/terms'>Términos</Link></StyledText>. Obtén más información sobre cómo procesamos tus datos en nuestra <StyledText underline>Política de privacidad</StyledText> y <StyledText underline>Política de cookies</StyledText>.
               </StyledText>
               <Btn title="Iniciar sesión con Google" onPress={handleLoginGoogle} google disabled/>
               <Btn title="Iniciar sesión con Facebook" onPress={handleLoginFacebook} facebook disabled/>
-              <Link href='/login/code' style={[styles.linkStyle, styles.button]}>
+              <Link href='/login/code' style={[styles.linkStyle, styles.button, {
+                backgroundColor: calcBackgroundColor(),
+              }]}>
                 <StyledText button full center>
                   Iniciar sesión con correo
                 </StyledText>
@@ -95,13 +108,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
-    backgroundColor: Colors.light['palette-3'],
     paddingHorizontal: 0,
   },
   mailPage: {
     flex: 1,
     justifyContent: 'space-between',
-    backgroundColor: Colors.light["palette-3"]
   },
   box: {
     flex: 1,
@@ -114,14 +125,12 @@ const styles = StyleSheet.create({
   box2: {
     flex: 10,
     height: '100%',
-    backgroundColor: Colors.light["palette-3"],
   },
   box3: {
     flex: 0.5,
   },
   button: {
     borderRadius: 15,
-    backgroundColor: Colors.light['palette-6'],
     paddingVertical: 10,
     paddingHorizontal: 20,
     alignItems: 'center',

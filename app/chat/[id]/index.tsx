@@ -1,20 +1,14 @@
-import { Link, Stack, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
 import { Keyboard, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 import { Colors } from "../../../constants/Colors";
 import StyledText from "../../../components/StyledText";
-import Calendar from "../../../components/Calendar/page";
-import Like from "../../../Icons/Like";
-import Party from "../../../Icons/Party";
-import CalendarIcon from "../../../Icons/CalendarIcon";
-import Chat from "../../../Icons/Chat";
-import Menu from "../../../components/Menu/Menu";
 import { useEffect, useRef, useState } from "react";
-import getAllChats from "../../../api/chat/getAllChats";
 import Message from "../../../components/Message";
 import { io, Socket } from "socket.io-client";
 import getChatByEvent from "../../../api/events/getChatByEvent";
+import useScreenMode from "../../../utilities/screenMode";
 
-interface chat {
+interface Chat {
   sender: string;
   message: string;
 }
@@ -23,7 +17,7 @@ export default function ChatPage() {
   const { id } = useLocalSearchParams();
   const scrollViewRef = useRef<ScrollView>(null);
 // {"message": "Sss", "sender": "Usuario 1"}
-  const [chat_, setChat] = useState<[chat]>();
+  const [chat_, setChat_] = useState<[Chat]>();
 
 const [socket, setSocket] = useState<Socket | null>(null); 
 const [newMessage, setNewMessage] = useState("");
@@ -32,12 +26,12 @@ useEffect(() => {
   const socket = io('https://api.bledbonds.es');
   setSocket(socket);
 
-  seeChat(id.toString());
+  seeChat(Number(id));
 }, []);
 
 useEffect(() => {
   socket?.on(`chat message ${id}`, (msg) => {
-    seeChat(parseInt(id));
+    seeChat(Number(id));
   })
 }, [socket, id])
 
@@ -51,23 +45,13 @@ const sendMessage = () => {
     message: newMessage,
     chatId: id,
   });
-  // setChat([...chat, { sender: "Yo", message: newMessage }]);
   setNewMessage("");
 }
-
-const [chatName, setChatName] = useState("");
 
 const seeChat = async (idEvent: number) => {
   const fetchChat = async (idEvent: number) => {
     const data = await getChatByEvent(idEvent);
-    console.log('data', data);
-    // messages: [ { ID_message: 2, ID_user: 11, ID_chat: 1, message: 'HOLA MUNDO' } ]
-    setChatName(data.chatName)
-    console.log('data.messages', data.messages[0].ID_user);
-    console.log('data.messages', data.messages[0].message);
-    
-    
-    setChat(
+    setChat_(
       data?.messages?.map((item: {
         ID_user: string;
         message: string;
@@ -80,6 +64,8 @@ const seeChat = async (idEvent: number) => {
   await fetchChat(idEvent);
 }
 
+  const { mode } = useScreenMode()
+
   return (
     <>
       <Stack.Screen
@@ -87,9 +73,15 @@ const seeChat = async (idEvent: number) => {
           headerTitle: `Chat ${id}`,
         }}
       />
-      <View style={[styles.container]}>
-        <View style={[styles.box, styles.box2]}>
-          <View style={[styles.mailPage]}>
+      <View style={[styles.container, {
+        backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
+      }]}>
+        <View style={[styles.box, styles.box2, {
+          backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
+        }]}>
+          <View style={[styles.mailPage, {
+            backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"]
+          }]}>
             <ScrollView 
               style={{
                 margin: 20,
@@ -102,7 +94,7 @@ const seeChat = async (idEvent: number) => {
                   sender={m.sender}
                   message={m.message}
                   isMine={m.sender === "Yo" || m.sender === "Usuario 1"}
-                  key={i}
+                  key={i + 1}
                 />
               ))}
             </ScrollView>
@@ -110,7 +102,7 @@ const seeChat = async (idEvent: number) => {
               flex: 1,
               flexDirection: 'row',
               borderBottomWidth: 1,
-              borderBottomColor: Colors.light["palette-11"],
+              backgroundColor: (mode === 'light') ? Colors.light["palette-11"] : Colors.dark["palette-11"],
               width: '100%',
               position: 'absolute',
               bottom: 0,
@@ -119,7 +111,7 @@ const seeChat = async (idEvent: number) => {
             }}>
               <TextInput
                 style={{
-                  backgroundColor: Colors.light["palette-4"],
+                  backgroundColor: (mode === 'light') ? Colors.light["palette-4"] : Colors.dark["palette-4"],
                   width: '80%',
                   height: '100%',
                   paddingLeft: 10,
@@ -136,10 +128,9 @@ const seeChat = async (idEvent: number) => {
                   height: '100%',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  backgroundColor: Colors.light["palette-5"],
+                  backgroundColor: (mode === 'light') ? Colors.light["palette-5"] : Colors.dark["palette-5"],
                 }}
                 onPress={() => {
-                  console.log('enviar mensaje');
                   sendMessage()
                 }}
                 >
@@ -159,12 +150,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: Colors.light["palette-3"],
     flexDirection: 'column',
   },
   imput: {
     borderWidth: 1,
-    borderColor: Colors.light["palette-1"],
     padding: 10,
     borderRadius: 10,
   },
@@ -181,7 +170,6 @@ const styles = StyleSheet.create({
   },
   mailPage: {
     flex: 1,
-    backgroundColor: Colors.light["palette-3"]
   },
   box: {
     flex: 1,
@@ -194,14 +182,12 @@ const styles = StyleSheet.create({
   box2: {
     flex: 10,
     height: '100%',
-    backgroundColor: Colors.light["palette-3"],
   },
   box3: {
     flex: 0.5,
   },
   button: {
     borderRadius: 15,
-    backgroundColor: Colors.light['palette-6'],
     paddingVertical: 10,
     paddingHorizontal: 20,
     alignItems: 'center',

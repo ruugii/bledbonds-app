@@ -1,8 +1,8 @@
-import { router, Stack } from "expo-router";
-import { Platform, ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { Stack } from "expo-router";
+import { ScrollView, StyleSheet, TextInput, View } from "react-native";
 import { Colors } from "../../constants/Colors";
 import StyledText from "../../components/StyledText";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Radio from "../../components/Radio";
 import getFindAPI from "../../api/find/getFind";
 import getSexualidadAPI from "../../api/sexualidad/getSexualidad";
@@ -11,13 +11,12 @@ import Btn from "../../ux/Btn";
 import useAuth from "../../utilities/login";
 import updateUserAPI from "../../api/user/update";
 import getUserData from "../../api/user/getData";
-import UploadImage from "../../components/UploadImage";
-import uploadImage from "../../api/image/uploadImage";
 import DropDown from "../../components/DropDown";
 import studyLevelOptionsAPI from "../../api/studyLevel/studyLevelOptions";
 import languageOptionsAPI from "../../api/language/language";
 import zodiacOptionsAPI from "../../api/zodiac/getZodiacOptions";
 import religionOptionsAPI from "../../api/religion/religionOptionsAPI";
+import useScreenMode from "../../utilities/screenMode";
 
 interface FindInterface {
   id: string;
@@ -61,7 +60,7 @@ export default function ProfilePage() {
   const [sexualidadOptions, setSexualidadOptions] = useState<SexualidadInterface[]>([]);
   const [estadoCivil, setEstadoCivil] = useState('');
   const [estadoCivilOptions, setEstadoCivilOptions] = useState<EstadoCivilInterface[]>([]);
-  const [altura, setAltura] = useState('');
+  const [altura] = useState('');
   const [studies, setStudies] = useState('');
   const [studyLocation, setStudyLocation] = useState('');
   const [studyLevel, setStudyLevel] = useState('');
@@ -70,7 +69,6 @@ export default function ProfilePage() {
   const [chargeWork, setChargeWork] = useState('');
   const [enterprise, setEnterprise] = useState('');
   const [drink, setDrink] = useState('');
-  const [smoke, setSmoke] = useState('');
   const [language, setLanguage] = useState<string[]>([]);
   const [languageOptions, setLanguageOptions] = useState<LanguageInterface[]>([]);
   const [zodiac, setZodiac] = useState('');
@@ -78,8 +76,6 @@ export default function ProfilePage() {
   const [pets, setPets] = useState('');
   const [religion, setReligion] = useState('');
   const [religionOptions, setReligionOptions] = useState<ReligionInterface[]>([]);
-  const [child, setChild] = useState('');
-  const [photo, setPhoto] = useState<any>(null);
   const [bio, setBio] = useState('');
   const [maxCharBio] = useState(200);
   const [languageResponse, setLanguageResponse] = useState<string>('');
@@ -97,7 +93,6 @@ export default function ProfilePage() {
   useEffect(() => {
     const getSexualidad = async () => {
       const data = await getSexualidadAPI();
-      console.log('sexualidad', data);
       setSexualidadOptions(data);
     }
     getSexualidad();
@@ -106,7 +101,6 @@ export default function ProfilePage() {
   useEffect(() => {
     const getFind = async () => {
       const data = await getFindAPI();
-      console.log(data);
       setFindOptions(data);
     }
     getFind();
@@ -115,7 +109,6 @@ export default function ProfilePage() {
   useEffect(() => {
     const getEstadoCivil = async () => {
       const data = await getEstadoCivilAPI();
-      console.log(data);
       setEstadoCivilOptions(data);
     }
     getEstadoCivil();
@@ -125,11 +118,8 @@ export default function ProfilePage() {
     const getData = async () => {
       const token = await getToken() ?? '';
       const data = await getUserData({ token });
-      console.log('data', await data);
 
       if (data?.user_info) {
-        console.log('data?.user_info', data?.user_info);
-        
         setEstadoCivil(data?.user_info.id_status);
         setSexualidad(data?.user_info.id_orientation);
         setDrink(`${data?.user_info.drink}`);
@@ -151,7 +141,6 @@ export default function ProfilePage() {
   useEffect(() => {
     const getData = async () => {
       const data = await studyLevelOptionsAPI();
-      console.log(data);
       setStudyLevelOptions(data);
     }
 
@@ -161,7 +150,6 @@ export default function ProfilePage() {
   useEffect(() => {
     const getData = async () => {
       const data = await languageOptionsAPI();
-      console.log(data);
       setLanguageOptions(data);
     }
 
@@ -171,7 +159,6 @@ export default function ProfilePage() {
   useEffect(() => {
     const getData = async () => {
       const data = await zodiacOptionsAPI();
-      console.log(data);
       setZodiacOptions(data);
     }
 
@@ -181,7 +168,6 @@ export default function ProfilePage() {
   useEffect(() => {
     const getData = async () => {
       const data = await religionOptionsAPI();
-      console.log(data);
       setReligionOptions(data);
     }
 
@@ -190,31 +176,7 @@ export default function ProfilePage() {
 
   const { getToken } = useAuth();
 
-  const generatePhoto = () => {
-    return (
-      <View style={{
-        flexDirection: 'column',
-        gap: 10,
-      }}
-      >
-        <StyledText litle bold left>
-          Agrega una imagen para tu perfil
-        </StyledText>
-        <StyledText xsmall bold left>
-          En caso de que quieras mas de una imagen, la puedes agregar desde "tu perfil" una vez hayas completado tu perfil
-        </StyledText>
-        <UploadImage
-          photo={photo}
-          setPhoto={setPhoto}
-        />
-      </View>
-    )
-  }
-
-  const createFileObject = (photo: any) => {
-    const uri = Platform.OS === 'ios' ? photo.uri.replace('file://', '') : photo.uri;
-    return new File([uri], photo.fileName, { type: photo.mimeType });
-  };
+  const { mode } = useScreenMode()
 
   return (
     <>
@@ -223,8 +185,12 @@ export default function ProfilePage() {
           headerTitle: () => null,
         }}
       />
-      <View style={[styles.container]}>
-        <View style={[styles.box, styles.box2]}>
+      <View style={[styles.container, {
+        backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
+      }]}>
+        <View style={[styles.box, styles.box2, {
+          backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
+        }]}>
           <ScrollView>
             <StyledText title bold mayus center>
               Tu perfil - actualiza tu perfil
@@ -240,7 +206,7 @@ export default function ProfilePage() {
                     flexDirection: 'row',
                     marginVertical: 5,
                   }}
-                  key={index}
+                  key={index + 1}
                 >
                   <Radio checked={estadoCivil === item.id} onPress={() => setEstadoCivil(estadoCivil === item.id ? '0' : item.id)} style={{
                     marginRight: 10,
@@ -263,7 +229,7 @@ export default function ProfilePage() {
                     flexDirection: 'row',
                     marginVertical: 5,
                   }}
-                  key={index}
+                  key={index + 1}
                 >
                   <Radio checked={sexualidad === item.id} onPress={() => setSexualidad(sexualidad === item.id ? '0' : item.id)} style={{
                     marginRight: 10,
@@ -358,7 +324,7 @@ export default function ProfilePage() {
                     flexDirection: 'row',
                     marginVertical: 5,
                   }}
-                  key={index}
+                  key={index + 1}
                 >
                   <Radio multioption checked={language.includes(item.id)} onPress={() => setLanguage(language.includes(item.id) ? language.filter((i) => i !== item.id) : [...language, item.id])} style={{
                     marginRight: 10,
@@ -490,7 +456,9 @@ export default function ProfilePage() {
                   response={studyLocation}
                 >
                   <TextInput
-                    style={[styles.imput]}
+                    style={[styles.imput, {
+                      borderColor: mode === 'light' ? Colors.light['palette-1'] : Colors.dark['palette-1'],
+                    }]}
                     onChangeText={setStudyLocation}
                     value={studyLocation}
                     placeholder="Study location"
@@ -552,7 +520,7 @@ export default function ProfilePage() {
             >
               <TextInput
                 style={[styles.textArea, {
-                  borderColor: Colors.light['palette-1'],
+                  borderColor: mode === 'light' ? Colors.light['palette-1'] : Colors.dark['palette-1'],
                   marginTop: 10,
                 }]}
                 placeholder="Escribe aquí"
@@ -611,7 +579,9 @@ export default function ProfilePage() {
                   response={chargeWork}
                 >
                   <TextInput
-                    style={[styles.imput]}
+                    style={[styles.imput, {
+                      borderColor: mode === 'light' ? Colors.light['palette-1'] : Colors.dark['palette-1'],
+                    }]}
                     onChangeText={setChargeWork}
                     value={chargeWork}
                     placeholder="Charge work"
@@ -622,7 +592,7 @@ export default function ProfilePage() {
                   response={enterprise}
                 >
                   <TextInput
-                    style={[styles.imput]}
+                    style={[styles.imput, { borderColor: mode === 'light' ? Colors.light['palette-1'] : Colors.dark['palette-1'] }]}
                     onChangeText={setEnterprise}
                     value={enterprise}
                     placeholder="Enterprise"
@@ -664,13 +634,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: Colors.light["palette-3"],
     flexDirection: 'column',
     paddingHorizontal: 20,
   },
   textArea: {
     borderWidth: 1,
-    borderColor: Colors.light["palette-1"],
     padding: 10,
     borderRadius: 10,
     height: 100,  // Adjust height as needed
@@ -689,7 +657,6 @@ const styles = StyleSheet.create({
   },
   mailPage: {
     flex: 1,
-    backgroundColor: Colors.light["palette-3"]
   },
   box: {
     flex: 1,
@@ -702,7 +669,6 @@ const styles = StyleSheet.create({
   box2: {
     flex: 10,
     height: '100%',
-    backgroundColor: Colors.light["palette-3"],
     marginTop: 20,
   },
   box3: {
@@ -710,7 +676,6 @@ const styles = StyleSheet.create({
   },
   button: {
     borderRadius: 15,
-    backgroundColor: Colors.light['palette-6'],
     paddingVertical: 10,
     paddingHorizontal: 20,
     alignItems: 'center',
@@ -720,7 +685,6 @@ const styles = StyleSheet.create({
   },
   imput: {
     borderWidth: 1,
-    borderColor: Colors.light["palette-1"],
     padding: 10,
     borderRadius: 10,
   },

@@ -2,20 +2,23 @@ import { TouchableOpacity, View } from "react-native";
 import StyledText from "../StyledText";
 import { useState } from "react";
 import { Colors } from "../../constants/Colors";
+import useScreenMode from "../../utilities/screenMode";
 
-interface dropDownProps {
-  title: string;
-  response?: string;
-  children: React.ReactNode;
+interface DropDownProps {
+  readonly title: string;
+  readonly response?: string;
+  readonly children: React.ReactNode;
 }
 
-export default function DropDown(props: dropDownProps) {
+export default function DropDown(props: DropDownProps) {
   
   const [open, setOpen] = useState(false);
 
+  const { mode } = useScreenMode()
+
   return (
     <View style={{
-      borderBottomColor: Colors.light["palette-11"],
+      borderBottomColor: mode==='light'? Colors.light["palette-11"] : Colors.dark["palette-11"],
       borderBottomWidth: 1,
       paddingBottom: 10,
     }}>

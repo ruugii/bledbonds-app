@@ -1,10 +1,10 @@
 import { Pressable, Text, View } from "react-native";
 
 interface RadioInterface {
-  checked: boolean;
-  multioption?: boolean;
-  onPress: () => void;
-  style?: {}
+  readonly checked: boolean;
+  readonly multioption?: boolean;
+  readonly onPress: () => void;
+  readonly style?: {}
 }
 
 export default function Radio(props: RadioInterface) {

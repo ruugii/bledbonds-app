@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Path, Svg } from "react-native-svg"
-const Dislike = (props) => (
+const Dislike = (props: any) => (
   <Svg
     xmlns="http://www.w3.org/2000/svg"
     width={24}

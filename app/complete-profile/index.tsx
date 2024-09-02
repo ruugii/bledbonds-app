@@ -12,7 +12,8 @@ import useAuth from "../../utilities/login";
 import updateUserAPI from "../../api/user/update";
 import getUserData from "../../api/user/getData";
 import UploadImage from "../../components/UploadImage";
-import uploadImage from "../../api/image/uploadImage";
+import useScreenMode from "../../utilities/screenMode";
+import uploadImageV2 from "../../api/image/uploadImageV2";
 
 interface FindInterface {
   id: string;
@@ -30,20 +31,21 @@ interface EstadoCivilInterface {
 }
 
 export default function CompleteProfilePage() {
+
   const [find, setFind] = useState('0');
   const [findOptions, setFindOptions] = useState<FindInterface[]>([]);
   const [sexualidad, setSexualidad] = useState('0');
   const [sexualidadOptions, setSexualidadOptions] = useState<SexualidadInterface[]>([]);
   const [estadoCivil, setEstadoCivil] = useState('0');
   const [estadoCivilOptions, setEstadoCivilOptions] = useState<EstadoCivilInterface[]>([]);
-  const [photo, setPhoto] = useState<any>(null);
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [photoAux, setPhotoAux] = useState<any>(null);
   const [bio, setBio] = useState('');
   const [maxCharBio] = useState(200);
 
   useEffect(() => {
     const getSexualidad = async () => {
       const data = await getSexualidadAPI();
-      console.log('sexualidad', data);
       setSexualidadOptions(data);
     }
     getSexualidad();
@@ -52,7 +54,6 @@ export default function CompleteProfilePage() {
   useEffect(() => {
     const getFind = async () => {
       const data = await getFindAPI();
-      console.log(data);
       setFindOptions(data);
     }
     getFind();
@@ -61,7 +62,6 @@ export default function CompleteProfilePage() {
   useEffect(() => {
     const getEstadoCivil = async () => {
       const data = await getEstadoCivilAPI();
-      console.log(data);
       setEstadoCivilOptions(data);
     }
     getEstadoCivil();
@@ -71,8 +71,6 @@ export default function CompleteProfilePage() {
     const getData = async () => {
       const token = await getToken() ?? '';
       const data = await getUserData({ token });
-      console.log('data', data);
-      
       if (data?.user_info) {
         setFind(data?.user_info.id_find);
         setSexualidad(data?.user_info.id_orientation);
@@ -101,15 +99,14 @@ export default function CompleteProfilePage() {
         <UploadImage
           photo={photo}
           setPhoto={setPhoto}
+          photoAux={photoAux}
+          setPhotoAux={setPhotoAux}
         />
       </View>
     )
   }
 
-  const createFileObject = (photo: any) => {
-    const uri = Platform.OS === 'ios' ? photo.uri.replace('file://', '') : photo.uri;
-    return new File([uri], photo.fileName, { type: photo.mimeType });
-  };
+  const { mode } = useScreenMode()
 
   return (
     <>
@@ -118,8 +115,12 @@ export default function CompleteProfilePage() {
           headerTitle: () => null,
         }}
       />
-      <View style={[styles.container]}>
-        <View style={[styles.box, styles.box2]}>
+      <View style={[styles.container, {
+        backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
+      }]}>
+        <View style={[styles.box, styles.box2, {
+          backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
+        }]}>
           <ScrollView>
             <StyledText title bold mayus center>
               Completa tu perfil
@@ -134,7 +135,7 @@ export default function CompleteProfilePage() {
                     flexDirection: 'row',
                     marginVertical: 5,
                   }}
-                  key={index}
+                  key={index + 1}
                 >
                   <Radio checked={find === item.id} onPress={() => setFind(find === item.id ? '0' : item.id)} style={{
                     marginRight: 10,
@@ -157,7 +158,7 @@ export default function CompleteProfilePage() {
                     flexDirection: 'row',
                     marginVertical: 5,
                   }}
-                  key={index}
+                  key={index + 1}
                 >
                   <Radio checked={sexualidad === item.id} onPress={() => setSexualidad(sexualidad === item.id ? '0' : item.id)} style={{
                     marginRight: 10,
@@ -180,7 +181,7 @@ export default function CompleteProfilePage() {
                     flexDirection: 'row',
                     marginVertical: 5,
                   }}
-                  key={index}
+                  key={index + 1}
                 >
                   <Radio checked={estadoCivil === item.id} onPress={() => setEstadoCivil(estadoCivil === item.id ? '0' : item.id)} style={{
                     marginRight: 10,
@@ -199,8 +200,9 @@ export default function CompleteProfilePage() {
               </StyledText>
               <TextInput
                 style={[styles.textArea, {
-                  borderColor: Colors.light['palette-1'],
+                  borderColor: (mode === 'light') ? Colors.light['palette-1'] : Colors.dark['palette-1'],
                   marginTop: 10,
+                  color: (mode === 'light') ? Colors.light['palette-11'] : Colors.dark['palette-11'],
                 }]}
                 placeholder="Escribe aquí"
                 value={bio}
@@ -223,27 +225,35 @@ export default function CompleteProfilePage() {
                 let imageURL = {
                   url: '',
                 }
-                if (photo) {
-                  const photoData = {
-                    uri: [Platform.OS === 'ios' ? photo.uri.replace('file://', '') : photo.uri],
-                    fileName: photo.fileName,
-                    mimeType: photo.mimeType,
-                  }
-                  const file = createFileObject(photoData);
-                  imageURL = await uploadImage(file);
+                let data = ''
+
+                if (photoAux) {
+                  let formData = new FormData()
+                  formData.append('image', photo);
+                  const imageURL = await uploadImageV2(formData)
+                  const token = await getToken() ?? '';
+                  data = await updateUserAPI({
+                    token: token,
+                    id_find: find,
+                    id_orientation: sexualidad,
+                    id_status: estadoCivil,
+                    bio: bio,
+                    photo: imageURL.url !== '' ? imageURL.url : undefined
+                  })
+                } else {
+                  const token = await getToken() ?? '';
+                  data = await updateUserAPI({
+                    token: token,
+                    id_find: find,
+                    id_orientation: sexualidad,
+                    id_status: estadoCivil,
+                    bio: bio,
+                    photo: imageURL.url !== '' ? imageURL.url : undefined
+                  })
                 }
-                const token = await getToken() ?? '';
-                const data = await updateUserAPI({
-                  token: token,
-                  id_find: find,
-                  id_orientation: sexualidad,
-                  id_status: estadoCivil,
-                  bio: bio,
-                  photo: imageURL.url !== '' ? imageURL.url : undefined
-                })
-                if (data) {
-                  router.replace('/')
-                }
+                // if (data) {
+                //   router.replace('/')
+                // }
               }
               updateUser();
             }} clickable />
@@ -258,13 +268,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: Colors.light["palette-3"],
     flexDirection: 'column',
     paddingHorizontal: 20,
   },
   textArea: {
     borderWidth: 1,
-    borderColor: Colors.light["palette-1"],
     padding: 10,
     borderRadius: 10,
     height: 100,  // Adjust height as needed
@@ -283,7 +291,6 @@ const styles = StyleSheet.create({
   },
   mailPage: {
     flex: 1,
-    backgroundColor: Colors.light["palette-3"]
   },
   box: {
     flex: 1,
@@ -296,7 +303,6 @@ const styles = StyleSheet.create({
   box2: {
     flex: 10,
     height: '100%',
-    backgroundColor: Colors.light["palette-3"],
     marginTop: 20,
   },
   box3: {
@@ -304,7 +310,6 @@ const styles = StyleSheet.create({
   },
   button: {
     borderRadius: 15,
-    backgroundColor: Colors.light['palette-6'],
     paddingVertical: 10,
     paddingHorizontal: 20,
     alignItems: 'center',

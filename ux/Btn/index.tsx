@@ -1,15 +1,16 @@
-import React, { useEffect } from 'react';
-import { TouchableOpacity, Text, StyleSheet, Image, View } from 'react-native';
+import React from 'react';
+import { TouchableOpacity, StyleSheet, Image, View } from 'react-native';
 import { Colors } from '../../constants/Colors';
 import StyledText from '../../components/StyledText';
+import useScreenMode from '../../utilities/screenMode';
 
 interface BtnProps {
-  title: string;
-  onPress?: () => void;
-  disabled?: boolean;
-  google?: boolean;
-  facebook?: boolean;
-  clickable?: boolean;
+  readonly title: string;
+  readonly onPress?: () => void;
+  readonly disabled?: boolean;
+  readonly google?: boolean;
+  readonly facebook?: boolean;
+  readonly clickable?: boolean;
 }
 
 export default function Btn({ title, onPress, disabled, google, facebook, clickable }: BtnProps) {
@@ -20,13 +21,31 @@ export default function Btn({ title, onPress, disabled, google, facebook, clicka
     }
   }
 
+  const { mode } = useScreenMode()
+
+  const calcBackgroundColor = () => {
+    // disabled ? mode==='light'? Colors.light['palette-2'] : Colors.dark['palette-2'] : mode==='light'? Colors.light['palette-6'] : Colors.dark['palette-6'],
+    if (disabled && mode==='light') {
+      return Colors.light['palette-2'];
+    } else if (disabled && mode==='dark') {
+      return Colors.dark['palette-2'];
+    } else if (!disabled && mode==='light') {
+      return Colors.light['palette-6'];
+    } else if (!disabled && mode==='dark') {
+      return Colors.dark['palette-6'];
+    }
+  }
+
   if (clickable) {
     return (
-      
       <TouchableOpacity
         onPress={handlePress}
         disabled={disabled}
-        style={[styles.button, disabled && styles.disabledButton]}
+        style={[
+          styles.button, {
+            backgroundColor: calcBackgroundColor()
+          }, 
+          disabled ? styles.disabledButton : {}]}
         
       >
         <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
@@ -40,7 +59,14 @@ export default function Btn({ title, onPress, disabled, google, facebook, clicka
     );
   } else {
     return (
-      <View style={[styles.button, disabled && styles.disabledButton, { display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', width: '100%' }]}>
+      <View style={[styles.button, { 
+        display: 'flex', 
+        flexDirection: 'row', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        width: '100%',
+        backgroundColor: calcBackgroundColor(),
+      }, disabled && ( styles.disabledButton )]}>
         {google && <Image source={require('../../assets/google.png')} style={{ width: 20, height: 20, marginRight: 10 }} />}
         {facebook && <Image source={require('../../assets/facebook.png')} style={{ width: 20, height: 20, marginRight: 10 }} />}
         <StyledText button disabled={disabled}>
@@ -55,7 +81,6 @@ export default function Btn({ title, onPress, disabled, google, facebook, clicka
 const styles = StyleSheet.create({
   button: {
     borderRadius: 15,
-    backgroundColor: Colors.light['palette-6'],
     paddingVertical: 10,
     paddingHorizontal: 20,
     alignItems: 'center',
@@ -63,18 +88,5 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   disabledButton: {
-    backgroundColor: Colors.light['palette-2'],
-    color: Colors.light['palette-5']
   },
-  buttonText: {
-    color: Colors.light['palette-11'],
-    fontSize: 16,
-    display: 'flex',
-    alignContent: 'center',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  disabledText: {
-    color: Colors.light['palette-5']
-  }
 });

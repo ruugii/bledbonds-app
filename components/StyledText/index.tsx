@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, Text } from "react-native";
 import { Colors } from "../../constants/Colors";
+import useScreenMode from "../../utilities/screenMode";
 
 interface TextProps {
   text?: string;
@@ -36,30 +37,25 @@ export default function StyledText(props: Readonly<TextProps>) {
 
   useEffect(() => {
     if (props.animationChange && (props.text || props.nextText)) {
-      const interval = setInterval(() => {
-        setCurrentIndex(prev => {
-          const textLength = toggleText && props.nextText ? props.nextText.length : props.text!.length;
+      const textLength = toggleText && props.nextText ? props.nextText.length : props.text!.length;
 
-          // Si estamos eliminando el texto
+      const updateIndex = () => {
+        setCurrentIndex((prev) => {
           if (isDeleting) {
-            if (prev > 0) {
-              return prev - 1;
-            } else {
-              setIsDeleting(false);
-              setToggleText(prevToggle => !prevToggle);
-              return 0;
-            }
+            if (prev > 0) return prev - 1;
+            setIsDeleting(false);
+            setToggleText(!toggleText);
+            return 0;
+          } else if (prev < textLength) {
+            return prev + 1;
           } else {
-            // Si estamos añadiendo el texto
-            if (prev < textLength) {
-              return prev + 1;
-            } else {
-              setIsDeleting(true);
-              return textLength;
-            }
+            setIsDeleting(true);
+            return textLength;
           }
         });
-      }, 800);
+      };
+
+      const interval = setInterval(updateIndex, 800);
 
       return () => clearInterval(interval);
     }
@@ -72,29 +68,73 @@ export default function StyledText(props: Readonly<TextProps>) {
     }
   }, [currentIndex, toggleText, props.animationChange, props.text, props.nextText]);
 
+  const { mode } = useScreenMode();
+
+  const getStyle = () => {
+    const baseStyles = [
+      getModeStyles(),
+      getTextStyles(),
+      getColorStyles(),
+      getAlignmentStyles(),
+      getSizeStyles(),
+      props.style,
+    ];
+
+    return baseStyles.filter(Boolean);
+  };
+
+  const getModeStyles = () => {
+    return mode === 'light' ? styles.textStyles : styles.darkTextStyles;
+  };
+
+  const getTextStyles = () => {
+    return [
+      props.title && styles.title,
+      props.subtitle && styles.subtitle,
+      props.litle && styles.little,
+      props.bold && styles.bold,
+      props.underline && styles.underline,
+      props.mayus && styles.mayus,
+    ];
+  };
+
+  const getColorStyles = () => {
+    return [
+      props.light && {
+        color: mode === 'light' ? Colors.light["palette-1"] : Colors.dark["palette-1"],
+      },
+      props.transparent && { color: 'transparent' },
+      props.button && [
+        styles.button,
+        {
+          color: mode === 'light' ? Colors.light["palette-11"] : Colors.dark["palette-11"],
+        },
+      ],
+      props.disabled && {
+        color: mode === 'light' ? Colors.light["palette-5"] : Colors.dark["palette-5"],
+      },
+      props.red && { color: 'red' },
+    ];
+  };
+
+  const getAlignmentStyles = () => {
+    return [
+      props.left && styles.left,
+      props.justify && styles.justify,
+      props.right && { textAlign: 'right' },
+      props.center && { textAlign: 'center' },
+      props.full && { width: '100%' },
+    ];
+  };
+
+  const getSizeStyles = () => {
+    if (props.micro) return styles.micro;
+    if (props.xsmall) return { fontSize: 15 };
+    return null;
+  };
+
   return (
-    <Text style={[
-      styles.textStyles,
-      props.title ? styles.title : {},
-      props.subtitle ? styles.subtitle : {},
-      props.litle ? styles.little : {},
-      props.bold ? styles.bold : {},
-      props.underline ? styles.underline : {},
-      props.mayus ? styles.mayus : {},
-      props.light ? styles.light : {},
-      props.left ? styles.left : {},
-      props.justify ? styles.justify : {},
-      props.style ? props.style : {},
-      props.transparent ? { color: 'transparent' } : {},
-      props.right ? { textAlign: 'right' } : {},
-      props.button ? styles.button : {},
-      props.disabled ? styles.disabled : {},
-      props.micro ? styles.micro : {},
-      props.full ? { width: '100%' } : {},
-      props.center ? { textAlign: 'center'} : {},
-      props.xsmall ? { fontSize: 15 } : {},
-      props.red ? { color: 'red' } : {},
-    ]}>
+    <Text style={getStyle()}>
       {props.children ? props.children : displayText}
     </Text>
   );
@@ -103,6 +143,9 @@ export default function StyledText(props: Readonly<TextProps>) {
 const styles = StyleSheet.create({
   textStyles: {
     color: Colors.light["palette-11"],
+  },
+  darkTextStyles: {
+    color: Colors.dark["palette-11"],
   },
   title: {
     fontSize: 40,
@@ -125,9 +168,6 @@ const styles = StyleSheet.create({
   mayus: {
     textTransform: 'uppercase',
   },
-  light: {
-    color: Colors.light["palette-1"],
-  },
   left: {
     textAlign: 'left',
   },
@@ -135,15 +175,11 @@ const styles = StyleSheet.create({
     textAlign: 'justify',
   },
   button: {
-    color: Colors.light['palette-11'],
     fontSize: 16,
     display: 'flex',
     alignContent: 'center',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  disabled: {
-    color: Colors.light["palette-5"]
   },
   micro: {
     fontSize: 10,

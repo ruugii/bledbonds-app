@@ -1,12 +1,12 @@
 import { View } from "react-native";
 import StyledText from "../StyledText";
-import { useEffect } from "react";
 import { Colors } from "../../constants/Colors";
+import useScreenMode from "../../utilities/screenMode";
 
 interface CalendarProps {
-  month: string;
-  year: string;
-  events: { eventImageURL: string, event_name: string, event_date: string, event_location: string, event_description: string, id: number }[]
+  readonly month: string;
+  readonly year: string;
+  readonly events: { eventImageURL: string, event_name: string, event_date: string, event_location: string, event_description: string, id: number }[]
 }
 
 export default function Calendar(props: CalendarProps) {
@@ -61,25 +61,25 @@ export default function Calendar(props: CalendarProps) {
     }
   }
 
+  const { mode } = useScreenMode()
+
   const dayNumber = (date: Date) => {
-    console.log(props.events);
-    
-    for (let i = 0; i < props.events.length; i++) {
+    for (const event of props.events) {
       
-      const eventDate = new Date(props.events[i].event_date);
-      console.log('eventDate', eventDate.getMonth());
-      console.log('eventDate', date.getMonth());
+      const eventDate = new Date(event.event_date);
 
       if (date.getDate() === eventDate.getDate() && date.getMonth() === eventDate.getMonth() && date.getFullYear() === eventDate.getFullYear()) {
         return (
-          <View style={[styles.day, { backgroundColor: Colors.light["palette-11"] }]}>
+          <View style={[styles.day, { backgroundColor: mode==='light'? Colors.light["palette-11"] : Colors.dark["palette-11"] }]}>
             <StyledText litle light>{date.getDate()}</StyledText>
           </View>
         )
       }
     }
     return (
-      <View style={[styles.day]}>
+      <View style={
+        styles.day
+      }>
         <StyledText litle>{date.getDate()}</StyledText>
       </View>
     )
@@ -91,7 +91,7 @@ export default function Calendar(props: CalendarProps) {
       <View style={styles.calendar}>
         {days.map((day, index) => {
           return (
-            <View key={index} style={[styles.day]}>
+            <View key={index + 1} style={styles.day}>
               <StyledText litle>{day}</StyledText>
             </View>
           )

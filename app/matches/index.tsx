@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Image, ImageBackground, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Card from "../../components/Card/Page";
 import StyledText from "../../components/StyledText";
 import Dislike from "../../Icons/Dislike";
@@ -16,170 +16,73 @@ import CitasCiegas from "../../Icons/CitasCiegas";
 import menuEnabled from "../../api/menu/menuenabled";
 import Swiper from "react-native-deck-swiper";
 import Menu from "../../components/Menu/Menu";
+import useScreenMode from "../../utilities/screenMode";
 
 const swiperRef = React.createRef<Swiper<{ fotos: string[]; aficiones: string[]; description: string; location: string; name: string; age: string; }>>();
 
+interface UserInterface {
+  fotos: string[];
+  aficiones: string[];
+  description: string;
+  location: string;
+  name: string;
+  age: string;
+}
+
 export default function Match() {
-  const users = [
-    {
-      fotos: [
-        "https://i.pinimg.com/280x280_RS/74/43/c2/7443c297a5735055c4485538f5596086.jpg",
-        "https://i.redd.it/xf0a7fpmpfl51.jpg",
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBQ2BNccKgO3GBJ4Y4kq4ESnRrd2IxKYBVUA&s",
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpTuQK32AI2k8ZgatqIUYTAhzD8ekGyY_9jg&s",
-        "https://i.pinimg.com/736x/93/aa/5d/93aa5d79190f22d7b7f09a10c74bf0c7.jpg",
-      ],
-      aficiones: ["Futbol", "Cine", "Viajar", "Comer", "Bailar"],
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat... Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat... Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat... Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat... Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat...",
-      location: "Madrid",
-      name: "TEST",
-      age: "22",
-    },
-    {
-      fotos: [
-        "https://i.pinimg.com/280x280_RS/74/43/c2/7443c297a5735055c4485538f5596086.jpg",
-        "https://i.redd.it/xf0a7fpmpfl51.jpg",
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBQ2BNccKgO3GBJ4Y4kq4ESnRrd2IxKYBVUA&s",
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpTuQK32AI2k8ZgatqIUYTAhzD8ekGyY_9jg&s",
-        "https://i.pinimg.com/736x/93/aa/5d/93aa5d79190f22d7b7f09a10c74bf0c7.jpg",
-      ],
-      aficiones: ["Futbol", "Cine", "Viajar", "Comer", "Bailar"],
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat...",
-      location: "Madrid",
-      name: "TEST 2",
-      age: "22",
-    },
-    {
-      fotos: [
-        "https://i.pinimg.com/280x280_RS/74/43/c2/7443c297a5735055c4485538f5596086.jpg",
-        "https://i.redd.it/xf0a7fpmpfl51.jpg",
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBQ2BNccKgO3GBJ4Y4kq4ESnRrd2IxKYBVUA&s",
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpTuQK32AI2k8ZgatqIUYTAhzD8ekGyY_9jg&s",
-        "https://i.pinimg.com/736x/93/aa/5d/93aa5d79190f22d7b7f09a10c74bf0c7.jpg",
-      ],
-      aficiones: ["Futbol", "Cine", "Viajar", "Comer", "Bailar"],
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat...",
-      location: "Madrid",
-      name: "TEST 3",
-      age: "22",
-    },
-    {
-      fotos: [
-        "https://i.pinimg.com/280x280_RS/74/43/c2/7443c297a5735055c4485538f5596086.jpg",
-        "https://i.redd.it/xf0a7fpmpfl51.jpg",
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBQ2BNccKgO3GBJ4Y4kq4ESnRrd2IxKYBVUA&s",
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpTuQK32AI2k8ZgatqIUYTAhzD8ekGyY_9jg&s",
-        "https://i.pinimg.com/736x/93/aa/5d/93aa5d79190f22d7b7f09a10c74bf0c7.jpg",
-      ],
-      aficiones: ["Futbol", "Cine", "Viajar", "Comer", "Bailar"],
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat...",
-      location: "Madrid",
-      name: "TEST 4",
-      age: "22",
-    },
-    {
-      fotos: [
-        "https://i.pinimg.com/280x280_RS/74/43/c2/7443c297a5735055c4485538f5596086.jpg",
-        "https://i.redd.it/xf0a7fpmpfl51.jpg",
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBQ2BNccKgO3GBJ4Y4kq4ESnRrd2IxKYBVUA&s",
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpTuQK32AI2k8ZgatqIUYTAhzD8ekGyY_9jg&s",
-        "https://i.pinimg.com/736x/93/aa/5d/93aa5d79190f22d7b7f09a10c74bf0c7.jpg",
-      ],
-      aficiones: ["Futbol", "Cine", "Viajar", "Comer", "Bailar"],
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat...",
-      location: "Madrid",
-      name: "TEST 5",
-      age: "22",
-    },
-    {
-      fotos: [
-        "https://i.pinimg.com/280x280_RS/74/43/c2/7443c297a5735055c4485538f5596086.jpg",
-        "https://i.redd.it/xf0a7fpmpfl51.jpg",
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBQ2BNccKgO3GBJ4Y4kq4ESnRrd2IxKYBVUA&s",
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpTuQK32AI2k8ZgatqIUYTAhzD8ekGyY_9jg&s",
-        "https://i.pinimg.com/736x/93/aa/5d/93aa5d79190f22d7b7f09a10c74bf0c7.jpg",
-      ],
-      aficiones: ["Futbol", "Cine", "Viajar", "Comer", "Bailar"],
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat...",
-      location: "Madrid",
-      name: "TEST 6",
-      age: "22",
-    },
-    {
-      fotos: [
-        "https://i.pinimg.com/280x280_RS/74/43/c2/7443c297a5735055c4485538f5596086.jpg",
-        "https://i.redd.it/xf0a7fpmpfl51.jpg",
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBQ2BNccKgO3GBJ4Y4kq4ESnRrd2IxKYBVUA&s",
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpTuQK32AI2k8ZgatqIUYTAhzD8ekGyY_9jg&s",
-        "https://i.pinimg.com/736x/93/aa/5d/93aa5d79190f22d7b7f09a10c74bf0c7.jpg",
-      ],
-      aficiones: ["Futbol", "Cine", "Viajar", "Comer", "Bailar"],
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat...",
-      location: "Madrid",
-      name: "TEST 7",
-      age: "22",
-    },
-    {
-      fotos: [
-        "https://i.pinimg.com/280x280_RS/74/43/c2/7443c297a5735055c4485538f5596086.jpg",
-        "https://i.redd.it/xf0a7fpmpfl51.jpg",
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBQ2BNccKgO3GBJ4Y4kq4ESnRrd2IxKYBVUA&s",
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpTuQK32AI2k8ZgatqIUYTAhzD8ekGyY_9jg&s",
-        "https://i.pinimg.com/736x/93/aa/5d/93aa5d79190f22d7b7f09a10c74bf0c7.jpg",
-      ],
-      aficiones: ["Futbol", "Cine", "Viajar", "Comer", "Bailar"],
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat...",
-      location: "Madrid",
-      name: "TEST 8",
-      age: "22",
-    },
-    {
-      fotos: [
-        "https://i.pinimg.com/280x280_RS/74/43/c2/7443c297a5735055c4485538f5596086.jpg",
-        "https://i.redd.it/xf0a7fpmpfl51.jpg",
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBQ2BNccKgO3GBJ4Y4kq4ESnRrd2IxKYBVUA&s",
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpTuQK32AI2k8ZgatqIUYTAhzD8ekGyY_9jg&s",
-        "https://i.pinimg.com/736x/93/aa/5d/93aa5d79190f22d7b7f09a10c74bf0c7.jpg",
-      ],
-      aficiones: ["Futbol", "Cine", "Viajar", "Comer", "Bailar"],
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat...",
-      location: "Madrid",
-      name: "TEST 9",
-      age: "22",
-    },
-    {
-      fotos: [
-        "https://i.pinimg.com/280x280_RS/74/43/c2/7443c297a5735055c4485538f5596086.jpg",
-        "https://i.redd.it/xf0a7fpmpfl51.jpg",
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBQ2BNccKgO3GBJ4Y4kq4ESnRrd2IxKYBVUA&s",
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpTuQK32AI2k8ZgatqIUYTAhzD8ekGyY_9jg&s",
-        "https://i.pinimg.com/736x/93/aa/5d/93aa5d79190f22d7b7f09a10c74bf0c7.jpg",
-      ],
-      aficiones: ["Futbol", "Cine", "Viajar", "Comer", "Bailar"],
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat...",
-      location: "Madrid",
-      name: "TEST 10",
-      age: "22",
-    },
-  ];
+  const [users, setUsers] = useState<UserInterface[]>([]);
+
+  const calculateAge = (birthday: Date): string => {
+    const today = new Date();
+    const birthdayDate = new Date(birthday);
+    let age = today.getFullYear() - birthdayDate.getFullYear();
+    const m = today.getMonth() - birthdayDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthdayDate.getDate())) {
+      age--;
+    }
+    return `${age}`;
+  };
+
+  useEffect(() => {
+    const getUsers = async () => {
+      for (let i = 0; i < 50; i++) {
+        let data = {
+          userRandom: [
+            {
+              fotos: [''],
+              aficiones: ["Futbol", "Cine", "Viajar", "Comer", "Bailar"],
+              location: "Madrid",
+              description: ``,
+              name: ``,
+              birthdate: calculateAge(new Date('2001-05-31')) ?? '',
+              bio: ``,
+            }
+          ]
+        }
+        if (data) {
+          const data_ = data.userRandom[0]
+          const obj = {
+            fotos: data_.fotos ?? [],
+            aficiones: ["Futbol", "Cine", "Viajar", "Comer", "Bailar"],
+            location: "Madrid",
+            description: `${data_.bio}`,
+            name: `${data_.name}`,
+            age: calculateAge(new Date(data_.birthdate)) ?? '',
+          }
+          setUsers(users => [...users, obj]);
+        }
+      }
+    }
+    getUsers();
+  }, [])
   const { isLoggedIn } = useAuth();
 
   const [usersIndex, setUsersIndex] = useState(0);
   const [currentUser, setCurrentUser] = useState(users[usersIndex]);
-  const [prevUser, setPrevUser] = useState(users[usersIndex - 1]);
   const [match, setMatch] = useState(false);
   const [matchEnabled, setMatchEnabled] = useState(false);
-  const [like, setLike] = useState(false);
-  const [dislike, setDislike] = useState(false);
+  const [like] = useState(false);
+  const [dislike] = useState(false);
 
   const undoUser = () => {
     prev();
@@ -195,8 +98,6 @@ export default function Match() {
 
   const LikeUser = () => {
     const number = Math.floor(Math.random() * 10);
-    console.log(number > 5);
-
     if (number > 5) {
       setMatch(true);
     } else {
@@ -206,11 +107,9 @@ export default function Match() {
 
   const nextUser = () => {
     if (users.length <= usersIndex + 1) {
-      setPrevUser(users[usersIndex]);
       setCurrentUser(users[0]);
       setUsersIndex(0);
     } else {
-      setPrevUser(users[usersIndex]);
       setCurrentUser(users[usersIndex + 1]);
       setUsersIndex(usersIndex + 1);
     }
@@ -219,7 +118,6 @@ export default function Match() {
   const prev = () => {
     setCurrentUser(users[usersIndex - 1]);
     setUsersIndex(usersIndex - 1);
-    setPrevUser(users[usersIndex - 1]);
   };
 
   const [menuOptions, setMenuOptions] = useState([
@@ -299,11 +197,15 @@ export default function Match() {
     getMenu();
   }, []);
 
+  const { mode } = useScreenMode()
+
   if (!isLoggedIn) {
     return <></>;
   } else if (!matchEnabled) {
     return (
-      <View style={[styles.container]}>
+      <View style={[styles.container, {
+        backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
+      }]}>
         <StyledText bold center title mayus>
           Actualmente esta función no está activada.
         </StyledText>
@@ -340,26 +242,41 @@ export default function Match() {
                 <View style={styles.cardButtons}>
                   <TouchableOpacity
                     onPress={undoUser}
-                    style={[styles.undoButton, usersIndex === 0 && styles.undoButtonDisabled]}
+                    style={[styles.undoButton, {
+                      borderColor: mode === 'light' ? Colors.light.buttonUndoEnabled : Colors.dark.buttonUndoEnabled,
+                      backgroundColor: mode === 'light' ? Colors.light.buttonUndoEnabled : Colors.dark.buttonUndoEnabled,
+                    }, usersIndex === 0 && {
+                      borderColor: mode === 'light' ? Colors.light.buttonUndoDisabled : Colors.dark.buttonUndoDisabled,
+                      backgroundColor: mode === 'light' ? Colors.light.buttonUndoEnabled : Colors.dark.buttonUndoEnabled,
+                    }]}
                     disabled={usersIndex === 0}
                   >
                     <Undo />
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => swiperRef?.current?.swipeLeft()}
-                    style={styles.dislikeButton}
+                    style={[styles.dislikeButton, {
+                      borderColor: mode === 'light' ? Colors.light.buttonDislike : Colors.dark.buttonDislike,
+                      backgroundColor: mode === 'light' ? Colors.light.buttonDislike : Colors.dark.buttonDislike,
+                    }]}
                   >
                     <Dislike />
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => swiperRef?.current?.swipeRight()}
-                    style={styles.likeButton}
+                    style={[styles.likeButton, {
+                      borderColor: mode === 'light' ? Colors.light.buttonLike : Colors.dark.buttonLike,
+                      backgroundColor: mode === 'light' ? Colors.light.buttonLike : Colors.dark.buttonLike,
+                    }]}
                   >
                     <Like />
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={SuperLikeUser}
-                    style={styles.superlikeButton}
+                    style={[styles.superlikeButton, {
+                      borderColor: mode === 'light' ? Colors.light.buttonSuperlike : Colors.dark.buttonSuperlike,
+                      backgroundColor: mode === 'light' ? Colors.light.buttonSuperlike : Colors.dark.buttonSuperlike,
+                    }]}
                   >
                     <SuperLike />
                   </TouchableOpacity>
@@ -368,7 +285,9 @@ export default function Match() {
             )}
             verticalSwipe={false}
             stackSize={2}
-            onSwipedLeft={DislikeUser}
+            onSwipedLeft={() => {
+              DislikeUser();
+            }}
             onSwipedRight={LikeUser}
             animateOverlayLabelsOpacity
             animateCardOpacity
@@ -409,13 +328,17 @@ export default function Match() {
               }
             }}
           />
-          <View style={styles.menuContainer}>
+          <View style={[styles.menuContainer, {
+            backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
+          }]}>
             <Menu options={menuOptions} />
           </View>
         </View>
         {match && (
           <Modal>
-            <View style={[styles.container_modal]}>
+            <View style={[styles.container_modal, {
+              backgroundColor: (mode === 'light') ? Colors.light["palette-3_transparent"] : Colors.dark["palette-3_transparent"],
+            }]}>
               <StyledText bold center title mayus>
                 ¡Has dado match con {currentUser.name}!
               </StyledText>
@@ -458,7 +381,6 @@ const styles = StyleSheet.create({
   container_modal: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: Colors.light["palette-3_transparent"],
     flexDirection: 'column',
     paddingHorizontal: 20,
     display: 'flex',
@@ -467,7 +389,6 @@ const styles = StyleSheet.create({
   container: {
     display: 'flex',
     flexDirection: 'column',
-    backgroundColor: Colors.light["palette-3"],
     height: '90%',
     width: '100%',
   },
@@ -504,12 +425,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderStyle: "solid",
     borderWidth: 5,
-    borderColor: Colors.light.buttonUndoEnabled,
-    backgroundColor: Colors.light.buttonUndoEnabled,
-  },
-  undoButtonDisabled: {
-    borderColor: Colors.light.buttonUndoDisabled,
-    backgroundColor: Colors.light.buttonUndoDisabled,
   },
   dislikeButton: {
     padding: 10,
@@ -524,8 +439,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderStyle: "solid",
     borderWidth: 5,
-    borderColor: Colors.light.buttonDislike,
-    backgroundColor: Colors.light.buttonDislike,
   },
   superlikeButton: {
     padding: 10,
@@ -540,8 +453,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderStyle: "solid",
     borderWidth: 5,
-    borderColor: Colors.light.buttonSuperlike,
-    backgroundColor: Colors.light.buttonSuperlike,
   },
   likeButton: {
     padding: 10,
@@ -556,15 +467,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderStyle: "solid",
     borderWidth: 5,
-    borderColor: Colors.light.buttonLike,
-    backgroundColor: Colors.light.buttonLike,
   },
   menuContainer: {
     position: 'absolute',
     bottom: 0,
     width: '100%',
     height: 80, // Ajusta la altura según sea necesario
-    backgroundColor: Colors.light["palette-3"],
     flex: 1,
     paddingHorizontal: 20,
     elevation: 15,

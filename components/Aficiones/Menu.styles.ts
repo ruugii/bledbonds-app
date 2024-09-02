@@ -1,6 +1,4 @@
 import { StyleSheet } from "react-native";
-import Constants from "expo-constants";
-import { Colors } from "../../constants/Colors";
 
 const styles = StyleSheet.create({
   box: {
@@ -19,7 +17,6 @@ const styles = StyleSheet.create({
   },
   menuItem: {
     margin: 10,
-    backgroundColor: Colors.light["palette-1"],
     padding: 10,
     borderRadius: 10,
     elevation: 5,

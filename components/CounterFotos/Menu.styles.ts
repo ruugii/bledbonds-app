@@ -1,5 +1,4 @@
 import { StyleSheet } from "react-native";
-import { Colors } from "react-native/Libraries/NewAppScreen";
 
 const styles = StyleSheet.create({
   menu: {
@@ -23,7 +22,6 @@ const styles = StyleSheet.create({
     height: 30,
     width: '100%',  // Ajusta según sea necesario
     marginHorizontal: 2,
-    backgroundColor: Colors.light['palette-11'],
     borderRadius: 30,  // Ajusta según sea necesario
   },
   selectedMenuItem: {
