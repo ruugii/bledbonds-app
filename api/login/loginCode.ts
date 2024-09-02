@@ -16,7 +16,6 @@ const loginByCode = async (user: RegisterInterface) => {
       body: JSON.stringify(user)
     });
     if (!resp.ok) {
-      console.log(resp);
       
       throw new Error('Network response was not ok');
     } else {

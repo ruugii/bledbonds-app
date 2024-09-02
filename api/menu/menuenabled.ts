@@ -13,7 +13,6 @@ const menuEnabled = async (user: RegisterInterface) => {
       },
     });
     if (!resp.ok) {
-      console.log(resp);
       
       throw new Error('Network response was not ok');
     } else {

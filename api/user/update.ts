@@ -34,7 +34,6 @@ const updateUserAPI = async (user: RegisterInterface) => {
       throw new Error('Network response was not ok');
     } else {
       const data = await resp.json();
-      console.log(data);
       return data;
     }
   } catch (error) {
