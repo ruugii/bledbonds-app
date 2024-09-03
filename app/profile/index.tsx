@@ -17,6 +17,7 @@ import languageOptionsAPI from "../../api/language/language";
 import zodiacOptionsAPI from "../../api/zodiac/getZodiacOptions";
 import religionOptionsAPI from "../../api/religion/religionOptionsAPI";
 import useScreenMode from "../../utilities/screenMode";
+import ImagePreview from "../../components/ImagePreview";
 
 interface FindInterface {
   id: string;
@@ -80,6 +81,8 @@ export default function ProfilePage() {
   const [maxCharBio] = useState(200);
   const [languageResponse, setLanguageResponse] = useState<string>('');
 
+  const [photos, setPhotos] = useState<string[]>([]);
+
   useEffect(() => {
     let aux = '';
     languageOptions.forEach((item) => {
@@ -119,6 +122,9 @@ export default function ProfilePage() {
       const token = await getToken() ?? '';
       const data = await getUserData({ token });
 
+      console.log('data', data);
+
+
       if (data?.user_info) {
         setEstadoCivil(data?.user_info.id_status);
         setSexualidad(data?.user_info.id_orientation);
@@ -133,6 +139,7 @@ export default function ProfilePage() {
         setWork(`${data?.user_info.you_work}`);
         setChargeWork(`${data?.user_info.charge_work}`);
         setEnterprise(`${data?.user_info.enterprise}`);
+        setPhotos(data?.user_info.photos);
       }
     }
     getData();
@@ -600,6 +607,28 @@ export default function ProfilePage() {
                 </DropDown>
               </>
             )}
+
+            <DropDown
+              title="Fotos de tu perfil"
+            >
+              <View
+                style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignContent: 'space-between',
+                  gap: 20,
+                  marginTop: 10,
+                }}
+              >
+                {
+                  photos.map((item, index) => (
+                    <ImagePreview key={index} photo={item} />
+                  ))
+                }
+              </View>
+            </DropDown>
 
             <Btn title="Actualizar el perfil" clickable onPress={() => {
               const updateUser = async () => {

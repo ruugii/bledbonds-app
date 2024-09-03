@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
   card: {
     flex: 0.85,
     // height: '95%',
-    backgroundColor: 'blue',
+    backgroundColor: 'white',
     // margin: 24,
     // marginVertical: 24,
     borderRadius: 14,
