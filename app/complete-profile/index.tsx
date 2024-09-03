@@ -13,7 +13,7 @@ import updateUserAPI from "../../api/user/update";
 import getUserData from "../../api/user/getData";
 import UploadImage from "../../components/UploadImage";
 import useScreenMode from "../../utilities/screenMode";
-import uploadImageV2 from "../../api/image/uploadImageV2";
+import { uploadImageV2 } from "../../api/image/uploadImageV2";
 
 interface FindInterface {
   id: string;
@@ -38,8 +38,11 @@ export default function CompleteProfilePage() {
   const [sexualidadOptions, setSexualidadOptions] = useState<SexualidadInterface[]>([]);
   const [estadoCivil, setEstadoCivil] = useState('0');
   const [estadoCivilOptions, setEstadoCivilOptions] = useState<EstadoCivilInterface[]>([]);
-  const [photo, setPhoto] = useState<File | null>(null);
-  const [photoAux, setPhotoAux] = useState<any>(null);
+  const [photo, setPhoto] = useState<{
+    uri: string;
+    type: string;
+    name: string;
+  }>();
   const [bio, setBio] = useState('');
   const [maxCharBio] = useState(200);
 
@@ -83,7 +86,7 @@ export default function CompleteProfilePage() {
 
   const { getToken } = useAuth();
 
-  const generatePhoto = () => {
+  const GeneratePhoto = () => {
     return (
       <View style={{
         flexDirection: 'column',
@@ -97,10 +100,7 @@ export default function CompleteProfilePage() {
           En caso de que quieras mas de una imagen, la puedes agregar desde "tu perfil" una vez hayas completado tu perfil
         </StyledText>
         <UploadImage
-          photo={photo}
           setPhoto={setPhoto}
-          photoAux={photoAux}
-          setPhotoAux={setPhotoAux}
         />
       </View>
     )
@@ -219,18 +219,13 @@ export default function CompleteProfilePage() {
                 </StyledText>
               </View>
             </View>
-            {generatePhoto()}
+            <GeneratePhoto />
             <Btn title="Completar Perfil" onPress={() => {
               const updateUser = async () => {
-                let imageURL = {
-                  url: '',
-                }
                 let data = ''
 
-                if (photoAux) {
-                  let formData = new FormData()
-                  formData.append('image', photo);
-                  const imageURL = await uploadImageV2(formData)
+                if (photo) {
+                  const imageURL = await uploadImageV2(photo.uri, photo.type, photo.name)
                   const token = await getToken() ?? '';
                   data = await updateUserAPI({
                     token: token,
@@ -248,12 +243,11 @@ export default function CompleteProfilePage() {
                     id_orientation: sexualidad,
                     id_status: estadoCivil,
                     bio: bio,
-                    photo: imageURL.url !== '' ? imageURL.url : undefined
                   })
                 }
-                // if (data) {
-                //   router.replace('/')
-                // }
+                if (data) {
+                  router.replace('/')
+                }
               }
               updateUser();
             }} clickable />

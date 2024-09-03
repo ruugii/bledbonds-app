@@ -9,16 +9,15 @@ export default function App() {
   const { isLoggedIn } = useAuth();
 
   return (
-    
-      isLoggedIn ? (
-        <></>
-      ) : (
-        <View style={styles.container}>
-          <StatusBar style="auto" />
-          <Text>Open up App.js to start working on your app!</Text>
-          <Link href="/about">Go to About</Link>
-        </View>
-      )
+    isLoggedIn ? (
+      <></>
+    ) : (
+      <View style={styles.container}>
+        <StatusBar style="auto" />
+        <Text>Open up App.js to start working on your app!</Text>
+        <Link href="/about">Go to About</Link>
+      </View>
+    )
   );
 }
 

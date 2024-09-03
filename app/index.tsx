@@ -26,6 +26,7 @@ export default function IndexPage() {
       const token = await getToken() ?? '';
       if (value) {
         const isPerfilCompleto = await isPerfilCompletoAPI({ token }) ?? false;
+
         if (isPerfilCompleto?.perfilCompleto) {
           router.replace('/matches')
         } else if (!isPerfilCompleto?.perfilCompleto) {
@@ -39,58 +40,58 @@ export default function IndexPage() {
   const { mode } = useScreenMode()
 
   const calcBackgroundColor = () => {
-    if (mode==='light') {
+    if (mode === 'light') {
       return Colors.light['palette-6'];
-    } else if (mode==='dark') {
+    } else if (mode === 'dark') {
       return Colors.dark['palette-6'];
     }
   }
 
   return (
     <GestureHandlerRootView>
-    {isLoggedIn ? (
-      <View style={[styles.container, {
-        backgroundColor: (mode === 'dark') ? Colors.dark['palette-3'] : Colors.light['palette-3'],
-      }]}>
-        <View style={[styles.box, styles.box2, { marginHorizontal: 20, backgroundColor: (mode === 'dark') ? Colors.dark["palette-3"] : Colors.light["palette-3"], }]}>
-          <View style={[styles.mailPage, {
-            backgroundColor: (mode === 'dark') ? Colors.dark["palette-3"] : Colors.light["palette-3"]
-          }]}>
-            <StyledText title bold>
-              ESTA ES LA PÁGINA DE INICIO CON LOGIN
-            </StyledText>
-          </View>
-        </View>
-      </View>
-    ) : (
-      <View style={[styles.container, {paddingHorizontal: 20, backgroundColor: (mode === 'dark') ? Colors.dark['palette-3'] : Colors.light['palette-3'],}]}>
-        <View style={[styles.box, styles.box2, {
-          backgroundColor: (mode === 'dark') ? Colors.dark["palette-3"] : Colors.light["palette-3"],
+      {isLoggedIn ? (
+        <View style={[styles.container, {
+          backgroundColor: (mode === 'dark') ? Colors.dark['palette-3'] : Colors.light['palette-3'],
         }]}>
-          <View style={[styles.mailPage, {
-            backgroundColor: (mode === 'dark') ? Colors.dark["palette-3"] : Colors.light["palette-3"]
-          }]}>
-            <StyledText title bold>
-              Todo empieza con un simple <StyledText underline text="ME GUSTA" nextText="LIKE" animationChange />
-            </StyledText>
-            <View style={{marginBottom: 15}}>
-              <StyledText litle bold>
-                Al pulsar "Iniciar sesión", estás aceptando nuestros <StyledText underline><Link href='/terms'>Términos</Link></StyledText>. Obtén más información sobre cómo procesamos tus datos en nuestra <StyledText underline>Política de privacidad</StyledText> y <StyledText underline>Política de cookies</StyledText>.
+          <View style={[styles.box, styles.box2, { marginHorizontal: 20, backgroundColor: (mode === 'dark') ? Colors.dark["palette-3"] : Colors.light["palette-3"], }]}>
+            <View style={[styles.mailPage, {
+              backgroundColor: (mode === 'dark') ? Colors.dark["palette-3"] : Colors.light["palette-3"]
+            }]}>
+              <StyledText title bold>
+                ESTA ES LA PÁGINA DE INICIO CON LOGIN
               </StyledText>
-              <Btn title="Iniciar sesión con Google" onPress={handleLoginGoogle} google disabled/>
-              <Btn title="Iniciar sesión con Facebook" onPress={handleLoginFacebook} facebook disabled/>
-              <Link href='/login/code' style={[styles.linkStyle, styles.button, {
-                backgroundColor: calcBackgroundColor(),
-              }]}>
-                <StyledText button full center>
-                  Iniciar sesión con correo
-                </StyledText>
-              </Link>
             </View>
           </View>
         </View>
-      </View>
-    )}
+      ) : (
+        <View style={[styles.container, { paddingHorizontal: 20, backgroundColor: (mode === 'dark') ? Colors.dark['palette-3'] : Colors.light['palette-3'], }]}>
+          <View style={[styles.box, styles.box2, {
+            backgroundColor: (mode === 'dark') ? Colors.dark["palette-3"] : Colors.light["palette-3"],
+          }]}>
+            <View style={[styles.mailPage, {
+              backgroundColor: (mode === 'dark') ? Colors.dark["palette-3"] : Colors.light["palette-3"]
+            }]}>
+              <StyledText title bold>
+                Todo empieza con un simple <StyledText underline text="ME GUSTA" nextText="LIKE" animationChange />
+              </StyledText>
+              <View style={{ marginBottom: 15 }}>
+                <StyledText litle bold>
+                  Al pulsar "Iniciar sesión", estás aceptando nuestros <StyledText underline><Link href='/terms'>Términos</Link></StyledText>. Obtén más información sobre cómo procesamos tus datos en nuestra <StyledText underline>Política de privacidad</StyledText> y <StyledText underline>Política de cookies</StyledText>.
+                </StyledText>
+                <Btn title="Iniciar sesión con Google" onPress={handleLoginGoogle} google disabled />
+                <Btn title="Iniciar sesión con Facebook" onPress={handleLoginFacebook} facebook disabled />
+                <Link href='/login/code' style={[styles.linkStyle, styles.button, {
+                  backgroundColor: calcBackgroundColor(),
+                }]}>
+                  <StyledText button full center>
+                    Iniciar sesión con correo
+                  </StyledText>
+                </Link>
+              </View>
+            </View>
+          </View>
+        </View>
+      )}
     </GestureHandlerRootView>
   )
 }

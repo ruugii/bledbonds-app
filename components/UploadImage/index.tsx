@@ -4,51 +4,43 @@ import StyledText from "../StyledText";
 import { Colors } from "../../constants/Colors";
 import * as ImagePicker from 'expo-image-picker';
 import useScreenMode from "../../utilities/screenMode";
+import { uploadImageV2 } from "../../api/image/uploadImageV2";
 
-interface UploadImageProps {
-  readonly photo: File | null;
-  readonly setPhoto: (photo: File | null) => void;
-  photoAux: any;
-  setPhotoAux: (photoAux: any) => void;
+interface fotoInterface {
+  uri: string;
+  type: string;
+  name: string;
 }
 
-export default function UploadImage({ photo, setPhoto, setPhotoAux }: UploadImageProps) {
+interface UploadImageProps {
+  readonly setPhoto: (aux: fotoInterface) => void;
+}
 
+export default function UploadImage({ setPhoto }: UploadImageProps) {
   const [photoURI, setPhotoURI] = useState<string | null>(null);
   const { mode } = useScreenMode();
-
   const handleChoosePhoto = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
-      Alert.alert("Permiso denegado", "No se puede acceder a la galería sin permisos.");
+      Alert.alert("Permission denied", "Cannot access gallery without permissions.");
       return;
-    } else {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        quality: 1,
-      });
+    }
 
-      if (!result.canceled) {
-        setPhotoURI(
-          result.assets[0].uri
-        )
-        
-        const file = await uriToFile(
-          result.assets[0].uri,
-          result.assets[0].fileName || 'image.jpg',
-          result.assets[0].type || 'image/jpeg'
-        );
-        setPhotoAux(file)
-        setPhoto(file);
-      }
-    };
-  }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 1,
+    });
 
-  const uriToFile = async (uri: string, fileName: string, mimeType: string): Promise<File> => {
-    const response = await fetch(uri);
-    const blob = await response.blob();
-    return new File([blob], fileName, { type: mimeType, lastModified: Date.now() });
+    if (!result.canceled && result.assets?.[0]) {
+      const selectedImage = result.assets[0];
+      setPhotoURI(selectedImage.uri);
+      setPhoto({
+        uri: selectedImage.uri,
+        type: selectedImage.mimeType ?? 'image/jpeg',
+        name: selectedImage.fileName ?? 'image.jpg',
+      })
+    }
   };
 
   return (
