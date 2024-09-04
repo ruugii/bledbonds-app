@@ -2,6 +2,7 @@ import { ImageBackground, StyleSheet, TouchableOpacity, View } from "react-nativ
 import Aficiones from "../Aficiones";
 import { useEffect, useState } from "react";
 import StyledText from "../StyledText";
+import useScreenMode from "../../utilities/screenMode";
 
 interface CardProps {
   readonly url: string[];
@@ -24,6 +25,9 @@ export default function Card(props: CardProps) {
   const [selectedFoto, setSelectedFoto] = useState<string>(fotos[0]);
   const [indexSelected, setIndexSelected] = useState<number>(0);
   const [showText, setShowText] = useState<boolean>(false);
+
+  const { mode } = useScreenMode();
+
   const handleNextFoto = () => {
     if (indexSelected + 1 < fotos.length) {
       setIndexSelected(prev => prev + 1);
@@ -136,12 +140,14 @@ export default function Card(props: CardProps) {
         <ImageBackground source={{ uri: selectedFoto }} style={styles.image}>
           {!showText ? (
             <>
-              <View style={{ position: 'absolute', top: 0, right: 0, padding: 24 }}>
+              <View style={{ position: 'absolute', top: 0, right: 0, padding: 24, zIndex: 100 }}>
                 <StyledText light litle>
                   {`${indexSelected + 1} / ${fotos.length}`}
                 </StyledText>
               </View>
-              <View style={styles.card_filter}>
+              <View style={[styles.card_filter, {
+                backgroundColor: mode === 'dark' ? 'rgba(0,0,0, 0.7)' : 'rgba(255,255,255, 0.7)'
+              }]}>
                 <View style={styles.card_text}>
                   <StyledText light left title mayus>{props.name}</StyledText>
                   <StyledText light left litle mayus>{props.age}</StyledText>
@@ -163,7 +169,9 @@ export default function Card(props: CardProps) {
             </>
           ) : (
             (
-              <View style={styles.card_filter}>
+              <View style={[styles.card_filter, {
+                backgroundColor: mode === 'dark' ? 'rgba(0,0,0, 0.7)' : 'rgba(255,255,255, 0.7)'
+              }]}>
                 {calcOptions()}
               </View>
             )
@@ -202,7 +210,6 @@ const styles = StyleSheet.create({
     marginTop: 40
   },
   card_filter: {
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
     width: '100%',
     height: '100%',
     // padding: 24,
