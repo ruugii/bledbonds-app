@@ -75,14 +75,18 @@ export default function Layout() {
           paddingHorizontal: 10,
           paddingVertical: 10,
         }}>
-          <View>
+          <View style={{
+            paddingVertical: 10,
+          }}>
             <TouchableOpacity onPress={handlePress}>
               <StyledText style={{ color: (mode === 'light') ? Colors.light["palette-11"] : Colors.dark["palette-11"] }} litle bold mayus>
                 {isLoggedIn ? 'Logout' : 'Login'}
               </StyledText>
             </TouchableOpacity>
           </View>
-          <View>
+          <View style={{
+            paddingVertical: 10,
+          }}>
             <TouchableOpacity onPress={() => router.push('/profile')}>
               <StyledText style={{ color: (mode === 'light') ? Colors.light["palette-11"] : Colors.dark["palette-11"] }} litle bold mayus>
                 Profile
