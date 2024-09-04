@@ -56,7 +56,7 @@ export default function Match() {
           aficiones: userRandom.userRandom[0].aficiones ?? [],
           description: userRandom.userRandom[0].bio ?? '',
           location: userRandom.userRandom[0].location ?? '',
-          name: `${userRandom.userRandom[0].name} - ${userRandom.userRandom[0].id}`,
+          name: userRandom.userRandom[0].name,
           age: calculateAge(new Date(userRandom.userRandom[0].birthdate)) ?? '',
         }]);
       }
@@ -236,7 +236,7 @@ export default function Match() {
                       backgroundColor: mode === 'light' ? Colors.light.buttonUndoEnabled : Colors.dark.buttonUndoEnabled,
                     }, usersIndex === 0 && {
                       borderColor: mode === 'light' ? Colors.light.buttonUndoDisabled : Colors.dark.buttonUndoDisabled,
-                      backgroundColor: mode === 'light' ? Colors.light.buttonUndoEnabled : Colors.dark.buttonUndoEnabled,
+                      backgroundColor: mode === 'light' ? Colors.light.buttonUndoDisabled : Colors.dark.buttonUndoDisabled,
                     }]}
                     disabled={usersIndex === 0}
                   >
@@ -440,10 +440,10 @@ const styles = StyleSheet.create({
   superlikeButton: {
     padding: 10,
     borderRadius: 300,
-    minWidth: 60,
-    minHeight: 60,
-    maxWidth: 60,
-    maxHeight: 60,
+    minWidth: 50,
+    minHeight: 50,
+    maxWidth: 50,
+    maxHeight: 50,
     flex: 1,
     alignContent: "center",
     justifyContent: "center",
