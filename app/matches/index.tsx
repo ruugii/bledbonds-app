@@ -17,6 +17,7 @@ import menuEnabled from "../../api/menu/menuenabled";
 import Swiper from "react-native-deck-swiper";
 import Menu from "../../components/Menu/Menu";
 import useScreenMode from "../../utilities/screenMode";
+import getToLike from "../../api/user/getToLike";
 
 const swiperRef = React.createRef<Swiper<{ fotos: string[]; aficiones: string[]; description: string; location: string; name: string; age: string; }>>();
 
@@ -45,37 +46,25 @@ export default function Match() {
 
   useEffect(() => {
     const getUsers = async () => {
+      const token = await getToken()
       for (let i = 0; i < 50; i++) {
-        let data = {
-          userRandom: [
-            {
-              fotos: [''],
-              aficiones: ["Futbol", "Cine", "Viajar", "Comer", "Bailar"],
-              location: "Madrid",
-              description: ``,
-              name: ``,
-              birthdate: calculateAge(new Date('2001-05-31')) ?? '',
-              bio: ``,
-            }
-          ]
-        }
-        if (data) {
-          const data_ = data.userRandom[0]
-          const obj = {
-            fotos: data_.fotos ?? [],
-            aficiones: ["Futbol", "Cine", "Viajar", "Comer", "Bailar"],
-            location: "Madrid",
-            description: `${data_.bio}`,
-            name: `${data_.name}`,
-            age: calculateAge(new Date(data_.birthdate)) ?? '',
-          }
-          setUsers(users => [...users, obj]);
-        }
+        const userRandom = await getToLike({ token: token ?? '' });
+        console.log('userRandom', userRandom);
+        
+        setUsers(users => [...users, {
+          fotos: userRandom.userRandom[0].fotos ?? [],
+          aficiones: userRandom.userRandom[0].aficiones ?? [],
+          description: userRandom.userRandom[0].bio ?? '',
+          location: userRandom.userRandom[0].location ?? '',
+          name: `${userRandom.userRandom[0].name} - ${userRandom.userRandom[0].id}`,
+          age: calculateAge(new Date(userRandom.userRandom[0].birthdate)) ?? '',
+        }]);
       }
+      console.log('users', users);
     }
     getUsers();
   }, [])
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, getToken } = useAuth();
 
   const [usersIndex, setUsersIndex] = useState(0);
   const [currentUser, setCurrentUser] = useState(users[usersIndex]);
@@ -251,7 +240,9 @@ export default function Match() {
                     }]}
                     disabled={usersIndex === 0}
                   >
-                    <Undo />
+                    <Undo
+                      black
+                    />
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => swiperRef?.current?.swipeLeft()}
@@ -260,7 +251,9 @@ export default function Match() {
                       backgroundColor: mode === 'light' ? Colors.light.buttonDislike : Colors.dark.buttonDislike,
                     }]}
                   >
-                    <Dislike />
+                    <Dislike
+                      black
+                    />
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => swiperRef?.current?.swipeRight()}
@@ -269,7 +262,9 @@ export default function Match() {
                       backgroundColor: mode === 'light' ? Colors.light.buttonLike : Colors.dark.buttonLike,
                     }]}
                   >
-                    <Like />
+                    <Like
+                      black
+                    />
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={SuperLikeUser}
@@ -278,7 +273,9 @@ export default function Match() {
                       backgroundColor: mode === 'light' ? Colors.light.buttonSuperlike : Colors.dark.buttonSuperlike,
                     }]}
                   >
-                    <SuperLike />
+                    <SuperLike
+                      black
+                    />
                   </TouchableOpacity>
                 </View>
               </Card>
