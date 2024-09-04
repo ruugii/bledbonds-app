@@ -101,7 +101,7 @@ export default function StyledText(props: Readonly<TextProps>) {
   const getColorStyles = () => {
     return [
       props.light && {
-        color: mode === 'light' ? Colors.light["palette-1"] : Colors.dark["palette-1"],
+        color: mode === 'light' ? Colors.light["palette-11"] : Colors.dark["palette-11"],
       },
       props.transparent && { color: 'transparent' },
       props.button && [
