@@ -18,6 +18,7 @@ import zodiacOptionsAPI from "../../api/zodiac/getZodiacOptions";
 import religionOptionsAPI from "../../api/religion/religionOptionsAPI";
 import useScreenMode from "../../utilities/screenMode";
 import ImagePreview from "../../components/ImagePreview";
+import UploadImage from "../../components/UploadImage";
 
 interface FindInterface {
   id: string;
@@ -80,8 +81,12 @@ export default function ProfilePage() {
   const [bio, setBio] = useState('');
   const [maxCharBio] = useState(200);
   const [languageResponse, setLanguageResponse] = useState<string>('');
-
   const [photos, setPhotos] = useState<string[]>([]);
+  const [photo, setPhoto] = useState<{
+    uri: string;
+    type: string;
+    name: string;
+  }>();
 
   useEffect(() => {
     let aux = '';
@@ -121,10 +126,6 @@ export default function ProfilePage() {
     const getData = async () => {
       const token = await getToken() ?? '';
       const data = await getUserData({ token });
-
-      console.log('data', data);
-
-
       if (data?.user_info) {
         setEstadoCivil(data?.user_info.id_status);
         setSexualidad(data?.user_info.id_orientation);
@@ -150,7 +151,6 @@ export default function ProfilePage() {
       const data = await studyLevelOptionsAPI();
       setStudyLevelOptions(data);
     }
-
     getData();
   }, [])
 
@@ -159,7 +159,6 @@ export default function ProfilePage() {
       const data = await languageOptionsAPI();
       setLanguageOptions(data);
     }
-
     getData();
   }, [])
 
@@ -168,7 +167,6 @@ export default function ProfilePage() {
       const data = await zodiacOptionsAPI();
       setZodiacOptions(data);
     }
-
     getData();
   }, [])
 
@@ -177,7 +175,6 @@ export default function ProfilePage() {
       const data = await religionOptionsAPI();
       setReligionOptions(data);
     }
-
     getData();
   }, [])
 
@@ -619,7 +616,7 @@ export default function ProfilePage() {
                   justifyContent: 'space-between',
                   alignContent: 'space-between',
                   gap: 20,
-                  marginTop: 10,
+                  marginTop: 30,
                 }}
               >
                 {
@@ -627,6 +624,9 @@ export default function ProfilePage() {
                     <ImagePreview key={index} photo={item} />
                   ))
                 }
+                <UploadImage
+                  setPhoto={setPhoto}
+                />
               </View>
             </DropDown>
 
