@@ -73,16 +73,6 @@ export default function Card(props: CardProps) {
   }
 
   const calcOptions = () => {
-    /*
-    option === 0 ? (
-      <Aficiones name={aficiones} />
-    ) : option === 1 ? (
-      <Aficiones name={[description]} text showText={showText} handleShowText={handleShowText} />
-    ) : (
-      <Aficiones name={[location]} />
-    )
-    */
-
     if (option === 0) {
       return <Aficiones name={aficiones} />;
     } else if (option === 1) {
