@@ -137,7 +137,9 @@ export default function Card(props: CardProps) {
             </StyledText>
           </View>
         )}
-        <ImageBackground source={{ uri: selectedFoto }} style={styles.image}>
+        <ImageBackground source={{ uri: selectedFoto }} style={[styles.image, {
+          zIndex: 100,
+        }]}>
           {!showText ? (
             <>
               <View style={{ position: 'absolute', top: 0, right: 0, padding: 24, zIndex: 100 }}>
@@ -177,6 +179,21 @@ export default function Card(props: CardProps) {
             )
           )}
         </ImageBackground>
+        <View style={{
+          height: '100%',
+          width: '100%',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          zIndex: 99,
+          alignContent: 'center',
+          justifyContent: 'center',
+          padding: 24,
+        }}>
+          <StyledText light title center red>
+            HA HABIDO UN ERROR AL CARGAR LA IMAGEN
+          </StyledText>
+        </View>
       </View>
     </View>
   );
