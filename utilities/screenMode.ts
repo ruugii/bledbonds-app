@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { Appearance } from "react-native"
 
 const useScreenMode = () => {
   // const [mode, setMode] = useState<string>(Appearance.getColorScheme() ?? 'light')
