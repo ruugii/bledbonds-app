@@ -18,6 +18,7 @@ import Swiper from "react-native-deck-swiper";
 import Menu from "../../components/Menu/Menu";
 import useScreenMode from "../../utilities/screenMode";
 import getToLike from "../../api/user/getToLike";
+import likeActionAPI from "../../api/actions/likeAPI";
 
 const swiperRef = React.createRef<Swiper<{ fotos: string[]; aficiones: string[]; description: string; location: string; name: string; age: string; }>>();
 
@@ -28,6 +29,7 @@ interface UserInterface {
   location: string;
   name: string;
   age: string;
+  id: string;
 }
 
 export default function Match() {
@@ -50,7 +52,6 @@ export default function Match() {
       for (let i = 0; i < 50; i++) {
         const userRandom = await getToLike({ token: token ?? '' });
         console.log('userRandom', userRandom);
-        
         setUsers(users => [...users, {
           fotos: userRandom.userRandom[0].fotos ?? [],
           aficiones: userRandom.userRandom[0].aficiones ?? [],
@@ -58,6 +59,7 @@ export default function Match() {
           location: userRandom.userRandom[0].location ?? '',
           name: userRandom.userRandom[0].name,
           age: calculateAge(new Date(userRandom.userRandom[0].birthdate)) ?? '',
+          id: userRandom.userRandom[0].id,
         }]);
       }
       console.log('users', users);
@@ -85,12 +87,19 @@ export default function Match() {
     nextUser();
   };
 
-  const LikeUser = () => {
-    const number = Math.floor(Math.random() * 10);
-    if (number > 5) {
+  const LikeUser = async () => {
+    console.log(await getToken());
+    const token = await getToken();
+    const result = await likeActionAPI({
+      token: token ?? '',
+      id: users[usersIndex].id,
+    })
+    if (result && result.IsMatch === 'true') {
+      setCurrentUser(users[usersIndex]);
+      console.log('match');
       setMatch(true);
     } else {
-      nextUser();
+      nextUser()
     }
   };
 
