@@ -51,7 +51,6 @@ export default function Match() {
       const token = await getToken()
       for (let i = 0; i < 50; i++) {
         const userRandom = await getToLike({ token: token ?? '' });
-        console.log('userRandom', userRandom);
         setUsers(users => [...users, {
           fotos: userRandom.userRandom[0].fotos ?? [],
           aficiones: userRandom.userRandom[0].aficiones ?? [],
@@ -62,7 +61,6 @@ export default function Match() {
           id: userRandom.userRandom[0].id,
         }]);
       }
-      console.log('users', users);
     }
     getUsers();
   }, [])
@@ -88,7 +86,6 @@ export default function Match() {
   };
 
   const LikeUser = async () => {
-    console.log(await getToken());
     const token = await getToken();
     const result = await likeActionAPI({
       token: token ?? '',
@@ -96,7 +93,6 @@ export default function Match() {
     })
     if (result && result.IsMatch === 'true') {
       setCurrentUser(users[usersIndex]);
-      console.log('match');
       setMatch(true);
     } else {
       nextUser()

@@ -16,7 +16,6 @@ export default function ImagePreview(props: ImagePreviewProps) {
       <View>
         <TouchableOpacity
           onPress={() => {
-            console.log('click');
             setModalOpen(!modalOpen);
           }}
         >
