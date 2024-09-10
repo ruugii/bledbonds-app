@@ -51,15 +51,17 @@ export default function Match() {
       const token = await getToken()
       for (let i = 0; i < 50; i++) {
         const userRandom = await getToLike({ token: token ?? '' });
-        setUsers(users => [...users, {
-          fotos: userRandom.userRandom[0].fotos ?? [],
-          aficiones: userRandom.userRandom[0].aficiones ?? [],
-          description: userRandom.userRandom[0].bio ?? '',
-          location: userRandom.userRandom[0].location ?? '',
-          name: userRandom.userRandom[0].name,
-          age: calculateAge(new Date(userRandom.userRandom[0].birthdate)) ?? '',
-          id: userRandom.userRandom[0].id,
-        }]);
+        if (!(userRandom.status === '-0001')) {
+          setUsers(users => [...users, {
+            fotos: userRandom.userRandom[0].fotos ?? [],
+            aficiones: userRandom.userRandom[0].aficiones ?? [],
+            description: userRandom.userRandom[0].bio ?? '',
+            location: userRandom.userRandom[0].location ?? '',
+            name: userRandom.userRandom[0].name,
+            age: calculateAge(new Date(userRandom.userRandom[0].birthdate)) ?? '',
+            id: userRandom.userRandom[0].id,
+          }]);
+        }
       }
     }
     getUsers();
@@ -215,121 +217,136 @@ export default function Match() {
         />
         <View style={{
           flex: 10,
-          backgroundColor: 'red',
           alignContent: 'center',
           alignItems: 'center',
         }}>
-          <Swiper
-            cards={users}
-            ref={swiperRef}
-            renderCard={(card) => (
-              <Card
-                name={card.name || ''}
-                age={card.age || ''}
-                aficiones={card.aficiones || []}
-                description={card.description || ''}
-                location={card.location || ''}
-                url={card.fotos || []}
-                like={like}
-                dislike={dislike}
-              >
-                <View style={styles.cardButtons}>
-                  <TouchableOpacity
-                    onPress={undoUser}
-                    style={[styles.undoButton, {
-                      borderColor: mode === 'light' ? Colors.light.buttonUndoEnabled : Colors.dark.buttonUndoEnabled,
-                      backgroundColor: mode === 'light' ? Colors.light.buttonUndoEnabled : Colors.dark.buttonUndoEnabled,
-                    }, usersIndex === 0 && {
-                      borderColor: mode === 'light' ? Colors.light.buttonUndoDisabled : Colors.dark.buttonUndoDisabled,
-                      backgroundColor: mode === 'light' ? Colors.light.buttonUndoDisabled : Colors.dark.buttonUndoDisabled,
-                    }]}
-                    disabled={usersIndex === 0}
-                  >
-                    <Undo
-                      black
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => swiperRef?.current?.swipeLeft()}
-                    style={[styles.dislikeButton, {
-                      borderColor: mode === 'light' ? Colors.light.buttonDislike : Colors.dark.buttonDislike,
-                      backgroundColor: mode === 'light' ? Colors.light.buttonDislike : Colors.dark.buttonDislike,
-                    }]}
-                  >
-                    <Dislike
-                      black
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => swiperRef?.current?.swipeRight()}
-                    style={[styles.likeButton, {
-                      borderColor: mode === 'light' ? Colors.light.buttonLike : Colors.dark.buttonLike,
-                      backgroundColor: mode === 'light' ? Colors.light.buttonLike : Colors.dark.buttonLike,
-                    }]}
-                  >
-                    <Like
-                      black
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={SuperLikeUser}
-                    style={[styles.superlikeButton, {
-                      borderColor: mode === 'light' ? Colors.light.buttonSuperlike : Colors.dark.buttonSuperlike,
-                      backgroundColor: mode === 'light' ? Colors.light.buttonSuperlike : Colors.dark.buttonSuperlike,
-                    }]}
-                  >
-                    <SuperLike
-                      black
-                    />
-                  </TouchableOpacity>
-                </View>
-              </Card>
-            )}
-            verticalSwipe={false}
-            stackSize={2}
-            onSwipedLeft={() => {
-              DislikeUser();
-            }}
-            onSwipedRight={LikeUser}
-            animateOverlayLabelsOpacity
-            animateCardOpacity
-            overlayLabels={{
-              left: {
-                title: "DISLIKE",
-                style: {
-                  label: {
-                    backgroundColor: "red",
-                    color: "white",
-                    fontSize: 24,
-                  },
-                  wrapper: {
-                    flecDirection: "column",
-                    alignItems: "flex-end",
-                    justifyContent: "flex-start",
-                    marginTop: 20,
-                    marginLeft: -20,
+          {users.length > 0 ? (
+            <Swiper
+              cards={users}
+              ref={swiperRef}
+              renderCard={(card) => (
+                <Card
+                  name={card.name || ''}
+                  age={card.age || ''}
+                  aficiones={card.aficiones || []}
+                  description={card.description || ''}
+                  location={card.location || ''}
+                  url={card.fotos || []}
+                  like={like}
+                  dislike={dislike}
+                >
+                  <View style={styles.cardButtons}>
+                    <TouchableOpacity
+                      onPress={undoUser}
+                      style={[styles.undoButton, {
+                        borderColor: mode === 'light' ? Colors.light.buttonUndoEnabled : Colors.dark.buttonUndoEnabled,
+                        backgroundColor: mode === 'light' ? Colors.light.buttonUndoEnabled : Colors.dark.buttonUndoEnabled,
+                      }, usersIndex === 0 && {
+                        borderColor: mode === 'light' ? Colors.light.buttonUndoDisabled : Colors.dark.buttonUndoDisabled,
+                        backgroundColor: mode === 'light' ? Colors.light.buttonUndoDisabled : Colors.dark.buttonUndoDisabled,
+                      }]}
+                      disabled={usersIndex === 0}
+                    >
+                      <Undo
+                        black
+                      />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => swiperRef?.current?.swipeLeft()}
+                      style={[styles.dislikeButton, {
+                        borderColor: mode === 'light' ? Colors.light.buttonDislike : Colors.dark.buttonDislike,
+                        backgroundColor: mode === 'light' ? Colors.light.buttonDislike : Colors.dark.buttonDislike,
+                      }]}
+                    >
+                      <Dislike
+                        black
+                      />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => swiperRef?.current?.swipeRight()}
+                      style={[styles.likeButton, {
+                        borderColor: mode === 'light' ? Colors.light.buttonLike : Colors.dark.buttonLike,
+                        backgroundColor: mode === 'light' ? Colors.light.buttonLike : Colors.dark.buttonLike,
+                      }]}
+                    >
+                      <Like
+                        black
+                      />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={SuperLikeUser}
+                      style={[styles.superlikeButton, {
+                        borderColor: mode === 'light' ? Colors.light.buttonSuperlike : Colors.dark.buttonSuperlike,
+                        backgroundColor: mode === 'light' ? Colors.light.buttonSuperlike : Colors.dark.buttonSuperlike,
+                      }]}
+                    >
+                      <SuperLike
+                        black
+                      />
+                    </TouchableOpacity>
+                  </View>
+                </Card>
+              )}
+              verticalSwipe={false}
+              stackSize={2}
+              onSwipedLeft={() => {
+                DislikeUser();
+              }}
+              onSwipedRight={LikeUser}
+              animateOverlayLabelsOpacity
+              animateCardOpacity
+              overlayLabels={{
+                left: {
+                  title: "DISLIKE",
+                  style: {
+                    label: {
+                      backgroundColor: "red",
+                      color: "white",
+                      fontSize: 24,
+                    },
+                    wrapper: {
+                      flecDirection: "column",
+                      alignItems: "flex-end",
+                      justifyContent: "flex-start",
+                      marginTop: 20,
+                      marginLeft: -20,
+                    }
+                  }
+                },
+                right: {
+                  title: "LIKE",
+                  style: {
+                    label: {
+                      backgroundColor: "green",
+                      color: "white",
+                      fontSize: 24,
+                    },
+                    wrapper: {
+                      flecDirection: "column",
+                      alignItems: "flex-start",
+                      justifyContent: "flex-start",
+                      marginTop: 20,
+                      marginLeft: 20,
+                    }
                   }
                 }
-              },
-              right: {
-                title: "LIKE",
-                style: {
-                  label: {
-                    backgroundColor: "green",
-                    color: "white",
-                    fontSize: 24,
-                  },
-                  wrapper: {
-                    flecDirection: "column",
-                    alignItems: "flex-start",
-                    justifyContent: "flex-start",
-                    marginTop: 20,
-                    marginLeft: 20,
-                  }
-                }
-              }
-            }}
-          />
+              }}
+            />
+          ) : (
+            <View style={{
+              height: '90%',
+              width: '100%',
+              alignContent: 'center',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
+              paddingHorizontal: 10,
+            }}>
+              <StyledText bold center title mayus red>
+                Actualmente no hay mas usuarios, porfavor intente mas tarde.
+              </StyledText>
+            </View>
+          )}
           <View style={[styles.menuContainer, {
             backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
           }]}>
