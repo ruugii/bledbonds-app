@@ -44,16 +44,20 @@ export default function Card(props: CardProps) {
     if (indexSelected - 1 >= 0) {
       setIndexSelected(prev => prev - 1);
       setSelectedFoto(fotos[indexSelected - 1]);
-      setOption(option + 1)
+      setOption(option - 1)
     } else {
       setIndexSelected(fotos.length - 1);
       setSelectedFoto(fotos[fotos.length - 1]);
-      setOption(option + 1)
+      setOption(option - 1)
     }
   }
 
   useEffect(() => {
-    if (option === 3) {
+    if (option === 0 && aficiones.length === 0) {
+      setOption(1);
+    } else if (option === 2 && location.length === 0) {
+      setOption(1);
+    } else if (option === 3) {
       setOption(0);
     } else if (option === -1) {
       setOption(2);
