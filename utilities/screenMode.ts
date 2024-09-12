@@ -2,8 +2,8 @@ import { useState } from "react"
 import { Appearance } from "react-native"
 
 const useScreenMode = () => {
-  // const [mode, setMode] = useState<string>(Appearance.getColorScheme() ?? 'light')
-  const [mode, setMode] = useState<string>('dark')
+  const [mode, setMode] = useState<string>(Appearance.getColorScheme() ?? 'light')
+  // const [mode, setMode] = useState<string>('dark')
 
   const toggleMode = () => {
     if (mode === 'light') {
