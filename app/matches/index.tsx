@@ -49,18 +49,23 @@ export default function Match() {
   useEffect(() => {
     const getUsers = async () => {
       const token = await getToken()
-      for (let i = 0; i < 50; i++) {
-        const userRandom = await getToLike({ token: token ?? '' });
-        if (!(userRandom.status === '-0001')) {
-          setUsers(users => [...users, {
-            fotos: userRandom.userRandom[0].fotos ?? [],
-            aficiones: userRandom.userRandom[0].aficiones ?? [],
-            description: userRandom.userRandom[0].bio ?? '',
-            location: userRandom.userRandom[0].location ?? '',
-            name: userRandom.userRandom[0].name,
-            age: calculateAge(new Date(userRandom.userRandom[0].birthdate)) ?? '',
-            id: userRandom.userRandom[0].id,
-          }]);
+      const userRandom = await getToLike({ token: token ?? '' });
+      if (userRandom.status !== '-0001') {
+        for (const user of userRandom.userRandom) {
+          setUsers(
+            users => [
+              ...users,
+              {
+                fotos: user.fotos ?? [],
+                aficiones: user.aficiones ?? [],
+                description: user.bio ?? '',
+                location: user.location ?? '',
+                name: user.name,
+                age: calculateAge(new Date(user.birthdate)) ?? '',
+                id: user.id,
+              }
+            ]
+          )
         }
       }
     }
@@ -93,7 +98,8 @@ export default function Match() {
       token: token ?? '',
       id: users[usersIndex].id,
     })
-    if (result && result.IsMatch === 'true') {
+
+    if (result && result.IsMatch === true) {
       setCurrentUser(users[usersIndex]);
       setMatch(true);
     } else {
@@ -174,7 +180,7 @@ export default function Match() {
           text: 'CHAT',
           selected: false,
           url: '/chat',
-          icon: <Chat />,
+          icon: <Chat black />,
           active: false,
         });
       }
