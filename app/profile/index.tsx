@@ -55,6 +55,24 @@ interface ReligionInterface {
   text: string;
 }
 
+interface DataToUpdate {
+  token: string;
+  id_find: string;
+  id_orientation: string;
+  id_status: string;
+  bio: string;
+  height?: string;
+  studyPlace?: string;
+  you_work?: string;
+  charge_work?: string;
+  enterprise?: string;
+  drink?: string;
+  language?: string[];
+  id_zodiac?: string;
+  mascotas?: string;
+  id_religion?: string;
+}
+
 export default function ProfilePage() {
   const [find, setFind] = useState('');
   const [findOptions, setFindOptions] = useState<FindInterface[]>([]);
@@ -177,6 +195,70 @@ export default function ProfilePage() {
     }
     getData();
   }, [])
+
+  const getJsonToUpdate = async (): Promise<DataToUpdate> => {
+    const data: DataToUpdate = {
+      token: await getToken() ?? '',
+      id_find: find,
+      id_orientation: sexualidad,
+      id_status: estadoCivil,
+      bio: bio,
+      height: altura,
+      studyPlace: studyLocation,
+      you_work: work,
+      charge_work: chargeWork,
+      enterprise: enterprise,
+      drink: drink,
+      language: language,
+      id_zodiac: zodiac,
+      mascotas: pets,
+      id_religion: religion,
+    }
+  
+    if (altura === '') {
+      delete data.height;
+    }
+    if (studyLocation === '') {
+      delete data.studyPlace;
+    }
+    if (work === '') {
+      delete data.you_work;
+    }
+    if (chargeWork === '') {
+      delete data.charge_work;
+    }
+    if (enterprise === '') {
+      delete data.enterprise;
+    }
+    if (drink === '') {
+      delete data.drink;
+    }
+    if (language.length === 0) {
+      delete data.language;
+    }
+    if (zodiac === '') {
+      delete data.id_zodiac;
+    }
+    if (pets === '') {
+      delete data.mascotas;
+    }
+    if (religion === '') {
+      delete data.id_religion;
+    }
+    if (data.charge_work === 'null') {
+      delete data.charge_work;
+    }
+    if (data.drink === 'null') {
+      delete data.drink;
+    }
+    if (data.enterprise === 'null') {
+      delete data.enterprise;
+    }
+    if (data.mascotas === 'null') {
+      delete data.mascotas;
+    }
+    return data;
+  }
 
   const { getToken } = useAuth();
 
@@ -632,23 +714,7 @@ export default function ProfilePage() {
 
             <Btn title="Actualizar el perfil" clickable onPress={() => {
               const updateUser = async () => {
-                updateUserAPI({
-                  token: await getToken() ?? '',
-                  id_find: find,
-                  id_orientation: sexualidad,
-                  id_status: estadoCivil,
-                  bio: bio,
-                  height: altura,
-                  studyPlace: studyLocation,
-                  you_work: work,
-                  charge_work: chargeWork,
-                  enterprise: enterprise,
-                  drink: drink,
-                  language: language,
-                  id_zodiac: zodiac,
-                  mascotas: pets,
-                  id_religion: religion,
-                })
+                updateUserAPI(await getJsonToUpdate())
               }
               updateUser()
             }} />
