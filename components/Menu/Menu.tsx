@@ -30,27 +30,41 @@ export default function Menu(props: MenuProps) {
   }, [props.options])
 
   return (
-    <View style={[style.box, style.box1, style.menu, props.margin ? style.menuMargin : {}, props.private ? style.private : {}, {display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}]}>
+    <View
+      style={
+        [
+          style.box,
+          style.box1,
+          style.menu,
+          props.margin ? style.menuMargin : {},
+          props.private ? style.private : {},
+          {
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }
+        ]
+      }
+    >
       <ScrollView horizontal={true}>
         {options.map((option, index) => {
           return (
-              <Link href={option.url} key={option.id}>
-                {/* <TouchableOpacity onPress={() => onClick(option.id)}> */}
-                <View key={option.id} style={style.menuItem} >
-                  {option.icon ? option.icon : null}
-                  <StyledText litle underline={option.active}>
-                    {option.text}
-                  </StyledText>
-                </View>
-                {index < options.length - 1 && <View style={[style.menuItem, {
-                  paddingHorizontal: 10,
-                }]}>
-                  <StyledText litle>
-                    |
-                  </StyledText>
-                </View>}
-              </Link>
-            
+            <Link href={option.url} key={option.id}>
+              <View key={option.id} style={style.menuItem} >
+                {option.icon ? option.icon : null}
+                <StyledText litle underline={option.active}>
+                  {option.text}
+                </StyledText>
+              </View>
+              {index < options.length - 1 && <View style={[style.menuItem, {
+                paddingHorizontal: 10,
+              }]}>
+                <StyledText litle>
+                  |
+                </StyledText>
+              </View>}
+            </Link>
           )
         })}
       </ScrollView>
