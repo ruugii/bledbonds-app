@@ -19,14 +19,18 @@ import Menu from "../../components/Menu/Menu";
 import useScreenMode from "../../utilities/screenMode";
 import getToLike from "../../api/user/getToLike";
 import likeActionAPI from "../../api/actions/likeAPI";
+import DislikeActionAPI from "../../api/actions/DislikeAPI";
 
-const swiperRef = React.createRef<Swiper<{ fotos: string[]; aficiones: string[]; description: string; location: string; name: string; age: string; }>>();
+const swiperRef = React.createRef<Swiper<{ fotos: string[]; aficiones: string[]; description: string; location: { lat: number; lon: number; }; name: string; age: string; }>>();
 
 interface UserInterface {
   fotos: string[];
   aficiones: string[];
   description: string;
-  location: string;
+  location: {
+    lat: number;
+    lon: number;
+  };
   name: string;
   age: string;
   id: string;
@@ -34,6 +38,7 @@ interface UserInterface {
 
 export default function Match() {
   const [users, setUsers] = useState<UserInterface[]>([]);
+  const [usersCount, setUsersCount] = useState(0);
 
   const calculateAge = (birthday: Date): string => {
     const today = new Date();
@@ -51,7 +56,9 @@ export default function Match() {
       const token = await getToken()
       const userRandom = await getToLike({ token: token ?? '' });
       if (userRandom.status !== '-0001') {
+        setUsersCount(userRandom.count[0]['COUNT(*)']);
         for (const user of userRandom.userRandom) {
+          console.log(user);
           setUsers(
             users => [
               ...users,
@@ -59,7 +66,7 @@ export default function Match() {
                 fotos: user.fotos ?? [],
                 aficiones: user.aficiones ?? [],
                 description: user.bio ?? '',
-                location: user.location ?? '',
+                location: { lat: user?.lat ?? 0, lon: user?.lon ?? 0 },
                 name: user.name,
                 age: calculateAge(new Date(user.birthdate)) ?? '',
                 id: user.id,
@@ -79,13 +86,20 @@ export default function Match() {
   const [matchEnabled, setMatchEnabled] = useState(false);
   const [like] = useState(false);
   const [dislike] = useState(false);
+  const [moreThan50, setMoreThan50] = useState(false);
 
   const undoUser = () => {
     prev();
   };
 
-  const DislikeUser = () => {
-    nextUser();
+  const DislikeUser = async () => {
+
+    const token = await getToken();
+    const result = await DislikeActionAPI({
+      token: token ?? '',
+      id: users[usersIndex].id,
+    })
+    nextUser()
   };
 
   const SuperLikeUser = () => {
@@ -93,17 +107,23 @@ export default function Match() {
   };
 
   const LikeUser = async () => {
-    const token = await getToken();
-    const result = await likeActionAPI({
-      token: token ?? '',
-      id: users[usersIndex].id,
-    })
-
-    if (result && result.IsMatch === true) {
-      setCurrentUser(users[usersIndex]);
-      setMatch(true);
+    setUsersCount(usersCount + 1);
+    if (usersCount >= 50) {
+      console.log('No puedes dar like a mas de 50 usuarios');
+      setMoreThan50(true);
     } else {
-      nextUser()
+      const token = await getToken();
+      const result = await likeActionAPI({
+        token: token ?? '',
+        id: users[usersIndex].id,
+      })
+
+      if (result && result.IsMatch === true) {
+        setCurrentUser(users[usersIndex]);
+        setMatch(true);
+      } else {
+        nextUser()
+      }
     }
   };
 
@@ -134,6 +154,10 @@ export default function Match() {
   ]);
 
   useEffect(() => {
+    console.log('usersCount', usersCount)
+  }, [usersCount]);
+
+  useEffect(() => {
     const getMenu = async () => {
       const matches = await menuEnabled({ key: 'matches' });
       const events = await menuEnabled({ key: 'events' });
@@ -159,7 +183,7 @@ export default function Match() {
             text: "EVENTS",
             selected: false,
             url: "/events",
-            icon: <Party />,
+            icon: <Party black />,
             active: false,
           }
         );
@@ -170,7 +194,7 @@ export default function Match() {
           text: "CALENDAR",
           selected: false,
           url: "/calendar",
-          icon: <CalendarIcon />,
+          icon: <CalendarIcon black />,
           active: false,
         });
       }
@@ -190,7 +214,7 @@ export default function Match() {
           text: 'CITAS A CIEGAS',
           selected: false,
           url: '/citasCiegas',
-          icon: <CitasCiegas />,
+          icon: <CitasCiegas black />,
           active: false,
         });
       }
@@ -236,7 +260,10 @@ export default function Match() {
                   age={card.age || ''}
                   aficiones={card.aficiones || []}
                   description={card.description || ''}
-                  location={card.location || ''}
+                  location={card.location || {
+                    lat: 0,
+                    lon: 0,
+                  }}
                   url={card.fotos || []}
                   like={like}
                   dislike={dislike}
@@ -339,17 +366,19 @@ export default function Match() {
               }}
             />
           ) : (
-            <View style={{
-              height: '90%',
-              width: '100%',
-              alignContent: 'center',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
-              paddingHorizontal: 10,
-            }}>
+            <View
+              style={{
+                height: '90%',
+                width: '100%',
+                alignContent: 'center',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
+                paddingHorizontal: 10,
+              }}
+            >
               <StyledText bold center title mayus red>
-                Actualmente no hay mas usuarios, porfavor intente mas tarde.
+                {usersCount >= 50 ? 'NO PUEDES DAR LIKE A MAS DE 50 USUARIOS' : `Actualmente no hay mas usuarios, porfavor intente mas tarde.`}
               </StyledText>
             </View>
           )}
@@ -375,6 +404,25 @@ export default function Match() {
                 onPress={() => {
                   setMatch(false);
                   nextUser();
+                }}
+              >
+                <Text>X</Text>
+              </TouchableOpacity>
+            </View>
+          </Modal>
+        )}
+        {moreThan50 && (
+          <Modal>
+            <View style={[styles.container_modal, {
+              backgroundColor: (mode === 'light') ? Colors.light["palette-3_transparent"] : Colors.dark["palette-3_transparent"],
+            }]}>
+              <StyledText bold center title mayus>
+                ¡No puedes dar like a mas de 50 usuarios!
+              </StyledText>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => {
+                  setMoreThan50(false);
                 }}
               >
                 <Text>X</Text>
@@ -499,7 +547,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 80, // Ajusta la altura según sea necesario
     flex: 1,
-    paddingHorizontal: 20,
+    // paddingHorizontal: 20,
     elevation: 15,
   },
 });

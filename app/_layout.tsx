@@ -5,7 +5,7 @@ import Logo from "../components/Logo";
 import useAuth from "../utilities/login";
 import StyledText from "../components/StyledText";
 import Config from "../Icons/Config";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { enableScreens } from "react-native-screens";
 import useScreenMode from "../utilities/screenMode";
 

@@ -2,6 +2,7 @@ import { View } from "react-native";
 import StyledText from "../StyledText";
 import { Colors } from "../../constants/Colors";
 import useScreenMode from "../../utilities/screenMode";
+import { useEffect, useState } from "react";
 
 interface CalendarProps {
   readonly month: string;
@@ -20,10 +21,26 @@ export default function Calendar(props: CalendarProps) {
   lastDay.setMonth(lastDay.getMonth() + 1);
   lastDay.setDate(lastDay.getDate() - 1);
 
+  // obtener el día de la semana del primer día del mes
+  const firstDayOfWeek = firstDay.getDay(); // 0 = Domingo, 1 = Lunes, etc.
+
   // crear el calendario
-  const calendar = [];
+  const calendar: (Date | null)[] = [];
+
   let day = new Date(firstDay);
   const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+  // agregar celdas vacías antes del primer día del mes si es necesario
+  if (firstDayOfWeek === 0) {
+    for (let i = 0; i < 6; i++) {
+      calendar.push(null);
+    }
+  } else {
+    for (let i = 0; i < firstDayOfWeek - 1; i++) {
+      calendar.push(null);
+    }
+  }
+
   while (day <= lastDay) {
     calendar.push(new Date(day));
     day.setDate(day.getDate() + 1);
@@ -65,24 +82,31 @@ export default function Calendar(props: CalendarProps) {
 
   const dayNumber = (date: Date) => {
     for (const event of props.events) {
-      
+
       const eventDate = new Date(event.event_date);
 
-      if (date.getDate() === eventDate.getDate() && date.getMonth() === eventDate.getMonth() && date.getFullYear() === eventDate.getFullYear()) {
+      if (date === null) {
         return (
-          <View style={[styles.day, { backgroundColor: mode==='light'? Colors.light["palette-11"] : Colors.dark["palette-11"] }]}>
-            <StyledText litle light>{date.getDate()}</StyledText>
+          <View style={styles.day}>
+            <StyledText litle>{''}</StyledText>
           </View>
         )
+      } else {
+        if (date.getDate() === eventDate.getDate() && date.getMonth() === eventDate.getMonth() && date.getFullYear() === eventDate.getFullYear()) {
+          return (
+            <View style={[styles.day, { backgroundColor: mode === 'light' ? Colors.light["palette-11"] : Colors.dark["palette-11"] }]}>
+              <StyledText litle light>{date.getDate()}</StyledText>
+            </View>
+          )
+        }
       }
+      return (
+        <View style={styles.day}>
+          <StyledText litle>{date?.getDate() ? date?.getDate() : ''}</StyledText>
+        </View>
+      )
     }
-    return (
-      <View style={
-        styles.day
-      }>
-        <StyledText litle>{date.getDate()}</StyledText>
-      </View>
-    )
+
   }
 
   return (
@@ -96,9 +120,7 @@ export default function Calendar(props: CalendarProps) {
             </View>
           )
         })}
-        {calendar.map((day, index) => {
-          return dayNumber(day)
-        })}
+        {calendar.map((day, index) => dayNumber(day))}
       </View>
     </View>
   );

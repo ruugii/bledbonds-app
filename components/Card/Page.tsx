@@ -3,6 +3,7 @@ import Aficiones from "../Aficiones";
 import { useEffect, useState } from "react";
 import StyledText from "../StyledText";
 import useScreenMode from "../../utilities/screenMode";
+import * as Location from 'expo-location';
 
 interface CardProps {
   readonly url: string[];
@@ -10,7 +11,10 @@ interface CardProps {
   readonly age: string;
   readonly aficiones: string[];
   readonly description: string;
-  readonly location: string;
+  readonly location: {
+    lat: number;
+    lon: number;
+  };
   readonly children?: React.ReactNode;
   readonly like?: boolean;
   readonly dislike?: boolean;
@@ -19,12 +23,28 @@ interface CardProps {
 export default function Card(props: CardProps) {
   const [aficiones] = useState<string[]>(props.aficiones);
   const [description] = useState<string>(props.description);
-  const [location] = useState<string>(props.location);
   const [option, setOption] = useState<number>(Math.floor(Math.random() * 2));
   const [fotos] = useState<string[]>(props.url);
   const [selectedFoto, setSelectedFoto] = useState<string>(fotos[0]);
   const [indexSelected, setIndexSelected] = useState<number>(0);
   const [showText, setShowText] = useState<boolean>(false);
+  const [latitude, setLatitude] = useState<number>(0);
+  const [longitude, setLongitude] = useState<number>(0);
+
+  useEffect(() => {
+    const getLocation = async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.log('ALERT: Location permissions are not granted');
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      setLatitude(location.coords.latitude);
+      setLongitude(location.coords.longitude);
+    }
+
+    getLocation();
+  }, [])
 
   const { mode } = useScreenMode();
 
@@ -55,25 +75,39 @@ export default function Card(props: CardProps) {
   useEffect(() => {
     if (option === 0 && aficiones.length === 0) {
       setOption(1);
-    } else if (option === 2 && location.length === 0) {
-      setOption(1);
+    } else if (option === 2) {
+      setOption(0);
     } else if (option === 3) {
       setOption(0);
     } else if (option === -1) {
-      setOption(2);
+      setOption(1);
     }
   }, [option])
 
   useEffect(() => {
-    calcularDistancia();
+    calcularDistancia(latitude, longitude, props.location.lat, props.location.lon);
   }, []);
 
   const handleShowText = () => {
     setShowText(!showText);
   }
 
-  const calcularDistancia = () => {
-    return "0"
+  function calcularDistancia(lat1 : number, lon1: number, lat2: number, lon2: number) {
+    const R = 6371; // Radio de la Tierra en km
+    const toRad = x => x * Math.PI / 180; // Convertir grados a radianes
+
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    let distance = R * c; // Distancia en km
+    distance = Number(distance.toFixed(2));
+    return distance;
   }
 
   const calcOptions = () => {
@@ -81,8 +115,6 @@ export default function Card(props: CardProps) {
       return <Aficiones name={aficiones} />;
     } else if (option === 1) {
       return <Aficiones name={[description]} text showText={showText} handleShowText={handleShowText} />
-    } else {
-      return <Aficiones name={[location]} />
     }
   }
 
@@ -137,7 +169,7 @@ export default function Card(props: CardProps) {
           {!showText ? (
             <>
               <View style={{ position: 'absolute', top: 0, right: 0, padding: 24, zIndex: 100 }}>
-                <StyledText light litle>
+                <StyledText litle>
                   {`${indexSelected + 1} / ${fotos.length}`}
                 </StyledText>
               </View>
@@ -145,16 +177,16 @@ export default function Card(props: CardProps) {
                 backgroundColor: mode === 'dark' ? 'rgba(0,0,0, 0.7)' : 'rgba(255,255,255, 0.7)'
               }]}>
                 <View style={styles.card_text}>
-                  <StyledText light left title mayus>{props.name}</StyledText>
-                  <StyledText light left litle mayus>{props.age}</StyledText>
-                  <StyledText light left litle mayus>{`${calcularDistancia()} km`}</StyledText>
+                  <StyledText left title mayus>{props.name}</StyledText>
+                  <StyledText left litle mayus>{props.age}</StyledText>
+                  <StyledText left litle mayus>{`${calcularDistancia(latitude, longitude, props.location.lat, props.location.lon)} km`}</StyledText>
                 </View>
                 <View style={styles.buttonNext}>
                   <TouchableOpacity onPress={handlePrevFoto} style={{ padding: 10, borderRadius: 100 }}>
-                    <StyledText light litle mayus>{'<'}</StyledText>
+                    <StyledText litle mayus>{'<'}</StyledText>
                   </TouchableOpacity>
                   <TouchableOpacity onPress={handleNextFoto} style={{ padding: 10, borderRadius: 100 }}>
-                    <StyledText light litle mayus>{'>'}</StyledText>
+                    <StyledText litle mayus>{'>'}</StyledText>
                   </TouchableOpacity>
                 </View>
                 {calcOptions()}
@@ -184,7 +216,7 @@ export default function Card(props: CardProps) {
           justifyContent: 'center',
           padding: 24,
         }}>
-          <StyledText light title center red>
+          <StyledText title center red>
             HA HABIDO UN ERROR AL CARGAR LA IMAGEN
           </StyledText>
         </View>

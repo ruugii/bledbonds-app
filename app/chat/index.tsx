@@ -21,7 +21,8 @@ export default function ChatPage() {
 
   useEffect(() => {
     const fetchChats = async () => {
-      const data = await getAllChats()
+      const token = await getToken() ?? ''
+      const data = await getAllChats(token)
       setChats(data)
     }
     fetchChats()
@@ -106,7 +107,7 @@ export default function ChatPage() {
             text: "EVENTS",
             selected: false,
             url: "/events",
-            icon: <Party />,
+            icon: <Party black />,
             active: false,
           }
         );
@@ -117,7 +118,7 @@ export default function ChatPage() {
           text: "CALENDAR",
           selected: false,
           url: "/calendar",
-          icon: <CalendarIcon />,
+          icon: <CalendarIcon  black />,
           active: false,
         });
       }
@@ -137,7 +138,7 @@ export default function ChatPage() {
           text: 'CITAS A CIEGAS',
           selected: false,
           url: '/citasCiegas',
-          icon: <CitasCiegas />,
+          icon: <CitasCiegas  black/>,
           active: false,
         });
       }
@@ -174,15 +175,15 @@ export default function ChatPage() {
         <View style={[
           styles.box,
           styles.box1,
-          styles.menu,
+          // styles.menu,
           {
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
-            backgroundColor: 'red',
             marginBottom: 10,
-            flex: 1.5
+            flex: 1.5,
+            marginHorizontal: 20,
           }
         ]}>
           <ScrollView horizontal={true}>
@@ -227,13 +228,14 @@ export default function ChatPage() {
         </View>
         <View style={[styles.box, styles.box2, {
           backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
+          marginHorizontal: 20,
         }]}>
           <View style={[styles.mailPage, {
             backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"]
           }]}>
             <ScrollView>
-              {chats.map((chat) => (
-                <Link href={`/chat/${chat.ID}`} key={chat.ID} style={{
+              {chats.map((chat, index) => (
+                <Link href={`/chat/${chat.ID}`} key={index + 1} style={{ 
                   display: 'flex',
                   flexDirection: 'row',
                   justifyContent: 'center',
@@ -263,7 +265,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     flexDirection: 'column',
-    paddingHorizontal: 20,
   },
   imput: {
     borderWidth: 1,
@@ -291,6 +292,7 @@ const styles = StyleSheet.create({
     flex: 1.5,
     justifyContent: 'center',
     alignItems: 'center',
+    height: '100%',
   },
   box2: {
     flex: 10,

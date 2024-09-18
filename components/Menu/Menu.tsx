@@ -42,15 +42,20 @@ export default function Menu(props: MenuProps) {
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
-            justifyContent: 'space-between'
+            justifyContent: 'space-between',
           }
         ]
       }
     >
-      <ScrollView horizontal={true}>
+      <ScrollView horizontal={true} style={{
+        width: '100%',
+      }}>
         {options.map((option, index) => {
           return (
-            <Link href={option.url} key={option.id}>
+            <Link href={option.url} key={option.id} style={{
+              marginLeft: index === 0 ? 20 : 0, 
+              marginRight: index === options.length - 1 ? 20 : 0,
+            }}>
               <View key={option.id} style={style.menuItem} >
                 {option.icon ? option.icon : null}
                 <StyledText litle underline={option.active}>

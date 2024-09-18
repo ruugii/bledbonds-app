@@ -10,6 +10,16 @@ import { Link, router, Stack } from "expo-router";
 import Menu from "../../../components/Menu/Menu";
 import useScreenMode from "../../../utilities/screenMode";
 
+const validateEmail = (email: string) => {
+  return (
+    email.length === 0 ||
+    !email.includes('@') ||
+    email.split('@').length !== 2 ||
+    !email.split('@')[1].includes('.') ||
+    email.split('@')[1].split('.').length < 2
+  )
+}
+
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState(false);
@@ -41,13 +51,7 @@ export default function LoginPage() {
   };
 
   useEffect(() => {
-    setEmailError(
-      email.length === 0 ||
-      !email.includes('@') ||
-      email.split('@').length !== 2 ||
-      !email.split('@')[1].includes('.') ||
-      email.split('@')[1].split('.').length < 2
-    );
+    setEmailError(validateEmail(email));
   }, [email]);
 
   const { mode } = useScreenMode()
@@ -71,14 +75,12 @@ export default function LoginPage() {
     ]} />
   )
 
-  if (isLoggedIn) {
-    return <></>;
-  } else {
-    return (
+  return (
+    !isLoggedIn && (
       <>
         <Stack.Screen
           options={{
-            headerTitle: generateMenu ,
+            headerTitle: generateMenu,
             headerRight: () => null,
             headerLeft: () => null,
           }}
@@ -105,7 +107,7 @@ export default function LoginPage() {
                   autoComplete="email"
                   placeholderTextColor={mode === 'light' ? Colors.light["palette-11"] : Colors.dark["palette-11"]}
                 />
-                {!true && (
+                {!hasCode && (
                   <Btn
                     title="Continuar"
                     clickable
@@ -129,7 +131,7 @@ export default function LoginPage() {
                     disabled={emailError}
                   />
                 )}
-                {true && (
+                {hasCode && (
                   <>
                     <TextInput
                       style={[styles.imput, styles.imputCode, codeError ? { borderColor: 'red' } : { borderColor: (mode === 'light') ? Colors.light["palette-6"] : Colors.dark["palette-6"] }, { color: mode === 'light' ? Colors.light["palette-11"] : Colors.dark["palette-11"] }]}
@@ -177,8 +179,8 @@ export default function LoginPage() {
           </View>
         </View>
       </>
-    );
-  }
+    )
+  )
 }
 
 const styles = StyleSheet.create({

@@ -37,15 +37,16 @@ export default function Message({ sender, message, isMine }: MessageProps) {
       <View style={{
         maxWidth: 320,
         padding: 12,
+        paddingVertical: 4,
         borderRadius: 8,
         borderBottomRightRadius: isMine ? 0 : 8,
         borderBottomLeftRadius: isMine ? 8 : 0,
         backgroundColor: calcBackground()
       }}>
         <View style={{
-          marginBottom: 4,
+          marginBottom: 2,
         }}>
-          <StyledText xsmall>
+          <StyledText xsmall bold>
             {isMine ? 'Yo' : sender}
           </StyledText>
         </View>

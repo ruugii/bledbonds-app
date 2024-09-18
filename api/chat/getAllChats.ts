@@ -1,8 +1,6 @@
 const getAllChats = async (token: string) => {
   try {
     let API_URL = 'https://api.bledbonds.es/api/v1';
-    console.log(token);
-    
     const resp = await fetch(`${API_URL}/chat/`, {
       method: 'GET',
       headers: {

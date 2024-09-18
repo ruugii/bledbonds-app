@@ -7,20 +7,101 @@ import Party from "../../Icons/Party";
 import CalendarIcon from "../../Icons/CalendarIcon";
 import Chat from "../../Icons/Chat";
 import Menu from "../../components/Menu/Menu";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import getAllChats from "../../api/chat/getAllChats";
 import CitasCiegas from "../../Icons/CitasCiegas";
 import useScreenMode from "../../utilities/screenMode";
+import useAuth from "../../utilities/login";
+import menuEnabled from "../../api/menu/menuenabled";
 
 export default function ChatPage() {
 
+  const { getToken } = useAuth()
+
+  const [menuOptions, setMenuOptions] = useState([
+    {
+      id: 0,
+      text: "",
+      selected: false,
+      url: "",
+      icon: <></>,
+      active: false,
+    },
+  ]);
+
   useEffect(() => {
     const fetchChats = async () => {
-      const data = await getAllChats()
+      const token = await getToken() ?? ''
+      const data = await getAllChats(token)
     }
     fetchChats()
-    
   }, [])
+
+  useEffect(() => {
+    const getMenu = async () => {
+      const matches = await menuEnabled({ key: 'matches' });
+      const events = await menuEnabled({ key: 'events' });
+      const calendar = await menuEnabled({ key: 'calendar' });
+      const chat = await menuEnabled({ key: 'chat' });
+      const citasCiegas = await menuEnabled({ key: 'ciegas' });
+      const aux = []
+      if (matches.Valor === '1') {
+        aux.push({
+          id: 1,
+          text: "MATCHES",
+          selected: false,
+          url: "/matches",
+          icon: <Like black />,
+          active: false,
+        });
+      }
+      if (events.Valor === '1') {
+        aux.push(
+          {
+            id: 2,
+            text: "EVENTS",
+            selected: false,
+            url: "/events",
+            icon: <Party black />,
+            active: false,
+          }
+        );
+      }
+      if (calendar.Valor === '1') {
+        aux.push({
+          id: 3,
+          text: "CALENDAR",
+          selected: false,
+          url: "/calendar",
+          icon: <CalendarIcon  black />,
+          active: false,
+        });
+      }
+      if (chat.Valor === '1') {
+        aux.push({
+          id: 4,
+          text: 'CHAT',
+          selected: false,
+          url: '/chat',
+          icon: <Chat black />,
+          active: false,
+        });
+      }
+      if (citasCiegas.Valor === '1') {
+        aux.push({
+          id: 5,
+          text: 'CITAS A CIEGAS',
+          selected: true,
+          url: '/citasCiegas',
+          icon: <CitasCiegas black />,
+          active: true,
+        });
+      }
+      setMenuOptions(aux);
+    };
+    getMenu();
+  }, []);
+
 
   const { mode } = useScreenMode()
 
@@ -45,50 +126,7 @@ export default function ChatPage() {
             </StyledText>
           </View>
         </View >
-        <Menu
-          options={[
-            {
-              id: 1,
-              text: "MATCHES",
-              selected: true,
-              url: "/matches",
-              icon: <Like black />,
-              active: false,
-            },
-            {
-              id: 2,
-              text: "EVENTS",
-              selected: false,
-              url: "/events",
-              icon: <Party />,
-              active: false,
-            },
-            {
-              id: 3,
-              text: "CALENDAR",
-              selected: false,
-              url: "/calendar",
-              icon: <CalendarIcon />,
-              active: false,
-            },
-            {
-              id: 4,
-              text: 'CHAT',
-              selected: false,
-              url: '/chat',
-              icon: <Chat />,
-              active: false,
-            },
-            {
-              id: 5,
-              text: 'CITAS A CIEGAS',
-              selected: false,
-              url: '/citasCiegas',
-              icon: <CitasCiegas />,
-              active: true,
-            }
-          ]}
-        />
+        <Menu options={menuOptions} />
       </View >
     </>
   )
@@ -99,7 +137,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     flexDirection: 'column',
-    paddingHorizontal: 20,
   },
   imput: {
     borderWidth: 1,

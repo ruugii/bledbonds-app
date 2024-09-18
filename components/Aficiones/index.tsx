@@ -38,10 +38,10 @@ export default function Aficiones(props: AficionesProps) {
             return (
               <View key={index + 1} style={[style.menuItem, { elevation: 0, height: '100%', backgroundColor: mode === 'light' ? Colors.light["palette-1_transparent"] : Colors.dark["palette-1_transparent"], margin: 0, paddingTop: 0 }]}>
                 <TouchableOpacity onPress={handleChange}>
-                  <StyledText litle justify light>CLOSE</StyledText>
+                  <StyledText litle justify>CLOSE</StyledText>
                 </TouchableOpacity>
                 <ScrollView>
-                  <StyledText litle justify light>{option}</StyledText>
+                  <StyledText litle justify>{option}</StyledText>
                 </ScrollView>
               </View>
             )
@@ -50,13 +50,13 @@ export default function Aficiones(props: AficionesProps) {
         ) : (
           <>
             <TouchableOpacity onPress={handleChange} style={{ marginLeft: 20 }}>
-              <StyledText litle light justify>Ver todas</StyledText>
+              <StyledText litle justify>Ver todas</StyledText>
             </TouchableOpacity>
             <ScrollView>
               {props.name.map((option, index) => {
                 return (
                   <View key={index + 1} style={[style.menuItem, { backgroundColor: mode === 'light' ? Colors.light["palette-1"] : Colors.dark["palette-1"], elevation: 0 }]}>
-                    <StyledText litle light justify>{option}</StyledText>
+                    <StyledText litle justify>{option}</StyledText>
                   </View>
                 )
               })}
