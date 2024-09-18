@@ -12,8 +12,9 @@ import Chat from "../../Icons/Chat";
 import Menu from "../../components/Menu/Menu";
 import CitasCiegas from "../../Icons/CitasCiegas";
 import useScreenMode from "../../utilities/screenMode";
+import menuEnabled from "../../api/menu/menuenabled";
 
-export default function CalendarPage () {
+export default function CalendarPage() {
 
   const [events, setEvents] = useState<{ eventImageURL: string, event_name: string, event_date: string, event_location: string, event_description: string, id: number }[]>([{
     eventImageURL: '',
@@ -47,95 +48,155 @@ export default function CalendarPage () {
 
   const { mode } = useScreenMode()
 
+  const [menuOptions, setMenuOptions] = useState([
+    {
+      id: 0,
+      text: "",
+      selected: false,
+      url: "",
+      icon: <></>,
+      active: false,
+    },
+  ]);
+
+  useEffect(() => {
+    const getMenu = async () => {
+      const matches = await menuEnabled({ key: 'matches' });
+      const events = await menuEnabled({ key: 'events' });
+      const calendar = await menuEnabled({ key: 'calendar' });
+      const chat = await menuEnabled({ key: 'chat' });
+      const citasCiegas = await menuEnabled({ key: 'ciegas' });
+      const aux = []
+      if (matches.Valor === '1') {
+        aux.push({
+          id: 1,
+          text: "MATCHES",
+          selected: false,
+          url: "/matches",
+          icon: <Like black />,
+          active: false,
+        });
+      }
+      if (events.Valor === '1') {
+        aux.push(
+          {
+            id: 2,
+            text: "EVENTS",
+            selected: false,
+            url: "/events",
+            icon: <Party black />,
+            active: false,
+          }
+        );
+      }
+      if (calendar.Valor === '1') {
+        aux.push({
+          id: 3,
+          text: "CALENDAR",
+          selected: true,
+          url: "/calendar",
+          icon: <CalendarIcon black />,
+          active: true,
+        });
+      }
+      if (chat.Valor === '1') {
+        aux.push({
+          id: 4,
+          text: 'CHAT',
+          selected: false,
+          url: '/chat',
+          icon: <Chat black />,
+          active: false,
+        });
+      }
+      if (citasCiegas.Valor === '1') {
+        aux.push({
+          id: 5,
+          text: 'CITAS A CIEGAS',
+          selected: false,
+          url: '/citasCiegas',
+          icon: <CitasCiegas black />,
+          active: false,
+        });
+      }
+      setMenuOptions(aux);
+    };
+    getMenu();
+  }, []);
+
   return (
     <>
-    <Stack.Screen
-          options={{
-            headerTitle: () => null,
-          }}
-        />
-        <View style={[styles.container, {
+      <Stack.Screen
+        options={{
+          headerTitle: () => null,
+        }}
+      />
+      <View style={[styles.container, {
+        backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
+      }]}>
+        <View style={[styles.box, styles.box2, {
           backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
         }]}>
-          <View style={[styles.box, styles.box2, {
-            backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
+          <View style={[styles.mailPage, {
+            backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"]
           }]}>
-            <View style={[styles.mailPage, {
-              backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"]
-            }]}>
-              <StyledText title bold mayus>
-                Calendario de eventos
-              </StyledText>
-              <View>
+            <StyledText title bold mayus>
+              Calendario de eventos
+            </StyledText>
+            <View style={{
+              display: 'flex',
+              flexDirection: 'row',
+            }}>
+              <View style={{
+                width: "10%",
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100%',
+              }}>
+                <TouchableOpacity onPress={() => setMonth(month - 1)}>
+                  <StyledText title bold mayus>
+                    &lt;
+                  </StyledText>
+                </TouchableOpacity>
+              </View>
+              <View style={{
+                width: "80%",
+                height: 400,
+              }}
+              >
                 <Calendar
                   month={`${month + 1}`}
                   year={`${year}`}
                   events={events}
                 />
+              </View>
+              <View style={{
+                width: "10%",
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100%',
+              }}>
                 <TouchableOpacity onPress={() => setMonth(month + 1)}>
                   <StyledText title bold mayus>
-                    Siguiente mes
-                  </StyledText>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setMonth(month - 1)}>
-                  <StyledText title bold mayus>
-                    Mes anterior
+                    &gt;
                   </StyledText>
                 </TouchableOpacity>
               </View>
             </View>
           </View>
-          <View style={{
-            width: "100%",
-            flex: 1,
-            backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
-          }}>
-            <Menu
-              options={[
-                {
-                  id: 1,
-                  text: "MATCHES",
-                  selected: true,
-                  url: "/matches",
-                  icon: (<Like black />),
-                  active: false,
-                },
-                {
-                  id: 2,
-                  text: "EVENTS",
-                  selected: false,
-                  url: "/events",
-                  icon: <Party />,
-                  active: false,
-                },
-                {
-                  id: 3,
-                  text: "CALENDAR",
-                  selected: false,
-                  url: "/calendar",
-                  icon: <CalendarIcon />,
-                  active: true,
-                },
-                {
-                  id: 4,
-                  text: 'CHAT',
-                  selected: false,
-                  url: '/chat',
-                  icon: <Chat />,
-                  active: false,
-                },
-                {
-                  id: 5,
-                  text: 'CITAS A CIEGAS',
-                  selected: false,
-                  url: '/citasCiegas',
-                  icon: <CitasCiegas />,
-                  active: false,
-                }
-              ]}
-            />
-          </View>
         </View>
+        <View style={{
+          width: "100%",
+          flex: 1,
+          backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
+        }}>
+          <Menu
+            options={menuOptions}
+          />
+        </View>
+      </View >
     </>
   )
 }
@@ -145,7 +206,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     flexDirection: 'column',
-    paddingHorizontal: 20,
   },
   imput: {
     borderWidth: 1,
@@ -165,7 +225,7 @@ const styles = StyleSheet.create({
   },
   mailPage: {
     flex: 1,
-    
+
   },
   box: {
     flex: 1,
