@@ -15,6 +15,8 @@ interface RegisterInterface {
   id_zodiac?: string;
   mascotas?: string;
   id_religion?: string;
+  lat?: number;
+  lon?: number;
 }
 
 const updateUserAPI = async (user: RegisterInterface) => {
