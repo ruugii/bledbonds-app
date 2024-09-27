@@ -118,7 +118,7 @@ export default function ChatPage() {
           text: "CALENDAR",
           selected: false,
           url: "/calendar",
-          icon: <CalendarIcon  black />,
+          icon: <CalendarIcon black />,
           active: false,
         });
       }
@@ -138,7 +138,7 @@ export default function ChatPage() {
           text: 'CITAS A CIEGAS',
           selected: false,
           url: '/citasCiegas',
-          icon: <CitasCiegas  black/>,
+          icon: <CitasCiegas black />,
           active: false,
         });
       }
@@ -235,7 +235,7 @@ export default function ChatPage() {
           }]}>
             <ScrollView>
               {chats.map((chat, index) => (
-                <Link href={`/chat/${chat.ID}`} key={index + 1} style={{ 
+                <Link href={`/chat/${chat.ID}`} key={index + 1} style={{
                   display: 'flex',
                   flexDirection: 'row',
                   justifyContent: 'center',
