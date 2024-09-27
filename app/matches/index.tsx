@@ -20,6 +20,9 @@ import useScreenMode from "../../utilities/screenMode";
 import getToLike from "../../api/user/getToLike";
 import likeActionAPI from "../../api/actions/likeAPI";
 import DislikeActionAPI from "../../api/actions/DislikeAPI";
+import * as Location from 'expo-location';
+import updateUserAPI from "../../api/user/update";
+import getUserData from "../../api/user/getData";
 
 const swiperRef = React.createRef<Swiper<{ fotos: string[]; aficiones: string[]; description: string; location: { lat: number; lon: number; }; name: string; age: string; }>>();
 
@@ -37,49 +40,12 @@ interface UserInterface {
 }
 
 export default function Match() {
+
+  const { isLoggedIn, getToken } = useAuth();
+  const { mode } = useScreenMode()
+
   const [users, setUsers] = useState<UserInterface[]>([]);
   const [usersCount, setUsersCount] = useState(0);
-
-  const calculateAge = (birthday: Date): string => {
-    const today = new Date();
-    const birthdayDate = new Date(birthday);
-    let age = today.getFullYear() - birthdayDate.getFullYear();
-    const m = today.getMonth() - birthdayDate.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birthdayDate.getDate())) {
-      age--;
-    }
-    return `${age}`;
-  };
-
-  useEffect(() => {
-    const getUsers = async () => {
-      const token = await getToken()
-      const userRandom = await getToLike({ token: token ?? '' });
-      if (userRandom.status !== '-0001') {
-        setUsersCount(userRandom.count[0]['COUNT(*)']);
-        for (const user of userRandom.userRandom) {
-          console.log(user);
-          setUsers(
-            users => [
-              ...users,
-              {
-                fotos: user.fotos ?? [],
-                aficiones: user.aficiones ?? [],
-                description: user.bio ?? '',
-                location: { lat: user?.lat ?? 0, lon: user?.lon ?? 0 },
-                name: user.name,
-                age: calculateAge(new Date(user.birthdate)) ?? '',
-                id: user.id,
-              }
-            ]
-          )
-        }
-      }
-    }
-    getUsers();
-  }, [])
-  const { isLoggedIn, getToken } = useAuth();
-
   const [usersIndex, setUsersIndex] = useState(0);
   const [currentUser, setCurrentUser] = useState(users[usersIndex]);
   const [match, setMatch] = useState(false);
@@ -87,61 +53,6 @@ export default function Match() {
   const [like] = useState(false);
   const [dislike] = useState(false);
   const [moreThan50, setMoreThan50] = useState(false);
-
-  const undoUser = () => {
-    prev();
-  };
-
-  const DislikeUser = async () => {
-
-    const token = await getToken();
-    const result = await DislikeActionAPI({
-      token: token ?? '',
-      id: users[usersIndex].id,
-    })
-    nextUser()
-  };
-
-  const SuperLikeUser = () => {
-    nextUser();
-  };
-
-  const LikeUser = async () => {
-    setUsersCount(usersCount + 1);
-    if (usersCount >= 50) {
-      console.log('No puedes dar like a mas de 50 usuarios');
-      setMoreThan50(true);
-    } else {
-      const token = await getToken();
-      const result = await likeActionAPI({
-        token: token ?? '',
-        id: users[usersIndex].id,
-      })
-
-      if (result && result.IsMatch === true) {
-        setCurrentUser(users[usersIndex]);
-        setMatch(true);
-      } else {
-        nextUser()
-      }
-    }
-  };
-
-  const nextUser = () => {
-    if (users.length <= usersIndex + 1) {
-      setCurrentUser(users[0]);
-      setUsersIndex(0);
-    } else {
-      setCurrentUser(users[usersIndex + 1]);
-      setUsersIndex(usersIndex + 1);
-    }
-  };
-
-  const prev = () => {
-    setCurrentUser(users[usersIndex - 1]);
-    setUsersIndex(usersIndex - 1);
-  };
-
   const [menuOptions, setMenuOptions] = useState([
     {
       id: 0,
@@ -152,10 +63,62 @@ export default function Match() {
       active: false,
     },
   ]);
+  const [latitude, setLatitude] = useState<number>(0);
+  const [longitude, setLongitude] = useState<number>(0);
+  const [find, setFind] = useState('');
+  const [sexualidad, setSexualidad] = useState('');
+  const [estadoCivil, setEstadoCivil] = useState('');
+  const [bio, setBio] = useState('');
 
   useEffect(() => {
-    console.log('usersCount', usersCount)
-  }, [usersCount]);
+    const getLocation = async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.log('ALERT: Location permissions are not granted');
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      setLatitude(location.coords.latitude);
+      console.log(location.coords.latitude);
+      setLongitude(location.coords.longitude);
+      console.log(location.coords.longitude);
+    }
+
+    getLocation();
+  }, [])
+
+  useEffect(() => {
+    const getData = async () => {
+      const token = await getToken() ?? '';
+      const data = await getUserData({ token });
+      if (data?.user_info) {
+        setFind(`${data?.user_info.id_find}`);
+        setSexualidad(data?.user_info.id_orientation);
+        setEstadoCivil(data?.user_info.id_status);
+        setBio(data?.user_info.bio);
+      }
+    }
+    getData();
+  }, [])
+
+  useEffect(() => {
+    if (latitude !== 0 && longitude !== 0 && find !== '' && sexualidad !== '' && estadoCivil !== '' && bio !== '') {
+      const updateLocation = async () => {
+        const token = await getToken()
+        const updateUser = await updateUserAPI({
+          token: token ?? '',
+          id_find: find,
+          id_orientation: sexualidad,
+          id_status: estadoCivil,
+          bio: bio,
+          lat: latitude,
+          lon: longitude,
+        })
+      }
+
+      updateLocation();
+    }
+  }, [latitude, longitude, find, sexualidad, estadoCivil, bio])
 
   useEffect(() => {
     const getMenu = async () => {
@@ -223,7 +186,97 @@ export default function Match() {
     getMenu();
   }, []);
 
-  const { mode } = useScreenMode()
+  useEffect(() => {
+    const getUsers = async () => {
+      const token = await getToken()
+      const userRandom = await getToLike({ token: token ?? '' });
+      if (userRandom.status !== '-0001') {
+        setUsersCount(userRandom.count[0]['COUNT(*)']);
+        for (const user of userRandom.userRandom) {
+          console.log(user);
+          setUsers(
+            users => [
+              ...users,
+              {
+                fotos: user.fotos ?? [],
+                aficiones: user.aficiones ?? [],
+                description: user.bio ?? '',
+                location: { lat: user?.lat ?? 0, lon: user?.lon ?? 0 },
+                name: user.name,
+                age: calculateAge(new Date(user.birthdate)) ?? '',
+                id: user.id,
+              }
+            ]
+          )
+        }
+      }
+    }
+    getUsers();
+  }, [])
+
+  const calculateAge = (birthday: Date): string => {
+    const today = new Date();
+    const birthdayDate = new Date(birthday);
+    let age = today.getFullYear() - birthdayDate.getFullYear();
+    const m = today.getMonth() - birthdayDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthdayDate.getDate())) {
+      age--;
+    }
+    return `${age}`;
+  };
+
+  const undoUser = () => {
+    prev();
+  };
+
+  const DislikeUser = async () => {
+    const token = await getToken();
+    const result = await DislikeActionAPI({
+      token: token ?? '',
+      id: users[usersIndex].id,
+    })
+    nextUser()
+  };
+
+  const SuperLikeUser = () => {
+    nextUser();
+  };
+
+  const LikeUser = async () => {
+    setUsersCount(usersCount + 1);
+    if (usersCount >= 50) {
+      console.log('No puedes dar like a mas de 50 usuarios');
+      setMoreThan50(true);
+    } else {
+      const token = await getToken();
+      const result = await likeActionAPI({
+        token: token ?? '',
+        id: users[usersIndex].id,
+      })
+
+      if (result && result.IsMatch === true) {
+        setCurrentUser(users[usersIndex]);
+        setMatch(true);
+      } else {
+        nextUser()
+      }
+    }
+  };
+
+  const nextUser = () => {
+    if (users.length <= usersIndex + 1) {
+      setCurrentUser(users[0]);
+      setUsersIndex(0);
+    } else {
+      setCurrentUser(users[usersIndex + 1]);
+      setUsersIndex(usersIndex + 1);
+    }
+  };
+
+  const prev = () => {
+    setCurrentUser(users[usersIndex - 1]);
+    setUsersIndex(usersIndex - 1);
+  };
 
   if (!isLoggedIn) {
     return <></>;
