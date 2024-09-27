@@ -14,6 +14,7 @@ import EyeClose from "../../Icons/EyeClose";
 import UpArrowIcon from "../../Icons/UpArrow";
 import DownArrowIcon from "../../Icons/DownArrow";
 import DateTimePicker from 'react-native-ui-datepicker';
+import * as Location from 'expo-location';
 
 
 const getID = (id: string) => {
@@ -83,7 +84,25 @@ export default function LoginPage() {
   const [gender, setGender] = useState('');
   const [genderError, setGenderError] = useState(true);
   const [genderList, setGenderList] = useState<GenderInterface[]>([]);
+  const [latitude, setLatitude] = useState<number>(0);
+  const [longitude, setLongitude] = useState<number>(0);
   const { login } = useAuth();
+
+  useEffect(() => {
+    const getLocation = async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.log('ALERT: Location permissions are not granted');
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      setLatitude(location.coords.latitude);
+      setLongitude(location.coords.longitude);
+    }
+
+    getLocation();
+  }, [])
+
   useEffect(() => {
     const fetchGender = async () => {
       const data = await getGenderAPI();
@@ -143,10 +162,18 @@ export default function LoginPage() {
   }, [birthdate])
 
   const onChangeDate = useCallback(
-    (params : { date: string }) => {
-      setBirthdate(new Date(
-        params.date
-      ));
+    (params: { date: string }) => {
+      const selectedDate = new Date(params.date);
+
+      // Crear una nueva fecha manualmente con los componentes de año, mes y día, evitando zonas horarias
+      const correctedDate = new Date(
+        selectedDate.getFullYear(),
+        selectedDate.getMonth(),
+        selectedDate.getDate(),
+        12, 0, 0  // Establecer hora manualmente para evitar que cambie el día
+      );
+      // Esto elimina cualquier problema de zona horaria
+      setBirthdate(correctedDate);
       setShowDatePicker(false);
     }, []
   )
@@ -332,6 +359,8 @@ export default function LoginPage() {
                     name: name,
                     birthDate: birthdate.toISOString().split('T')[0],
                     genre: gender,
+                    lat: latitude,
+                    lon: longitude,
                   }
                   const register = async () => {
                     const data = await registerAPI(user);

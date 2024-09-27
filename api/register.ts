@@ -5,6 +5,8 @@ interface RegisterInterface {
   name: string;
   birthDate: string;
   genre: string;
+  lat?: number;
+  lon?: number;
 }
 
 const registerAPI = async (user: RegisterInterface) => {
