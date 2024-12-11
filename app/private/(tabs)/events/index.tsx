@@ -14,7 +14,7 @@ import CitasCiegas from "../../../../Icons/CitasCiegas";
 import useScreenMode from "../../../../utilities/screenMode";
 import menuEnabled from "../../../../api/menu/menuenabled";
 
-export default function Match() {
+export default function EventsPage() {
   const { isLoggedIn } = useAuth();
 
   const [events, setEvents] = useState<{ eventImageURL: string, event_name: string, event_date: string, event_location: string, event_description: string, id: number }[]>();

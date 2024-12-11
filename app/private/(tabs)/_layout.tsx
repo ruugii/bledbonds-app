@@ -18,6 +18,9 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import StyledText from "../../../components/StyledText";
 import LoginPage from "../../(tabs)/login";
 import Logout from "../Logout";
+import EventsPage from "./events";
+import CalendarPage from "./calendar";
+import CitasCiegasPage from "./citasCiegas";
 
 // Stack
 const Stack = createNativeStackNavigator();
@@ -129,7 +132,7 @@ function TabGroup() {
       {showEffects && (
         <Tab.Screen
           name={t('events')}
-          component={Party}
+          component={EventsPage}
           options={{
             tabBarIcon: ({ focused }) => (
               <Party black={focused} />
@@ -140,7 +143,7 @@ function TabGroup() {
       {showCalendar && (
         <Tab.Screen
           name={t('calendar')}
-          component={CalendarIcon}
+          component={CalendarPage}
           options={{
             tabBarIcon: ({ focused }) => (
               <CalendarIcon black={focused} />
@@ -151,7 +154,7 @@ function TabGroup() {
       {showCitasACiegas && (
         <Tab.Screen
           name={t('citasCiegas')}
-          component={CitasCiegas}
+          component={CitasCiegasPage}
           options={{
             tabBarIcon: ({ focused }) => (
               <CitasCiegas black={focused} />

@@ -13,7 +13,7 @@ import useScreenMode from "../../../../utilities/screenMode";
 import useAuth from "../../../../utilities/login";
 import menuEnabled from "../../../../api/menu/menuenabled";
 
-export default function ChatPage() {
+export default function CitasCiegasPage() {
 
   const { getToken } = useAuth()
 
