@@ -170,7 +170,7 @@ export default function LoginPage() {
 
   const handleLogin = async () => {
     try {
-      const user = { email, phone, password: code };
+      const user = { email: email.includes('\n') ? email.split('\n')[0] : email, phone, password: code };
       const resp = await loginAPI(user);
       if (resp.token) {
         await AsyncStorage.setItem('token', resp.token ?? '');
