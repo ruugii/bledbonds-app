@@ -2,7 +2,7 @@ import { router, Stack } from "expo-router";
 import { Platform, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import { Colors } from "../../constants/Colors";
 import StyledText from "../../components/StyledText";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import Radio from "../../components/Radio";
 import getFindAPI from "../../api/find/getFind";
 import getSexualidadAPI from "../../api/sexualidad/getSexualidad";
@@ -14,6 +14,7 @@ import getUserData from "../../api/user/getData";
 import UploadImage from "../../components/UploadImage";
 import useScreenMode from "../../utilities/screenMode";
 import { uploadImageV2 } from "../../api/image/uploadImageV2";
+import { useTranslation } from "react-i18next";
 
 interface FindInterface {
   id: string;
@@ -94,10 +95,10 @@ export default function CompleteProfilePage() {
       }}
       >
         <StyledText litle bold left>
-          Agrega una imagen para tu perfil
+          {t('screens.complete_profile.text.add_image')}
         </StyledText>
         <StyledText xsmall bold left>
-          En caso de que quieras mas de una imagen, la puedes agregar desde "tu perfil" una vez hayas completado tu perfil
+          {t('screens.complete_profile.text.add_image_extra_info')}
         </StyledText>
         <UploadImage
           setPhoto={setPhoto}
@@ -108,119 +109,117 @@ export default function CompleteProfilePage() {
 
   const { mode } = useScreenMode()
 
+  const { t } = useTranslation();
+
   return (
-    <>
-      <Stack.Screen
-        options={{
-          headerTitle: () => null,
-        }}
-      />
-      <View style={[styles.container, {
+    <View style={[styles.container, {
+      backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
+    }]}>
+      <View style={[styles.box, styles.box2, {
         backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
       }]}>
-        <View style={[styles.box, styles.box2, {
-          backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
-        }]}>
-          <ScrollView>
-            <StyledText title bold mayus center>
-              Completa tu perfil
+        <ScrollView>
+          <StyledText title bold mayus center>
+            {t('screens.complete_profile.text.title')}
+          </StyledText>
+          <View>
+            <StyledText litle bold left>
+              {t('screens.complete_profile.text.find')}
             </StyledText>
-            <View>
-              <StyledText litle bold left>
-                Que buscas?
-              </StyledText>
-              {findOptions.map((item, index) => (
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    marginVertical: 5,
-                  }}
-                  key={index + 1}
-                >
-                  <Radio checked={find === item.id} onPress={() => setFind(find === item.id ? '0' : item.id)} style={{
-                    marginRight: 10,
-                  }} />
-                  <StyledText litle bold left>
-                    {item.text}
-                  </StyledText>
-                </View>
-              ))}
-            </View>
-            <View style={{
-              marginTop: 10,
-            }}>
-              <StyledText litle bold left>
-                Indica tu sexualidad
-              </StyledText>
-              {sexualidadOptions.map((item, index) => (
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    marginVertical: 5,
-                  }}
-                  key={index + 1}
-                >
-                  <Radio checked={sexualidad === item.id} onPress={() => setSexualidad(sexualidad === item.id ? '0' : item.id)} style={{
-                    marginRight: 10,
-                  }} />
-                  <StyledText litle bold left>
-                    {item.text}
-                  </StyledText>
-                </View>
-              ))}
-            </View>
-            <View style={{
-              marginTop: 10,
-            }}>
-              <StyledText litle bold left>
-                Indica tu estado civil actual
-              </StyledText>
-              {estadoCivilOptions.map((item, index) => (
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    marginVertical: 5,
-                  }}
-                  key={index + 1}
-                >
-                  <Radio checked={estadoCivil === item.id} onPress={() => setEstadoCivil(estadoCivil === item.id ? '0' : item.id)} style={{
-                    marginRight: 10,
-                  }} />
-                  <StyledText litle bold left>
-                    {item.text}
-                  </StyledText>
-                </View>
-              ))}
-            </View>
-            <View style={{
-              marginTop: 10,
-            }}>
-              <StyledText litle bold left>
-                Explicanos un poco mas sobre ti
-              </StyledText>
-              <TextInput
-                style={[styles.textArea, {
-                  borderColor: (mode === 'light') ? Colors.light['palette-1'] : Colors.dark['palette-1'],
-                  marginTop: 10,
-                  color: (mode === 'light') ? Colors.light['palette-11'] : Colors.dark['palette-11'],
-                }]}
-                placeholder="Escribe aquí"
-                value={bio}
-                onChangeText={(text) => setBio(text)}
-                multiline
-                numberOfLines={4}
-              />
-              <View style={{
-                marginVertical: 10,
-              }}
+            {findOptions.map((item, index) => (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  marginVertical: 5,
+                }}
+                key={index + 1}
               >
-                <StyledText xsmall right red={bio?.length > maxCharBio}>
-                  {bio?.length}/{maxCharBio}
+                <Radio checked={find === item.id} onPress={() => setFind(find === item.id ? '0' : item.id)} style={{
+                  marginRight: 10,
+                }} />
+                <StyledText litle bold left>
+                  {t('screens.complete_profile.text.find_options.' + item.id)}
                 </StyledText>
               </View>
+            ))}
+          </View>
+          <View style={{
+            marginTop: 10,
+          }}>
+            <StyledText litle bold left>
+              {t('screens.complete_profile.text.sexuality')}
+            </StyledText>
+            {sexualidadOptions.map((item, index) => (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  marginVertical: 5,
+                }}
+                key={index + 1}
+              >
+                <Radio checked={sexualidad === item.id} onPress={() => setSexualidad(sexualidad === item.id ? '0' : item.id)} style={{
+                  marginRight: 10,
+                }} />
+                <StyledText litle bold left>
+                  {t(`screens.complete_profile.text.sexuality_options.${item.id}`)}
+                </StyledText>
+              </View>
+            ))}
+          </View>
+          <View style={{
+            marginTop: 10,
+          }}>
+            <StyledText litle bold left>
+              {t('screens.complete_profile.text.social_status')}
+            </StyledText>
+            {estadoCivilOptions.map((item, index) => (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  marginVertical: 5,
+                }}
+                key={index + 1}
+              >
+                <Radio checked={estadoCivil === item.id} onPress={() => setEstadoCivil(estadoCivil === item.id ? '0' : item.id)} style={{
+                  marginRight: 10,
+                }} />
+                <StyledText litle bold left>
+                  {t(`screens.complete_profile.text.social_status_options.${item.id}`)}
+                </StyledText>
+              </View>
+            ))}
+          </View>
+          <View style={{
+            marginTop: 10,
+          }}>
+            <StyledText litle bold left>
+              {t('screens.complete_profile.text.bio')}
+            </StyledText>
+            <TextInput
+              style={[styles.textArea, {
+                borderColor: (mode === 'light') ? Colors.light['palette-1'] : Colors.dark['palette-1'],
+                marginTop: 10,
+                color: (mode === 'light') ? Colors.light['palette-11'] : Colors.dark['palette-11'],
+              }]}
+              placeholder={t('screens.complete_profile.text.bio_placeholder')}
+              value={bio}
+              onChangeText={(text) => setBio(text)}
+              multiline
+              numberOfLines={4}
+            />
+            <View style={{
+              marginVertical: 10,
+            }}
+            >
+              <StyledText xsmall right red={bio?.length > maxCharBio}>
+                {bio?.length}/{maxCharBio}
+              </StyledText>
             </View>
-            <GeneratePhoto />
-            <Btn title="Completar Perfil" onPress={() => {
+          </View>
+          <GeneratePhoto />
+          <Btn
+            title={t('screens.complete_profile.button.title')}
+            onPress={() => {
               const updateUser = async () => {
                 let data = ''
 
@@ -250,11 +249,13 @@ export default function CompleteProfilePage() {
                 }
               }
               updateUser();
-            }} clickable />
-          </ScrollView>
-        </View>
+            }}
+            clickable
+            margin
+          />
+        </ScrollView>
       </View>
-    </>
+    </View>
   );
 }
 

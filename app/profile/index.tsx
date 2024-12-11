@@ -19,6 +19,9 @@ import religionOptionsAPI from "../../api/religion/religionOptionsAPI";
 import useScreenMode from "../../utilities/screenMode";
 import ImagePreview from "../../components/ImagePreview";
 import UploadImage from "../../components/UploadImage";
+import { uploadImageV2 } from "../../api/image/uploadImageV2";
+import deletePhotoAPI from "../../api/user/deletephoto";
+import { useTranslation } from "react-i18next";
 
 interface FindInterface {
   id: string;
@@ -71,6 +74,7 @@ interface DataToUpdate {
   id_zodiac?: string;
   mascotas?: string;
   id_religion?: string;
+  photo?: string;
 }
 
 export default function ProfilePage() {
@@ -100,11 +104,30 @@ export default function ProfilePage() {
   const [maxCharBio] = useState(200);
   const [languageResponse, setLanguageResponse] = useState<string>('');
   const [photos, setPhotos] = useState<string[]>([]);
+  const [maxPhotos] = useState(5);
   const [photo, setPhoto] = useState<{
     uri: string;
     type: string;
     name: string;
   }>();
+
+  const { t } = useTranslation();
+
+  useEffect(() => {
+
+    const uploadPhoto = async () => {
+      const imageURL = await uploadImageV2(photo?.uri ?? '', photo?.type ?? '', photo?.name ?? '')
+      setPhotos([...photos, imageURL.url ?? ''])
+      updateUserAPI(await getJsonToUpdate({
+        photo: imageURL.url ?? ''
+      }))
+
+    }
+
+    if (photo !== undefined) {
+      uploadPhoto()
+    }
+  }, [photo])
 
   useEffect(() => {
     let aux = '';
@@ -196,7 +219,11 @@ export default function ProfilePage() {
     getData();
   }, [])
 
-  const getJsonToUpdate = async (): Promise<DataToUpdate> => {
+  const getJsonToUpdate = async ({
+    photo
+  }: {
+    photo?: string;
+  }): Promise<DataToUpdate> => {
     const data: DataToUpdate = {
       token: await getToken() ?? '',
       id_find: find,
@@ -213,8 +240,13 @@ export default function ProfilePage() {
       id_zodiac: zodiac,
       mascotas: pets,
       id_religion: religion,
+      photo: photo
     }
-  
+
+    if (!photo) {
+      delete data.photo;
+    }
+
     if (altura === '') {
       delete data.height;
     }
@@ -265,22 +297,23 @@ export default function ProfilePage() {
   const { mode } = useScreenMode()
 
   return (
-    <>
-      <Stack.Screen
-        options={{
-          headerTitle: () => null,
-        }}
-      />
-      <View style={[styles.container, {
+    <View style={[styles.container, {
+      backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
+    }]}>
+      <View style={[styles.box, styles.box2, {
         backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
       }]}>
-        <View style={[styles.box, styles.box2, {
-          backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
-        }]}>
-          <ScrollView>
-            <StyledText title bold mayus center>
-              Tu perfil - actualiza tu perfil
-            </StyledText>
+        <ScrollView>
+          <View style={{
+            paddingHorizontal: 20
+          }}>
+            <View style={{
+              marginTop: 20
+            }}>
+              <StyledText title bold mayus center>
+                Tu perfil - actualiza tu perfil
+              </StyledText>
+            </View>
             {/* INDICA TU ESTADO CIVIL */}
             <DropDown
               title="Relacion"
@@ -703,25 +736,47 @@ export default function ProfilePage() {
               >
                 {
                   photos.map((item, index) => (
-                    <ImagePreview key={index} photo={item} />
+                    <ImagePreview key={index} photo={item} onDelete={() => {
+                      const deletePhoto = async () => {
+                        await deletePhotoAPI({
+                          token: await getToken() ?? '',
+                          photo: item
+                        })
+                      }
+                      deletePhoto()
+                      setPhotos(photos.filter((i) => i !== item))
+                    }} />
                   ))
                 }
-                <UploadImage
-                  setPhoto={setPhoto}
-                />
+                {photos.length < maxPhotos ? (
+                  <UploadImage
+                    setPhoto={setPhoto}
+                    updatePhoto
+                  />
+                ) : (
+                  <View>
+                    <StyledText litle center>
+                      Con la version gratuita no puedes subir mas de {maxPhotos} fotos
+                    </StyledText>
+                  </View>
+                )}
               </View>
             </DropDown>
 
-            <Btn title="Actualizar el perfil" clickable onPress={() => {
-              const updateUser = async () => {
-                updateUserAPI(await getJsonToUpdate())
-              }
-              updateUser()
-            }} />
-          </ScrollView>
-        </View>
+            <View style={{
+              marginBottom: 20
+            }}>
+              <Btn title="Actualizar el perfil" clickable onPress={() => {
+                const updateUser = async () => {
+                  updateUserAPI(await getJsonToUpdate({}))
+                }
+                updateUser()
+              }} />
+            </View>
+          </View>
+        </ScrollView>
       </View>
-    </>
+    </View>
   );
 }
 
@@ -730,7 +785,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     flexDirection: 'column',
-    paddingHorizontal: 20,
   },
   textArea: {
     borderWidth: 1,
@@ -763,8 +817,7 @@ const styles = StyleSheet.create({
   },
   box2: {
     flex: 10,
-    height: '100%',
-    marginTop: 20,
+    height: '100%'
   },
   box3: {
     flex: 0.5,

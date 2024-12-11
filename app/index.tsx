@@ -8,6 +8,7 @@ import useAuth from "../utilities/login";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import isPerfilCompletoAPI from "../api/login/isPerfilCompleto";
 import useScreenMode from "../utilities/screenMode";
+import { useTranslation } from "react-i18next";
 
 export default function IndexPage() {
   const { isLoggedIn, login, getIsLoggedIn, getToken } = useAuth();
@@ -28,7 +29,7 @@ export default function IndexPage() {
         const isPerfilCompleto = await isPerfilCompletoAPI({ token }) ?? false;
 
         if (isPerfilCompleto?.perfilCompleto) {
-          router.replace('/matches')
+          router.replace('/private/matches')
         } else if (!isPerfilCompleto?.perfilCompleto) {
           router.replace('/complete-profile')
         }
@@ -46,6 +47,8 @@ export default function IndexPage() {
       return Colors.dark['palette-6'];
     }
   }
+
+  const { t } = useTranslation();
 
   return (
     <GestureHandlerRootView>
@@ -72,19 +75,20 @@ export default function IndexPage() {
               backgroundColor: (mode === 'dark') ? Colors.dark["palette-3"] : Colors.light["palette-3"]
             }]}>
               <StyledText title bold>
-                Todo empieza con un simple <StyledText underline text="ME GUSTA" nextText="LIKE" animationChange />
+                {t('screens.intro.text.introText')}<StyledText underline text={t('screens.intro.text.option1')} nextText={t('screens.intro.text.option2')} animationChange />
               </StyledText>
               <View style={{ marginBottom: 15 }}>
                 <StyledText litle bold>
-                  Al pulsar "Iniciar sesión", estás aceptando nuestros <StyledText underline><Link href='/terms'>Términos</Link></StyledText>. Obtén más información sobre cómo procesamos tus datos en nuestra <StyledText underline>Política de privacidad</StyledText> y <StyledText underline>Política de cookies</StyledText>.
+                  {t('screens.intro.terms.startText')}<StyledText underline><Link href='/terms'>{t('screens.intro.terms.text')}</Link></StyledText>. {t('screens.intro.terms.otherInfo')} <StyledText underline>{t('screens.intro.terms.privacy')}</StyledText> {t('y')} <StyledText underline>{t('screens.intro.terms.cookies')}</StyledText>.
+                  {/* Al pulsar "Iniciar sesión", estás aceptando nuestros <StyledText underline><Link href='/terms'>Términos</Link></StyledText>. Obtén más información sobre cómo procesamos tus datos en nuestra <StyledText underline>Política de privacidad</StyledText> y <StyledText underline>Política de cookies</StyledText>. */}
                 </StyledText>
-                <Btn title="Iniciar sesión con Google" onPress={handleLoginGoogle} google disabled />
-                <Btn title="Iniciar sesión con Facebook" onPress={handleLoginFacebook} facebook disabled />
-                <Link href='/login/code' style={[styles.linkStyle, styles.button, {
+                <Btn title={t('screens.intro.button.login_google')} onPress={handleLoginGoogle} google disabled />
+                <Btn title={t('screens.intro.button.login_facebook')} onPress={handleLoginFacebook} facebook disabled />
+                <Link href='/login' style={[styles.linkStyle, styles.button, {
                   backgroundColor: calcBackgroundColor(),
                 }]}>
                   <StyledText button full center>
-                    Iniciar sesión con correo
+                    {t('screens.intro.button.login')}
                   </StyledText>
                 </Link>
               </View>
