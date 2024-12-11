@@ -11,8 +11,10 @@ const Party = (props: any) => {
       return Colors.light["palette-11"];
     } else if (props.black && mode === 'dark') {
       return Colors.dark["palette-11"];
-    } else {
-      return 'rgba(255, 255, 255, 0)';
+    } else if (!props.black && mode === 'light') {
+      return Colors.light["palette-11"];
+    } else if (!props.black && mode === 'dark') {
+      return Colors.dark["palette-11"];
     }
   }
 
