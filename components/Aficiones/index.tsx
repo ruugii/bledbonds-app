@@ -4,6 +4,7 @@ import styles from "./Menu.styles";
 import { useEffect, useState } from "react";
 import { Colors } from "../../constants/Colors";
 import useScreenMode from "../../utilities/screenMode";
+import { useTranslation } from "react-i18next";
 
 interface AficionesProps {
   readonly name: string[]
@@ -29,6 +30,8 @@ export default function Aficiones(props: AficionesProps) {
 
   const { mode } = useScreenMode()
 
+  const { t } = useTranslation();
+
   if (props.text) {
     return (
       <View style={[style.box, style.box1, style.menu, (fullScreen ? { maxHeight: '100%', height: '100%', top: 0 } : {})]}>
@@ -38,7 +41,7 @@ export default function Aficiones(props: AficionesProps) {
             return (
               <View key={index + 1} style={[style.menuItem, { elevation: 0, height: '100%', backgroundColor: mode === 'light' ? Colors.light["palette-1_transparent"] : Colors.dark["palette-1_transparent"], margin: 0, paddingTop: 0 }]}>
                 <TouchableOpacity onPress={handleChange}>
-                  <StyledText litle justify>CLOSE</StyledText>
+                  <StyledText litle justify>{t('close')}</StyledText>
                 </TouchableOpacity>
                 <ScrollView>
                   <StyledText litle justify>{option}</StyledText>
@@ -50,7 +53,7 @@ export default function Aficiones(props: AficionesProps) {
         ) : (
           <>
             <TouchableOpacity onPress={handleChange} style={{ marginLeft: 20 }}>
-              <StyledText litle justify>Ver todas</StyledText>
+              <StyledText litle justify>{t('seeAll')}</StyledText>
             </TouchableOpacity>
             <ScrollView>
               {props.name.map((option, index) => {
