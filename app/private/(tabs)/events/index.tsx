@@ -1,31 +1,23 @@
 import { Stack } from "expo-router";
 import { StyleSheet, View } from "react-native";
-import { Colors } from "../../constants/Colors";
-import useAuth from "../../utilities/login";
+import { Colors } from "../../../../constants/Colors";
+import useAuth from "../../../../utilities/login";
 import { useEffect, useState } from "react";
-import getAllEvents from "../../api/events/getAllEvents";
+import getAllEvents from "../../../../api/events/getAllEvents";
 import { FlatList, GestureHandlerRootView } from "react-native-gesture-handler";
-import EventCard from "../../components/EventCard";
-import Menu from "../../components/Menu/Menu";
-import Like from "../../Icons/Like";
-import Party from "../../Icons/Party";
-import CalendarIcon from "../../Icons/CalendarIcon";
-import Chat from "../../Icons/Chat";
-import CitasCiegas from "../../Icons/CitasCiegas";
-import useScreenMode from "../../utilities/screenMode";
-import menuEnabled from "../../api/menu/menuenabled";
+import EventCard from "../../../../components/EventCard";
+import Like from "../../../../Icons/Like";
+import Party from "../../../../Icons/Party";
+import CalendarIcon from "../../../../Icons/CalendarIcon";
+import Chat from "../../../../Icons/Chat";
+import CitasCiegas from "../../../../Icons/CitasCiegas";
+import useScreenMode from "../../../../utilities/screenMode";
+import menuEnabled from "../../../../api/menu/menuenabled";
 
 export default function Match() {
   const { isLoggedIn } = useAuth();
 
-  const [events, setEvents] = useState<{ eventImageURL: string, event_name: string, event_date: string, event_location: string, event_description: string, id: number }[]>([{
-    eventImageURL: '',
-    event_name: '',
-    event_date: '',
-    event_location: '',
-    event_description: '',
-    id: 0
-  }]);
+  const [events, setEvents] = useState<{ eventImageURL: string, event_name: string, event_date: string, event_location: string, event_description: string, id: number }[]>();
 
   useEffect(() => {
     const fetchEventsData = async () => {
@@ -143,6 +135,7 @@ export default function Match() {
                       description={item.event_description || 'No description'}
                       location={item.event_location || 'No location'}
                       url={[item.eventImageURL]}
+                      id={item.id}
                     />
                   )}
                   keyExtractor={(item, index) => index.toString()}
@@ -155,9 +148,6 @@ export default function Match() {
             flex: 1,
             backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
           }}>
-            <Menu
-              options={menuOptions}
-            />
           </View>
         </View>
       </>
