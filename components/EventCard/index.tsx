@@ -4,8 +4,11 @@ import { useEffect, useState } from "react";
 import CloseIcon from "../../Icons/Close";
 import { Colors } from "../../constants/Colors";
 import useScreenMode from "../../utilities/screenMode";
+import useAuth from "../../utilities/login";
+import addToEvent from "../../api/events/addToEvent";
 
 interface CardProps {
+  readonly id: number;
   readonly url: string[];
   readonly name: string;
   readonly description: string;
@@ -13,6 +16,9 @@ interface CardProps {
 }
 
 export default function EventCard(props: CardProps) {
+
+  const { getToken } = useAuth();
+
   const [option, setOption] = useState<number>(Math.floor(Math.random() * 3)); // Adjusted random range to 0-2
   const [showText, setShowText] = useState<boolean>(false);
   const [selectedFoto] = useState<string>(props.url[0]);
@@ -48,11 +54,24 @@ export default function EventCard(props: CardProps) {
     }
   }
 
+  const apuntarse = (id : number) => {
+    const getTokenData = async () => {
+      const token = await getToken() ?? ''
+      console.log(token);
+      
+      await addToEvent(token, `${id}`)
+    }
+
+    getTokenData()
+
+    setShowText(!showText);
+  };
+
   return (
     <View style={styles.card}>
       <View style={styles.imageContainer}>
         <ImageBackground source={{ uri: selectedFoto }} style={styles.image}>
-          <View style={styles.card_filter}>
+          <View style={[styles.card_filter, { backgroundColor: mode === 'dark' ? 'rgba(0,0,0, 0.7)' : 'rgba(255,255,255, 0.7)' }]}>
             <View style={styles.card_text}>
               {showText ? (
                 <Modal>
@@ -64,7 +83,7 @@ export default function EventCard(props: CardProps) {
                     justifyContent: 'center',
                     zIndex: 90,
                   }}>
-                    <TouchableOpacity onPress={() => setShowText(!showText)}>
+                    <TouchableOpacity onPress={() => setShowText(!showText)} style={{ zIndex: 200 }}>
                       <View style={{
                         position: 'absolute',
                         top: 0,
@@ -106,7 +125,7 @@ export default function EventCard(props: CardProps) {
                       elevation: 5,
                     }}>
                       <TouchableOpacity
-                        onPress={() => setShowText(!showText)}
+                        onPress={() => apuntarse(props.id)}
                         style={{
                           flex: 1,
                           elevation: 15,
@@ -134,11 +153,11 @@ export default function EventCard(props: CardProps) {
                 </Modal>
               ) : (
                 <>
-                  <StyledText light left title mayus>{props.name}</StyledText>
-                  <StyledText light left litle mayus>{`${calcularDistancia()} km`}</StyledText>
-                  <StyledText light left litle>{props.location}</StyledText>
+                  <StyledText left title mayus>{props.name}</StyledText>
+                  <StyledText left litle mayus>{`${calcularDistancia()} km`}</StyledText>
+                  <StyledText left litle>{props.location}</StyledText>
                   <TouchableOpacity onPress={handleShowText}>
-                    <StyledText light left litle underline>{showText ? "VER MENOS" : "VER MAS"}</StyledText>
+                    <StyledText left litle underline>{showText ? "VER MENOS" : "VER MAS"}</StyledText>
                   </TouchableOpacity>
                 </>
               )}
