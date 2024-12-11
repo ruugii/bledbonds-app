@@ -1,0 +1,121 @@
+{
+  "language": "Español",
+  "y": "y",
+  "logout": "Cerrar sesión",
+  "login": "Iniciar sesión",
+  "profile": "Perfil",
+  "close": "Cerrar",
+  "seeAll": "Ver todo",
+  "menu": {
+    "login": "Iniciar sesión",
+    "register": "Registrate"
+  },
+  "screens": {
+    "intro": {
+      "text": {
+        "introText": "Todo empieza con un simple ",
+        "option1": "ME GUSTA",
+        "option2": "LIKE"
+      },
+      "terms": {
+        "startText": "Al pulsar \"Iniciar sesión\", estás aceptando nuestros ",
+        "text": "Términos",
+        "otherInfo": "Obtén más información sobre cómo procesamos tus datos en nuestra ",
+        "privacy": "Política de privacidad",
+        "cookies": "Política de cookies"
+      },
+      "button": {
+        "login": "Iniciar sesión con email",
+        "login_google": "Iniciar sesión con Google",
+        "login_facebook": "Iniciar sesión con Facebook",
+        "disabled": "Deshabilitado"
+      }
+    },
+    "login": {
+      "changeText": {
+        "login_with_password": "Iniciar sesión con contraseña",
+        "login_with_code": "Iniciar sesión con código"
+      },
+      "button": {
+        "login": "Continuar",
+        "login_with_code": "Iniciar sesión con código",
+        "login_with_password": "Iniciar sesión con contraseña"
+      },
+      "text": {
+        "password": "Contraseña",
+        "email": "Email",
+        "code": "Código de verificación",
+        "phone": "Teléfono - sin prefijo",
+        "no_acount": "No tienes cuenta? Regístrate gratis aquí"
+      }
+    },
+    "register": {
+      "text": {
+        "email": "Email",
+        "phone": "Teléfono - sin prefijo",
+        "name": "Nombre",
+        "birthdate": "Fecha de cumpleaños",
+        "password": "Contraseña",
+        "repeat_password": "Repite la Contraseña",
+        "gender": "Genero",
+        "no_acount": "Ya tienes una cuenta? Accede a continuacion"
+      },
+      "button": {
+        "register": "Registrate"
+      }
+    },
+    "complete_profile": {
+      "text": {
+        "title": "Completa tu perfil",
+        "find": "¿Qué buscas?",
+        "find_options": {
+          "1": "¿Quieres saber lo que pasa?",
+          "2": "¿Quieres hablar y conocer a personas nuevas?",
+          "3": "¿Quieres tener una relación?",
+          "4": "¿Quieres saber lo que pasa?",
+          "5": "¿Quieres hablar y conocer a personas nuevas?",
+          "6": "¿Quieres tener una relación?"
+        },
+        "sexuality": "Indica tu sexualidad",
+        "sexuality_options": {
+          "1": "Heterosexual",
+          "2": "Gay",
+          "3": "Lesbiana",
+          "4": "Bisexual",
+          "5": "Asexual",
+          "6": "Demisexual",
+          "7": "Pansexual",
+          "8": "Queer",
+          "9": "En cuestión",
+          "10": "Prefiero no decirlo",
+          "11": "Heterosexual",
+          "12": "Gay",
+          "13": "Lesbiana",
+          "14": "Bisexual",
+          "15": "Asexual",
+          "16": "Demisexual",
+          "17": "Pansexual",
+          "18": "Queer",
+          "19": "En cuestión",
+          "20": "Prefiero no decirlo"
+        },
+        "social_status": "Indica tu estado actual de la vida",
+        "social_status_options": {
+          "1": "Soltero",
+          "2": "En una relación",
+          "3": "Complicado",
+          "4": "En una relación abierta",
+          "5": "Prefiero no decirlo"
+        },
+        "bio": "Explica un poco de ti",
+        "bio_placeholder": "Escribe aquí",
+        "add_image": "Añade una foto",
+        "add_image_extra_info": "En caso de tener más de una foto, puedes añadirlas desde 'TU PERFIL' una vez que hayas completado"
+      },
+      "button": {
+        "title": "Completa tu perfil"
+      }
+    },
+    "photo": "Foto del perfil"
+  }
+}

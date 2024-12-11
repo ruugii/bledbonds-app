@@ -1,0 +1,121 @@
+{
+  "language": "Catala",
+  "y": "i",
+  "logout": "Tanca Sessió",
+  "login": "Inicia Sessió",
+  "profile": "Perfil",
+  "close": "Tanca",
+  "seeAll": "Veure tot",
+  "menu": {
+    "login": "Inicia Sessió",
+    "register": "Registrat"
+  },
+  "screens": {
+    "intro": {
+      "text": {
+        "introText": "Tot inicia amb un simple ",
+        "option1": "M'Agrada",
+        "option2": "LIKE"
+      },
+      "terms": {
+        "startText": "Al apretar \"Inicia sessió\", estás acceptant la nostra ",
+        "text": "Termes",
+        "otherInfo": "Tingues més informació sobre com processem les teves dades en la nostra ",
+        "privacy": "Política de privacitat",
+        "cookies": "Política de cookies"
+      },
+      "button": {
+        "login": "Inicia sessió amb correu electrònic",
+        "login_google": "Inicia sessió amb Google",
+        "login_facebook": "Inicia sessió amb Facebook",
+        "disabled": "Deshabilitat"
+      }
+    },
+    "login": {
+      "changeText": {
+        "login_with_password": "Inicia sessió amb contrasenya",
+        "login_with_code": "Inicia sessió amb codi"
+      },
+      "text": {
+        "email": "Correu electrònic",
+        "phone": "Telèfon",
+        "password": "Contrasenya",
+        "code": "Codi",
+        "no_acount": "No teniu un compte? Registreu-vos gratis"
+      },
+      "button": {
+        "login": "Continuar",
+        "login_with_code": "Inicia sessió amb codi",
+        "login_with_password": "Inicia sessió amb contrasenya"
+      }
+    },
+    "register": {
+      "text": {
+        "email": "Correu electrònic",
+        "phone": "Telèfon",
+        "name": "Nom",
+        "birthdate": "Aniversari",
+        "password": "Contrasenya",
+        "repeat_password": "Repeteix la Contrasenya",
+        "gender": "Genere",
+        "no_acount": "Ja tens un compte? Accedeix a continuacio"
+      },
+      "button": {
+        "register": "Registrat"
+      }
+    },
+    "complete_profile": {
+      "text": {
+        "title": "Completa el teu perfil",
+        "find": "Que busques",
+        "find_options": {
+          "1": "Quedar y veure que pasa",
+          "2": "Parlar i coneixer a persones noves",
+          "3": "Una relacio",
+          "4": "Quedar y veure que pasa",
+          "5": "Parlar i coneixer a persones noves",
+          "6": "Una relacio"
+        },
+        "sexuality": "Indica la teva sexualitat",
+        "sexuality_options": {
+          "1": "Heterosexual",
+          "2": "Gay",
+          "3": "Lesbiana",
+          "4": "Bisexual",
+          "5": "Asexual",
+          "6": "Demisexual",
+          "7": "Pansexual",
+          "8": "Queer",
+          "9": "En cuestionament",
+          "10": "Prefereixo no dir-ho",
+          "11": "Heterosexual",
+          "12": "Gay",
+          "13": "Lesbiana",
+          "14": "Bisexual",
+          "15": "Asexual",
+          "16": "Demisexual",
+          "17": "Pansexual",
+          "18": "Queer",
+          "19": "En cuestionament",
+          "20": "Prefereixo no dir-ho"
+        },
+        "social_status": "Indica el teu estat civil actual",
+        "social_status_options": {
+          "1": "Solter",
+          "2": "En una relacio",
+          "3": "Es complicat",
+          "4": "En una relacio oberta",
+          "5": "Prefereixo no dir-ho"
+        },
+        "bio": "Explica una mica de tu",
+        "bio_placeholder": "Escriu aquí",
+        "add_image": "Afegeix una foto",
+        "add_image_extra_info": "En cas de voler mes de una foto, la pots afegir desde 'EL TEU PERFIL' un cop acabat de completar"
+      },
+      "button": {
+        "title": "Completa el teu perfil"
+      }
+    },
+    "photo": "Foto del perfil"
+  }
+}
