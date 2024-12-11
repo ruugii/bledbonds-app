@@ -226,7 +226,7 @@ export default function LoginPage() {
                     onPress={() => {
                       const login = async () => {
                         try {
-                          const data = await loginByCode({ email });
+                          const data = await loginByCode({ email: email.includes('\n') ? email.split('\n')[0] : email });
                           if (data) {
                             await AsyncStorage.setItem('isPendingCode', JSON.stringify({
                               isPendingCode: true,
@@ -259,7 +259,7 @@ export default function LoginPage() {
                       onPress={() => {
                         const login_ = async () => {
                           try {
-                            const data = await loginByCode({ email, code });
+                            const data = await loginByCode({ email: email.includes('\n') ? email.split('\n')[0] : email, code });
                             if (data) {
                               await AsyncStorage.setItem('isLoggedIn', JSON.stringify(true));
                               await AsyncStorage.setItem('token', data.token);
