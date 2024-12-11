@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "bledbonds-app-2",
-    "slug": "bledbonds-app-2",
+    "name": "BledBonds",
+    "slug": "bledbonds",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/logo_app.png",
@@ -12,22 +12,23 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/logo.png",
+        "foregroundImage": "./assets/logo_app.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.ruugii_31.bledbondsapp2"
     },
     "web": {
-      "favicon": "./assets/logo.png"
+      "favicon": "./assets/logo_app.png"
     },
     "extra": {
       "eas": {
-        "projectId": "f9647608-1a4b-4eeb-91fb-07a2b73c70c1"
+        "projectId": "c7f6b80e-ff4c-4cb4-a0ac-2c57be427dae"
       }
     },
     "plugins": [
@@ -44,6 +45,13 @@
           "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
         }
       ]
-    ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  },
+  "react-native-google-mobile-ads": {
+    "android_app_id": "ca-app-pub-9151438107079869~7984691057",
+    "ios_app_id": "ca-app-pub-12345678910~123456459"
   }
 }
