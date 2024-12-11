@@ -1,28 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { Image, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import Card from "../../components/Card/Page";
-import StyledText from "../../components/StyledText";
-import Dislike from "../../Icons/Dislike";
-import SuperLike from "../../Icons/Superlike";
-import Like from "../../Icons/Like";
-import Undo from "../../Icons/undo";
-import { Colors } from "../../constants/Colors";
-import { Stack } from "expo-router";
-import Party from "../../Icons/Party";
-import CalendarIcon from "../../Icons/CalendarIcon";
-import Chat from "../../Icons/Chat";
-import useAuth from "../../utilities/login";
-import CitasCiegas from "../../Icons/CitasCiegas";
-import menuEnabled from "../../api/menu/menuenabled";
+import { Image, Modal, Platform, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import Card from "../../../../components/Card/Page";
+import StyledText from "../../../../components/StyledText";
+import Dislike from "../../../../Icons/Dislike";
+import SuperLike from "../../../../Icons/Superlike";
+import Like from "../../../../Icons/Like";
+import Undo from "../../../../Icons/undo";
+import { Colors } from "../../../../constants/Colors";
+import useAuth from "../../../../utilities/login";
+import menuEnabled from "../../../../api/menu/menuenabled";
 import Swiper from "react-native-deck-swiper";
-import Menu from "../../components/Menu/Menu";
-import useScreenMode from "../../utilities/screenMode";
-import getToLike from "../../api/user/getToLike";
-import likeActionAPI from "../../api/actions/likeAPI";
-import DislikeActionAPI from "../../api/actions/DislikeAPI";
+import useScreenMode from "../../../../utilities/screenMode";
+import getToLike from "../../../../api/user/getToLike";
+import likeActionAPI from "../../../../api/actions/likeAPI";
+import DislikeActionAPI from "../../../../api/actions/DislikeAPI";
 import * as Location from 'expo-location';
-import updateUserAPI from "../../api/user/update";
-import getUserData from "../../api/user/getData";
+import updateUserAPI from "../../../../api/user/update";
+import getUserData from "../../../../api/user/getData";
+// import mobileAds, { AdEventType, BannerAd, BannerAdSize, InterstitialAd, TestIds } from 'react-native-google-mobile-ads';
 
 const swiperRef = React.createRef<Swiper<{ fotos: string[]; aficiones: string[]; description: string; location: { lat: number; lon: number; }; name: string; age: string; }>>();
 
@@ -38,6 +33,17 @@ interface UserInterface {
   age: string;
   id: string;
 }
+const calculateAge = (birthday: Date): string => {
+  const today = new Date();
+  const birthdayDate = new Date(birthday);
+  let age = today.getFullYear() - birthdayDate.getFullYear();
+  const m = today.getMonth() - birthdayDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthdayDate.getDate())) {
+    age--;
+  }
+  return `${age}`;
+};
+
 
 export default function Match() {
 
@@ -53,16 +59,6 @@ export default function Match() {
   const [like] = useState(false);
   const [dislike] = useState(false);
   const [moreThan50, setMoreThan50] = useState(false);
-  const [menuOptions, setMenuOptions] = useState([
-    {
-      id: 0,
-      text: "",
-      selected: false,
-      url: "",
-      icon: <></>,
-      active: false,
-    },
-  ]);
   const [latitude, setLatitude] = useState<number>(0);
   const [longitude, setLongitude] = useState<number>(0);
   const [find, setFind] = useState('');
@@ -71,6 +67,14 @@ export default function Match() {
   const [bio, setBio] = useState('');
 
   useEffect(() => {
+    const getMenu = async () => {
+      const matches = await menuEnabled({ key: 'matches' });
+      if (matches.Valor === '1') {
+        setMatchEnabled(true);
+      }
+    };
+    getMenu();
+
     const getLocation = async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
@@ -83,11 +87,8 @@ export default function Match() {
       setLongitude(location.coords.longitude);
       console.log(location.coords.longitude);
     }
-
     getLocation();
-  }, [])
 
-  useEffect(() => {
     const getData = async () => {
       const token = await getToken() ?? '';
       const data = await getUserData({ token });
@@ -99,97 +100,11 @@ export default function Match() {
       }
     }
     getData();
-  }, [])
 
-  useEffect(() => {
-    if (latitude !== 0 && longitude !== 0 && find !== '' && sexualidad !== '' && estadoCivil !== '' && bio !== '') {
-      const updateLocation = async () => {
-        const token = await getToken()
-        const updateUser = await updateUserAPI({
-          token: token ?? '',
-          id_find: find,
-          id_orientation: sexualidad,
-          id_status: estadoCivil,
-          bio: bio,
-          lat: latitude,
-          lon: longitude,
-        })
-      }
-
-      updateLocation();
-    }
-  }, [latitude, longitude, find, sexualidad, estadoCivil, bio])
-
-  useEffect(() => {
-    const getMenu = async () => {
-      const matches = await menuEnabled({ key: 'matches' });
-      const events = await menuEnabled({ key: 'events' });
-      const calendar = await menuEnabled({ key: 'calendar' });
-      const chat = await menuEnabled({ key: 'chat' });
-      const citasCiegas = await menuEnabled({ key: 'ciegas' });
-      const aux = []
-      if (matches.Valor === '1') {
-        setMatchEnabled(true);
-        aux.push({
-          id: 1,
-          text: "MATCHES",
-          selected: true,
-          url: "/matches",
-          icon: <Like black />,
-          active: true,
-        });
-      }
-      if (events.Valor === '1') {
-        aux.push(
-          {
-            id: 2,
-            text: "EVENTS",
-            selected: false,
-            url: "/events",
-            icon: <Party black />,
-            active: false,
-          }
-        );
-      }
-      if (calendar.Valor === '1') {
-        aux.push({
-          id: 3,
-          text: "CALENDAR",
-          selected: false,
-          url: "/calendar",
-          icon: <CalendarIcon black />,
-          active: false,
-        });
-      }
-      if (chat.Valor === '1') {
-        aux.push({
-          id: 4,
-          text: 'CHAT',
-          selected: false,
-          url: '/chat',
-          icon: <Chat black />,
-          active: false,
-        });
-      }
-      if (citasCiegas.Valor === '1') {
-        aux.push({
-          id: 5,
-          text: 'CITAS A CIEGAS',
-          selected: false,
-          url: '/citasCiegas',
-          icon: <CitasCiegas black />,
-          active: false,
-        });
-      }
-      setMenuOptions(aux);
-    };
-    getMenu();
-  }, []);
-
-  useEffect(() => {
     const getUsers = async () => {
       const token = await getToken()
       const userRandom = await getToLike({ token: token ?? '' });
+      console.log(userRandom);
       if (userRandom.status !== '-0001') {
         setUsersCount(userRandom.count[0]['COUNT(*)']);
         for (const user of userRandom.userRandom) {
@@ -212,18 +127,26 @@ export default function Match() {
       }
     }
     getUsers();
-  }, [])
+  }, []);
 
-  const calculateAge = (birthday: Date): string => {
-    const today = new Date();
-    const birthdayDate = new Date(birthday);
-    let age = today.getFullYear() - birthdayDate.getFullYear();
-    const m = today.getMonth() - birthdayDate.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birthdayDate.getDate())) {
-      age--;
+  useEffect(() => {
+    if (latitude !== 0 && longitude !== 0 && find !== '' && sexualidad !== '' && estadoCivil !== '' && bio !== '') {
+      const updateLocation = async () => {
+        const token = await getToken()
+        const updateUser = await updateUserAPI({
+          token: token ?? '',
+          id_find: find,
+          id_orientation: sexualidad,
+          id_status: estadoCivil,
+          bio: bio,
+          lat: latitude,
+          lon: longitude,
+        })
+      }
+
+      updateLocation();
     }
-    return `${age}`;
-  };
+  }, [latitude, longitude, find, sexualidad, estadoCivil, bio])
 
   const undoUser = () => {
     prev();
@@ -231,7 +154,7 @@ export default function Match() {
 
   const DislikeUser = async () => {
     const token = await getToken();
-    const result = await DislikeActionAPI({
+    await DislikeActionAPI({
       token: token ?? '',
       id: users[usersIndex].id,
     })
@@ -277,6 +200,34 @@ export default function Match() {
     setCurrentUser(users[usersIndex - 1]);
     setUsersIndex(usersIndex - 1);
   };
+  // useEffect(() => {
+  //   async () => {
+  //     await mobileAds().initialize();
+  //   }
+  // }, [])
+
+  // const adUnitId = __DEV__ ? TestIds.GAM_NATIVE : 'ca-app-pub-9151438107079869/8497099432'
+  // const [isAdLoaded, setIsAdLoaded] = useState<boolean>(false);
+
+  // const interstitial = InterstitialAd.createForAdRequest(adUnitId, {
+  //   keywords: ['games', 'fun', 'action'],
+  // });
+
+  // useEffect(() => {
+  //   if (usersCount % 10 === 0) {
+  //     const unsubscribeLoaded = interstitial.addAdEventListener(AdEventType.LOADED, () => {
+  //       setIsAdLoaded(true);
+  //     });
+
+  //     // Start loading the interstitial straight away
+  //     interstitial.load();
+
+  //     // Unsubscribe from events on unmount
+  //     return () => {
+  //       unsubscribeLoaded();
+  //     };
+  //   }
+  // }, [usersCount])
 
   if (!isLoggedIn) {
     return <></>;
@@ -284,6 +235,8 @@ export default function Match() {
     return (
       <View style={[styles.container, {
         backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
+        height: '100%',
+        // backgroundColor: 'white',
       }]}>
         <StyledText bold center title mayus>
           Actualmente esta función no está activada.
@@ -293,135 +246,145 @@ export default function Match() {
   } else {
     return (
       <>
-        <Stack.Screen
-          options={{
-            headerTitle: () => null,
-          }}
-        />
         <View style={{
           flex: 10,
           alignContent: 'center',
           alignItems: 'center',
         }}>
           {users.length > 0 ? (
-            <Swiper
-              cards={users}
-              ref={swiperRef}
-              renderCard={(card) => (
-                <Card
-                  name={card.name || ''}
-                  age={card.age || ''}
-                  aficiones={card.aficiones || []}
-                  description={card.description || ''}
-                  location={card.location || {
-                    lat: 0,
-                    lon: 0,
-                  }}
-                  url={card.fotos || []}
-                  like={like}
-                  dislike={dislike}
-                >
-                  <View style={styles.cardButtons}>
-                    <TouchableOpacity
-                      onPress={undoUser}
-                      style={[styles.undoButton, {
-                        borderColor: mode === 'light' ? Colors.light.buttonUndoEnabled : Colors.dark.buttonUndoEnabled,
-                        backgroundColor: mode === 'light' ? Colors.light.buttonUndoEnabled : Colors.dark.buttonUndoEnabled,
-                      }, usersIndex === 0 && {
-                        borderColor: mode === 'light' ? Colors.light.buttonUndoDisabled : Colors.dark.buttonUndoDisabled,
-                        backgroundColor: mode === 'light' ? Colors.light.buttonUndoDisabled : Colors.dark.buttonUndoDisabled,
-                      }]}
-                      disabled={usersIndex === 0}
-                    >
-                      <Undo
-                        black
-                      />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => swiperRef?.current?.swipeLeft()}
-                      style={[styles.dislikeButton, {
-                        borderColor: mode === 'light' ? Colors.light.buttonDislike : Colors.dark.buttonDislike,
-                        backgroundColor: mode === 'light' ? Colors.light.buttonDislike : Colors.dark.buttonDislike,
-                      }]}
-                    >
-                      <Dislike
-                        black
-                      />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => swiperRef?.current?.swipeRight()}
-                      style={[styles.likeButton, {
-                        borderColor: mode === 'light' ? Colors.light.buttonLike : Colors.dark.buttonLike,
-                        backgroundColor: mode === 'light' ? Colors.light.buttonLike : Colors.dark.buttonLike,
-                      }]}
-                    >
-                      <Like
-                        black
-                      />
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={SuperLikeUser}
-                      style={[styles.superlikeButton, {
-                        borderColor: mode === 'light' ? Colors.light.buttonSuperlike : Colors.dark.buttonSuperlike,
-                        backgroundColor: mode === 'light' ? Colors.light.buttonSuperlike : Colors.dark.buttonSuperlike,
-                      }]}
-                    >
-                      <SuperLike
-                        black
-                      />
-                    </TouchableOpacity>
-                  </View>
-                </Card>
-              )}
-              verticalSwipe={false}
-              stackSize={2}
-              onSwipedLeft={() => {
-                DislikeUser();
+            <View
+              style={{
+                height: '100%',
+                width: '100%',
+                alignContent: 'center',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
+                paddingHorizontal: 10,
               }}
-              onSwipedRight={LikeUser}
-              animateOverlayLabelsOpacity
-              animateCardOpacity
-              overlayLabels={{
-                left: {
-                  title: "DISLIKE",
-                  style: {
-                    label: {
-                      backgroundColor: "red",
-                      color: "white",
-                      fontSize: 24,
-                    },
-                    wrapper: {
-                      flecDirection: "column",
-                      alignItems: "flex-end",
-                      justifyContent: "flex-start",
-                      marginTop: 20,
-                      marginLeft: -20,
+            >
+              <Swiper
+                cards={users}
+                ref={swiperRef}
+                renderCard={(card) => (
+                  <Card
+                    name={card.name || ''}
+                    age={card.age || ''}
+                    aficiones={card.aficiones || []}
+                    description={card.description || ''}
+                    location={card.location || {
+                      lat: 0,
+                      lon: 0,
+                    }}
+                    url={card.fotos || []}
+                    like={like}
+                    dislike={dislike}
+                  >
+                    <View style={styles.cardButtons}>
+                      <TouchableOpacity
+                        onPress={undoUser}
+                        style={[styles.undoButton, {
+                          borderColor: mode === 'light' ? Colors.light.buttonUndoEnabled : Colors.dark.buttonUndoEnabled,
+                          backgroundColor: mode === 'light' ? Colors.light.buttonUndoEnabled : Colors.dark.buttonUndoEnabled,
+                        }, usersIndex === 0 && {
+                          borderColor: mode === 'light' ? Colors.light.buttonUndoDisabled : Colors.dark.buttonUndoDisabled,
+                          backgroundColor: mode === 'light' ? Colors.light.buttonUndoDisabled : Colors.dark.buttonUndoDisabled,
+                        }]}
+                        // disabled={usersIndex === 0}
+                        disabled
+                      >
+                        <Undo
+                          black
+                        />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => swiperRef?.current?.swipeLeft()}
+                        style={[styles.dislikeButton, {
+                          borderColor: mode === 'light' ? Colors.light.buttonDislike : Colors.dark.buttonDislike,
+                          backgroundColor: mode === 'light' ? Colors.light.buttonDislike : Colors.dark.buttonDislike,
+                        }]}
+                      >
+                        <Dislike
+                          black
+                        />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => swiperRef?.current?.swipeRight()}
+                        style={[styles.likeButton, {
+                          borderColor: mode === 'light' ? Colors.light.buttonLike : Colors.dark.buttonLike,
+                          backgroundColor: mode === 'light' ? Colors.light.buttonLike : Colors.dark.buttonLike,
+                        }]}
+                      >
+                        <Like
+                          black
+                        />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={SuperLikeUser}
+                        style={[styles.superlikeButton, {
+                          borderColor: mode === 'light' ? Colors.light.buttonSuperlike : Colors.dark.buttonSuperlike,
+                          backgroundColor: mode === 'light' ? Colors.light.buttonSuperlike : Colors.dark.buttonSuperlike,
+                        }]}
+                        disabled
+                      >
+                        <SuperLike
+                          black
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </Card>
+                )}
+                verticalSwipe={false}
+                stackSize={2}
+                onSwipedLeft={() => {
+                  DislikeUser();
+                }}
+                onSwipedRight={LikeUser}
+                animateOverlayLabelsOpacity
+                animateCardOpacity
+                overlayLabels={{
+                  left: {
+                    title: "DISLIKE",
+                    style: {
+                      label: {
+                        backgroundColor: "red",
+                        color: "white",
+                        fontSize: 24,
+                      },
+                      wrapper: {
+                        flecDirection: "column",
+                        alignItems: "flex-end",
+                        justifyContent: "flex-start",
+                        marginTop: 20,
+                        marginLeft: -20,
+                      }
+                    }
+                  },
+                  right: {
+                    title: "LIKE",
+                    style: {
+                      label: {
+                        backgroundColor: "green",
+                        color: "white",
+                        fontSize: 24,
+                      },
+                      wrapper: {
+                        flecDirection: "column",
+                        alignItems: "flex-start",
+                        justifyContent: "flex-start",
+                        marginTop: 20,
+                        marginLeft: 20,
+                      }
                     }
                   }
-                },
-                right: {
-                  title: "LIKE",
-                  style: {
-                    label: {
-                      backgroundColor: "green",
-                      color: "white",
-                      fontSize: 24,
-                    },
-                    wrapper: {
-                      flecDirection: "column",
-                      alignItems: "flex-start",
-                      justifyContent: "flex-start",
-                      marginTop: 20,
-                      marginLeft: 20,
-                    }
-                  }
-                }
-              }}
-            />
+                }}
+                backgroundColor={(mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"]}
+              />
+            </View>
           ) : (
             <View
               style={{
-                height: '90%',
+                height: '100%',
                 width: '100%',
                 alignContent: 'center',
                 alignItems: 'center',
@@ -435,11 +398,6 @@ export default function Match() {
               </StyledText>
             </View>
           )}
-          <View style={[styles.menuContainer, {
-            backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
-          }]}>
-            <Menu options={menuOptions} />
-          </View>
         </View>
         {match && (
           <Modal>
@@ -496,10 +454,7 @@ const styles = StyleSheet.create({
   },
   card: {
     flex: 0.85,
-    // height: '95%',
     backgroundColor: 'blue',
-    // margin: 24,
-    // marginVertical: 24,
     borderRadius: 14,
     overflow: 'hidden', // Asegura que el contenido respete el borderRadius
     elevation: 5,
@@ -600,7 +555,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 80, // Ajusta la altura según sea necesario
     flex: 1,
-    // paddingHorizontal: 20,
     elevation: 15,
   },
 });
