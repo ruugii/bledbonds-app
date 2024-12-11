@@ -80,7 +80,7 @@ export default function ChatPage() {
       const data = await getAllMatches({ token })
       console.log(data)
 
-      // setMatchList(data.matchList)
+      setMatchList(data.matchList)
     }
     fetchMatches()
   }, [])
