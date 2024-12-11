@@ -1,18 +1,17 @@
 import { Stack } from "expo-router";
 import { StyleSheet, View } from "react-native";
-import { Colors } from "../../constants/Colors";
-import StyledText from "../../components/StyledText";
-import Like from "../../Icons/Like";
-import Party from "../../Icons/Party";
-import CalendarIcon from "../../Icons/CalendarIcon";
-import Chat from "../../Icons/Chat";
-import Menu from "../../components/Menu/Menu";
+import { Colors } from "../../../../constants/Colors";
+import StyledText from "../../../../components/StyledText";
+import Like from "../../../../Icons/Like";
+import Party from "../../../../Icons/Party";
+import CalendarIcon from "../../../../Icons/CalendarIcon";
+import Chat from "../../../../Icons/Chat";
 import { useEffect, useState } from "react";
-import getAllChats from "../../api/chat/getAllChats";
-import CitasCiegas from "../../Icons/CitasCiegas";
-import useScreenMode from "../../utilities/screenMode";
-import useAuth from "../../utilities/login";
-import menuEnabled from "../../api/menu/menuenabled";
+import getAllChats from "../../../../api/chat/getAllChats";
+import CitasCiegas from "../../../../Icons/CitasCiegas";
+import useScreenMode from "../../../../utilities/screenMode";
+import useAuth from "../../../../utilities/login";
+import menuEnabled from "../../../../api/menu/menuenabled";
 
 export default function ChatPage() {
 
@@ -126,7 +125,6 @@ export default function ChatPage() {
             </StyledText>
           </View>
         </View >
-        <Menu options={menuOptions} />
       </View >
     </>
   )
