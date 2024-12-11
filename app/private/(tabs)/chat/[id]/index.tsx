@@ -1,13 +1,15 @@
-import { Stack, useLocalSearchParams } from "expo-router";
+import { Stack } from "expo-router";
 import { Keyboard, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
-import { Colors } from "../../../constants/Colors";
-import StyledText from "../../../components/StyledText";
+import { Colors } from "../../../../../constants/Colors";
+import StyledText from "../../../../../components/StyledText";
 import { useEffect, useRef, useState } from "react";
-import Message from "../../../components/Message";
+import Message from "../../../../../components/Message";
 import { io, Socket } from "socket.io-client";
-import useScreenMode from "../../../utilities/screenMode";
-import getChatData from "../../../api/chat/getChatData";
-import useAuth from "../../../utilities/login";
+import useScreenMode from "../../../../../utilities/screenMode";
+import getChatData from "../../../../../api/chat/getChatData";
+import useAuth from "../../../../../utilities/login";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
+import { useRoute } from '@react-navigation/native';
 
 interface Chat {
   sender: string;
@@ -15,14 +17,17 @@ interface Chat {
   user: boolean;
 }
 
-export default function ChatPage() {
-  const { id } = useLocalSearchParams();
-
+export default function ChatPagePerId() {
+  const {
+    params: { id }
+  } = useRoute();
+  const Tab = createBottomTabNavigator()
   const { getToken } = useAuth();
   const scrollViewRef = useRef<ScrollView>(null);
   const [chat_, setChat_] = useState<Chat[]>([]);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [newMessage, setNewMessage] = useState("");
+  const [chatName, setChatName] = useState("");
 
   const calcButtonBackground = () => {
     if (newMessage.trim() === '') {
@@ -69,6 +74,7 @@ export default function ChatPage() {
   const seeChat = async (idEvent: number) => {
     const fetchChat = async (idEvent: number) => {
       const data = await getChatData(idEvent, await getToken() ?? '');
+      setChatName(data?.chatName)
       setChat_(
         data?.messages?.map((item: {
           ID_user: string;
@@ -88,7 +94,7 @@ export default function ChatPage() {
 
   return (
     <>
-      <Stack.Screen options={{ headerTitle: `Chat ${id}` }} />
+      <Stack.Screen options={{ headerTitle: chatName ?? `Chat ${id}` }} />
       <View style={[styles.container, { backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"] }]}>
         <View style={[styles.box, styles.box2, { backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"] }]}>
           <View style={[styles.mailPage, { backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"] }]}>
