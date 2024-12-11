@@ -1,27 +1,27 @@
-import { router, Stack } from "expo-router";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+// import { router, Stack } from "expo-router";
+import { Pressable, StatusBar, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Colors } from "../constants/Colors";
 import Logo from "../components/Logo";
 import useAuth from "../utilities/login";
 import StyledText from "../components/StyledText";
 import Config from "../Icons/Config";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { enableScreens } from "react-native-screens";
 import useScreenMode from "../utilities/screenMode";
+import '../localization/i18n'
+import { useTranslation } from "react-i18next";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import LoginPage from "./(tabs)/login";
+import Logout from "./private/Logout";
+import { router, Stack } from "expo-router";
+import Register from "../Icons/Register";
+import RegisterPage from "./(tabs)/register";
 
 interface HeaderRightProps {
   isLoggedIn: boolean;
   openConfig: boolean;
   setOpenConfig: (value: boolean) => void;
 }
-
-const HeaderRight = ({ isLoggedIn, openConfig, setOpenConfig }: HeaderRightProps) => (
-  isLoggedIn && (
-    <TouchableOpacity onPress={() => setOpenConfig(!openConfig)}>
-      <Config />
-    </TouchableOpacity>
-  )
-);
 
 const HeaderTitle = () => <Logo />;
 
@@ -34,6 +34,7 @@ export default function Layout() {
 
   const { mode } = useScreenMode()
 
+  const { t } = useTranslation();
   const handlePress = async () => {
     if (isLoggedIn) {
       await logout();
@@ -42,18 +43,15 @@ export default function Layout() {
     }
   };
 
-  const getHeaderRight = () => (
-    <HeaderRight
-      isLoggedIn={isLoggedIn}
-      openConfig={openConfig}
-      setOpenConfig={setOpenConfig}
-    />
-  )
-
   return (
     <View style={[styles.container, {
-      backgroundColor: (mode === 'light') ? Colors.light["palette-1"] : Colors.dark["palette-1"]
+      backgroundColor: (mode === 'light') ? Colors.light["palette-1"] : Colors.dark["palette-1"],
+      height: '100%',
+      width: '100%',
     }]}>
+      <StatusBar
+        backgroundColor={mode === 'light' ? Colors.light["palette-3"] : Colors.dark["palette-3"]}
+      />
       <Stack
         screenOptions={{
           headerStyle: {
@@ -62,25 +60,28 @@ export default function Layout() {
           headerTintColor: mode === 'light' ? Colors.light["palette-11"] : Colors.dark["palette-11"],
           headerTitle: HeaderTitle, // Use the HeaderTitle component
           headerLeft: () => null,
-          headerRight: getHeaderRight,
+          headerRight: () => null,
         }}
       />
       {openConfig && (
         <View style={{
           position: 'absolute',
-          top: 0,
+          top: 56,
           right: 0,
-          marginTop: 80,
           backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
           paddingHorizontal: 10,
           paddingVertical: 10,
+          borderRadius: 10,
+          borderColor: (mode === 'light') ? Colors.light["palette-4"] : Colors.dark["palette-4"],
+          borderStyle: 'solid',
+          borderWidth: 1
         }}>
           <View style={{
             paddingVertical: 10,
           }}>
             <TouchableOpacity onPress={handlePress}>
               <StyledText style={{ color: (mode === 'light') ? Colors.light["palette-11"] : Colors.dark["palette-11"] }} litle bold mayus>
-                {isLoggedIn ? 'Logout' : 'Login'}
+                {isLoggedIn ? t('logout') : t('login')}
               </StyledText>
             </TouchableOpacity>
           </View>
@@ -89,7 +90,7 @@ export default function Layout() {
           }}>
             <TouchableOpacity onPress={() => router.push('/profile')}>
               <StyledText style={{ color: (mode === 'light') ? Colors.light["palette-11"] : Colors.dark["palette-11"] }} litle bold mayus>
-                Profile
+                {t('profile')}
               </StyledText>
             </TouchableOpacity>
           </View>
