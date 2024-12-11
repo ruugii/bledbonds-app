@@ -11,9 +11,10 @@ interface BtnProps {
   readonly google?: boolean;
   readonly facebook?: boolean;
   readonly clickable?: boolean;
+  readonly margin?: boolean;
 }
 
-export default function Btn({ title, onPress, disabled, google, facebook, clickable }: BtnProps) {
+export default function Btn({ title, onPress, disabled, google, facebook, clickable, margin }: BtnProps) {
 
   const handlePress = () => {
     if (onPress) {
@@ -45,8 +46,9 @@ export default function Btn({ title, onPress, disabled, google, facebook, clicka
           styles.button, {
             backgroundColor: calcBackgroundColor()
           }, 
-          disabled ? styles.disabledButton : {}]}
-        
+          disabled ? styles.disabledButton : {},
+          margin ? { marginBottom: 25, marginTop: 35 } : {}
+        ]}
       >
         <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
           {google && <Image source={require('../../assets/google.png')} style={{ width: 20, height: 20, marginRight: 10 }} />}
