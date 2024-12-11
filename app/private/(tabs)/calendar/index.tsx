@@ -1,18 +1,17 @@
 import { useEffect, useState } from "react";
-import getAllEvents from "../../api/events/getAllEvents";
+import getAllEvents from "../../../../api/events/getAllEvents";
 import { Stack } from "expo-router";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import { Colors } from "../../constants/Colors";
-import StyledText from "../../components/StyledText";
-import Calendar from "../../components/Calendar/page";
-import Like from "../../Icons/Like";
-import Party from "../../Icons/Party";
-import CalendarIcon from "../../Icons/CalendarIcon";
-import Chat from "../../Icons/Chat";
-import Menu from "../../components/Menu/Menu";
-import CitasCiegas from "../../Icons/CitasCiegas";
-import useScreenMode from "../../utilities/screenMode";
-import menuEnabled from "../../api/menu/menuenabled";
+import { Colors } from "../../../../constants/Colors";
+import StyledText from "../../../../components/StyledText";
+import Calendar from "../../../../components/Calendar/page";
+import Like from "../../../../Icons/Like";
+import Party from "../../../../Icons/Party";
+import CalendarIcon from "../../../../Icons/CalendarIcon";
+import Chat from "../../../../Icons/Chat";
+import CitasCiegas from "../../../../Icons/CitasCiegas";
+import useScreenMode from "../../../../utilities/screenMode";
+import menuEnabled from "../../../../api/menu/menuenabled";
 
 export default function CalendarPage() {
 
@@ -192,9 +191,6 @@ export default function CalendarPage() {
           flex: 1,
           backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
         }}>
-          <Menu
-            options={menuOptions}
-          />
         </View>
       </View >
     </>
