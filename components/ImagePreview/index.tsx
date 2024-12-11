@@ -5,11 +5,16 @@ import CloseIcon from "../../Icons/Close";
 
 interface ImagePreviewProps {
   readonly photo: string;
+  readonly onDelete: () => void;
 }
 
 export default function ImagePreview(props: ImagePreviewProps) {
 
   const [modalOpen, setModalOpen] = useState<boolean>(false);
+
+  const handleDelete = () => {
+    props.onDelete();
+  }
 
   return (
     <>
@@ -17,6 +22,9 @@ export default function ImagePreview(props: ImagePreviewProps) {
         <TouchableOpacity
           onPress={() => {
             setModalOpen(!modalOpen);
+          }}
+          style={{
+            backgroundColor: 'rgba(255, 0, 0, 0.3)',
           }}
         >
           <Image
@@ -30,7 +38,7 @@ export default function ImagePreview(props: ImagePreviewProps) {
             }}
           />
         </TouchableOpacity>
-        <View
+        <TouchableOpacity
           style={{
             backgroundColor: 'rgba(255, 0, 0, 0.3)',
             borderBottomLeftRadius: 10,
@@ -38,11 +46,12 @@ export default function ImagePreview(props: ImagePreviewProps) {
             paddingHorizontal: 10,
             paddingVertical: 5,
           }}
+          onPress={() => handleDelete()}
         >
           <StyledText litle center>
             ELIMINAR
           </StyledText>
-        </View>
+        </TouchableOpacity>
       </View>
       <Modal
         transparent
@@ -87,7 +96,7 @@ export default function ImagePreview(props: ImagePreviewProps) {
                   setModalOpen(!modalOpen);
                 }}
               >
-                <CloseIcon black />
+                <CloseIcon />
               </TouchableOpacity>
               <ImageBackground
                 source={{ uri: props.photo }}
