@@ -1,22 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { TouchableOpacity, Image, Alert } from "react-native";
 import StyledText from "../StyledText";
 import { Colors } from "../../constants/Colors";
 import * as ImagePicker from 'expo-image-picker';
 import useScreenMode from "../../utilities/screenMode";
-import { uploadImageV2 } from "../../api/image/uploadImageV2";
+import { useTranslation } from "react-i18next";
 
-interface fotoInterface {
+interface FotoInterface {
   uri: string;
   type: string;
   name: string;
 }
 
 interface UploadImageProps {
-  readonly setPhoto: (aux: fotoInterface) => void;
+  readonly setPhoto: (aux: FotoInterface) => void;
+  readonly updatePhoto?: boolean;
 }
 
-export default function UploadImage({ setPhoto }: UploadImageProps) {
+export default function UploadImage({ setPhoto, updatePhoto }: UploadImageProps) {
+
+  const { t } = useTranslation()
+
   const [photoURI, setPhotoURI] = useState<string | null>(null);
   const { mode } = useScreenMode();
   const handleChoosePhoto = async () => {
@@ -27,6 +31,7 @@ export default function UploadImage({ setPhoto }: UploadImageProps) {
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
+      // mediaTypes: ImagePicker.MediaType['images'],
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       quality: 1,
@@ -40,6 +45,10 @@ export default function UploadImage({ setPhoto }: UploadImageProps) {
         type: selectedImage.mimeType ?? 'image/jpeg',
         name: selectedImage.fileName ?? 'image.jpg',
       })
+    }
+
+    if (updatePhoto) {
+      setPhotoURI(null)
     }
   };
 
@@ -66,7 +75,7 @@ export default function UploadImage({ setPhoto }: UploadImageProps) {
         />
       ) : (
         <StyledText xsmall bold center>
-          Imagen de perfil
+          {t('screens.photo')}
         </StyledText>
       )}
     </TouchableOpacity>
