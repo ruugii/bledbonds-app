@@ -17,10 +17,13 @@ import ChatPagePerId from "./chat/[id]";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import StyledText from "../../../components/StyledText";
 import LoginPage from "../../(tabs)/login";
-import Logout from "../Logout";
 import EventsPage from "./events";
 import CalendarPage from "./calendar";
 import CitasCiegasPage from "./citasCiegas";
+import ProfilePage from "../../profile";
+import Config from "../../../Icons/Config";
+import LogoutPage from "../Logout";
+import Logout from "../../../Icons/Logout";
 
 // Stack
 const Stack = createNativeStackNavigator();
@@ -163,13 +166,22 @@ function TabGroup() {
         />
       )}
       <Tab.Screen
+        name={t('config')}
+        component={ProfilePage}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <Config black={focused} />
+          )
+        }}
+      />
+      <Tab.Screen
         name={t('logout')}
-        component={Logout}
-        // options={{
-        //   tabBarIcon: ({ focused }) => (
-        //     <Logout black={focused} />
-        //   )
-        // }}
+        component={LogoutPage}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <Logout black={focused} />
+          )
+        }}
       />
     </Tab.Navigator>
   )
