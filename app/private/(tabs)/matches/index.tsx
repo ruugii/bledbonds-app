@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Image, Modal, Platform, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Card from "../../../../components/Card/Page";
 import StyledText from "../../../../components/StyledText";
 import Dislike from "../../../../Icons/Dislike";
@@ -17,6 +17,7 @@ import DislikeActionAPI from "../../../../api/actions/DislikeAPI";
 import * as Location from 'expo-location';
 import updateUserAPI from "../../../../api/user/update";
 import getUserData from "../../../../api/user/getData";
+import { useTranslation } from "react-i18next";
 // import mobileAds, { AdEventType, BannerAd, BannerAdSize, InterstitialAd, TestIds } from 'react-native-google-mobile-ads';
 
 const swiperRef = React.createRef<Swiper<{ fotos: string[]; aficiones: string[]; description: string; location: { lat: number; lon: number; }; name: string; age: string; }>>();
@@ -46,7 +47,7 @@ const calculateAge = (birthday: Date): string => {
 
 
 export default function Match() {
-
+  const { t } = useTranslation()
   const { isLoggedIn, getToken } = useAuth();
   const { mode } = useScreenMode()
 
@@ -133,7 +134,7 @@ export default function Match() {
     if (latitude !== 0 && longitude !== 0 && find !== '' && sexualidad !== '' && estadoCivil !== '' && bio !== '') {
       const updateLocation = async () => {
         const token = await getToken()
-        const updateUser = await updateUserAPI({
+        await updateUserAPI({
           token: token ?? '',
           id_find: find,
           id_orientation: sexualidad,
@@ -239,7 +240,7 @@ export default function Match() {
         // backgroundColor: 'white',
       }]}>
         <StyledText bold center title mayus>
-          Actualmente esta función no está activada.
+          {t('screens.matches.notEnabled')}
         </StyledText>
       </View>
     );
@@ -344,7 +345,7 @@ export default function Match() {
                 animateCardOpacity
                 overlayLabels={{
                   left: {
-                    title: "DISLIKE",
+                    title: t('screens.matches.dislike'),
                     style: {
                       label: {
                         backgroundColor: "red",
@@ -361,7 +362,7 @@ export default function Match() {
                     }
                   },
                   right: {
-                    title: "LIKE",
+                    title: t('screens.matches.like'),
                     style: {
                       label: {
                         backgroundColor: "green",
@@ -394,7 +395,7 @@ export default function Match() {
               }}
             >
               <StyledText bold center title mayus red>
-                {usersCount >= 50 ? 'NO PUEDES DAR LIKE A MAS DE 50 USUARIOS' : `Actualmente no hay mas usuarios, porfavor intente mas tarde.`}
+                {usersCount >= 50 ? t('screens.matches.noLikeMore50') : t('screens.matches.noMoreUsers')}
               </StyledText>
             </View>
           )}
@@ -405,7 +406,7 @@ export default function Match() {
               backgroundColor: (mode === 'light') ? Colors.light["palette-3_transparent"] : Colors.dark["palette-3_transparent"],
             }]}>
               <StyledText bold center title mayus>
-                ¡Has dado match con {currentUser.name}!
+                {t('screens.matches.match', { name: currentUser.name })}
               </StyledText>
               <View style={styles.matchImage}>
                 <Image source={{ uri: currentUser.fotos[0] }} style={styles.matchImage} />
@@ -428,7 +429,7 @@ export default function Match() {
               backgroundColor: (mode === 'light') ? Colors.light["palette-3_transparent"] : Colors.dark["palette-3_transparent"],
             }]}>
               <StyledText bold center title mayus>
-                ¡No puedes dar like a mas de 50 usuarios!
+                {t('screens.matches.noLikeMore50')}
               </StyledText>
               <TouchableOpacity
                 style={styles.closeButton}

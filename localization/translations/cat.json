@@ -119,6 +119,14 @@
         "title": "Completa el teu perfil"
       }
     },
+    "matches": {
+      "notEnabled": "Actualment no està activada.",
+      "dislike": "NO M'AGRADA",
+      "like": "M'AGRADA",
+      "noLikeMore50": "NO POTS DONAR M'AGRADA A MES DE 50 USUARIS",
+      "noMoreUsers": "Actualment no hi ha més usuaris, si us plau intenta-ho més tard.",
+      "match": "¡Has fet match amb {{name}}!"
+    },
     "photo": "Foto del perfil"
   }
 }

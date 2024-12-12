@@ -119,6 +119,14 @@
         "title": "Completa tu perfil"
       }
     },
+    "matches": {
+      "notEnabled": "Actualmente esta función no está activada.",
+      "dislike": "NO ME GUSTA",
+      "like": "ME GUSTA",
+      "noLikeMore50": "NO PUEDES DAR LIKE A MAS DE 50 USUARIOS",
+      "noMoreUsers": "Actualmente no hay mas usuarios, porfavor intente mas tarde.",
+      "match": "¡Has dado match con {{name}}!"
+    },
     "photo": "Foto del perfil"
   }
 }
