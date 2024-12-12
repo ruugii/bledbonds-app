@@ -8,8 +8,8 @@ import { io, Socket } from "socket.io-client";
 import useScreenMode from "../../../../../utilities/screenMode";
 import getChatData from "../../../../../api/chat/getChatData";
 import useAuth from "../../../../../utilities/login";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
-import { useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { useTranslation } from "react-i18next";
 
 interface Chat {
   sender: string;
@@ -17,17 +17,22 @@ interface Chat {
   user: boolean;
 }
 
+type RouteParams = {
+  MyScreen: {
+    id: string;
+  };
+};
+
 export default function ChatPagePerId() {
-  const {
-    params: { id }
-  } = useRoute();
-  const Tab = createBottomTabNavigator()
+  const route = useRoute<RouteProp<RouteParams, 'MyScreen'>>();
+  const { id } = route.params;
   const { getToken } = useAuth();
   const scrollViewRef = useRef<ScrollView>(null);
   const [chat_, setChat_] = useState<Chat[]>([]);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [newMessage, setNewMessage] = useState("");
   const [chatName, setChatName] = useState("");
+  const { t } = useTranslation()
 
   const calcButtonBackground = () => {
     if (newMessage.trim() === '') {
@@ -100,20 +105,20 @@ export default function ChatPagePerId() {
           <View style={[styles.mailPage, { backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"] }]}>
             <ScrollView style={{ marginVertical: 20, marginTop: 0, paddingHorizontal: 20, marginBottom: 40 }} ref={scrollViewRef}>
               {chat_?.map((m, i) => (
-                <Message sender={m.sender} message={m.message} isMine={m.user} key={i} />
+                <Message sender={m.sender} message={m.message} isMine={m.user} key={i + 1} />
               ))}
             </ScrollView>
             <View style={styles.inputContainer}>
               <TextInput
                 style={[styles.input, { backgroundColor: (mode === 'light') ? Colors.light["palette-4"] : Colors.dark["palette-4"] }]}
                 onBlur={() => Keyboard.dismiss()}
-                placeholder="Escribe un mensaje"
+                placeholder={t('pages.chat.inputPlaceholder')}
                 onChange={(e) => setNewMessage(e.nativeEvent.text)}
                 value={newMessage}
               />
               <TouchableOpacity style={[styles.sendButton, calcButtonBackground()]} onPress={sendMessage} disabled={newMessage.trim() === ''}>
                 <StyledText xsmall bold mayus>
-                  Enviar
+                  {t('pages.chat.sendButton')}
                 </StyledText>
               </TouchableOpacity>
             </View>

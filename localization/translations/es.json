@@ -135,6 +135,10 @@
     "citasCiegas": {
       "title": "Citas a ciegas"
     },
+    "chat": {
+      "sendButton": "Enviar",
+      "inputPlaceholder": "Escribe un mensaje"
+    },
     "photo": "Foto del perfil"
   }
 }
