@@ -2,31 +2,16 @@ import { Stack } from "expo-router";
 import { StyleSheet, View } from "react-native";
 import { Colors } from "../../../../constants/Colors";
 import StyledText from "../../../../components/StyledText";
-import Like from "../../../../Icons/Like";
-import Party from "../../../../Icons/Party";
-import CalendarIcon from "../../../../Icons/CalendarIcon";
-import Chat from "../../../../Icons/Chat";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import getAllChats from "../../../../api/chat/getAllChats";
-import CitasCiegas from "../../../../Icons/CitasCiegas";
 import useScreenMode from "../../../../utilities/screenMode";
 import useAuth from "../../../../utilities/login";
-import menuEnabled from "../../../../api/menu/menuenabled";
+import { useTranslation } from "react-i18next";
 
 export default function CitasCiegasPage() {
 
   const { getToken } = useAuth()
-
-  const [menuOptions, setMenuOptions] = useState([
-    {
-      id: 0,
-      text: "",
-      selected: false,
-      url: "",
-      icon: <></>,
-      active: false,
-    },
-  ]);
+  const { t } = useTranslation()
 
   useEffect(() => {
     const fetchChats = async () => {
@@ -35,71 +20,6 @@ export default function CitasCiegasPage() {
     }
     fetchChats()
   }, [])
-
-  useEffect(() => {
-    const getMenu = async () => {
-      const matches = await menuEnabled({ key: 'matches' });
-      const events = await menuEnabled({ key: 'events' });
-      const calendar = await menuEnabled({ key: 'calendar' });
-      const chat = await menuEnabled({ key: 'chat' });
-      const citasCiegas = await menuEnabled({ key: 'ciegas' });
-      const aux = []
-      if (matches.Valor === '1') {
-        aux.push({
-          id: 1,
-          text: "MATCHES",
-          selected: false,
-          url: "/matches",
-          icon: <Like black />,
-          active: false,
-        });
-      }
-      if (events.Valor === '1') {
-        aux.push(
-          {
-            id: 2,
-            text: "EVENTS",
-            selected: false,
-            url: "/events",
-            icon: <Party black />,
-            active: false,
-          }
-        );
-      }
-      if (calendar.Valor === '1') {
-        aux.push({
-          id: 3,
-          text: "CALENDAR",
-          selected: false,
-          url: "/calendar",
-          icon: <CalendarIcon  black />,
-          active: false,
-        });
-      }
-      if (chat.Valor === '1') {
-        aux.push({
-          id: 4,
-          text: 'CHAT',
-          selected: false,
-          url: '/chat',
-          icon: <Chat black />,
-          active: false,
-        });
-      }
-      if (citasCiegas.Valor === '1') {
-        aux.push({
-          id: 5,
-          text: 'CITAS A CIEGAS',
-          selected: true,
-          url: '/citasCiegas',
-          icon: <CitasCiegas black />,
-          active: true,
-        });
-      }
-      setMenuOptions(aux);
-    };
-    getMenu();
-  }, []);
 
 
   const { mode } = useScreenMode()
@@ -121,7 +41,7 @@ export default function CitasCiegasPage() {
             backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"]
           }]}>
             <StyledText title bold mayus>
-              Citas a ciegas
+              {t('pages.citasCiegas.title')}
             </StyledText>
           </View>
         </View >

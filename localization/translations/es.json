@@ -132,6 +132,9 @@
       "noDescription": "Sin descripción",
       "noLocation": "Sin ubicación"
     },
+    "citasCiegas": {
+      "title": "Citas a ciegas"
+    },
     "photo": "Foto del perfil"
   }
 }
