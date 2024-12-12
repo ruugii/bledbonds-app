@@ -1,8 +1,8 @@
-import { router, Stack } from "expo-router";
-import { Platform, ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { router } from "expo-router";
+import { ScrollView, StyleSheet, TextInput, View } from "react-native";
 import { Colors } from "../../constants/Colors";
 import StyledText from "../../components/StyledText";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState } from "react";
 import Radio from "../../components/Radio";
 import getFindAPI from "../../api/find/getFind";
 import getSexualidadAPI from "../../api/sexualidad/getSexualidad";
@@ -29,6 +29,28 @@ interface SexualidadInterface {
 interface EstadoCivilInterface {
   id: string;
   text: string;
+}
+
+
+const GeneratePhoto = (setPhoto: any) => {
+  const { t } = useTranslation();
+  return (
+    <View style={{
+      flexDirection: 'column',
+      gap: 10,
+    }}
+    >
+      <StyledText litle bold left>
+        {t('screens.complete_profile.text.add_image')}
+      </StyledText>
+      <StyledText xsmall bold left>
+        {t('screens.complete_profile.text.add_image_extra_info')}
+      </StyledText>
+      <UploadImage
+        setPhoto={setPhoto}
+      />
+    </View>
+  )
 }
 
 export default function CompleteProfilePage() {
@@ -86,26 +108,6 @@ export default function CompleteProfilePage() {
   }, [])
 
   const { getToken } = useAuth();
-
-  const GeneratePhoto = () => {
-    return (
-      <View style={{
-        flexDirection: 'column',
-        gap: 10,
-      }}
-      >
-        <StyledText litle bold left>
-          {t('screens.complete_profile.text.add_image')}
-        </StyledText>
-        <StyledText xsmall bold left>
-          {t('screens.complete_profile.text.add_image_extra_info')}
-        </StyledText>
-        <UploadImage
-          setPhoto={setPhoto}
-        />
-      </View>
-    )
-  }
 
   const { mode } = useScreenMode()
 
@@ -216,7 +218,7 @@ export default function CompleteProfilePage() {
               </StyledText>
             </View>
           </View>
-          <GeneratePhoto />
+          <GeneratePhoto setPhoto={setPhoto} />
           <Btn
             title={t('screens.complete_profile.button.title')}
             onPress={() => {
