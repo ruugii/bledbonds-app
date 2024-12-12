@@ -127,6 +127,11 @@
       "noMoreUsers": "Actualment no hi ha més usuaris, si us plau intenta-ho més tard.",
       "match": "¡Has fet match amb {{name}}!"
     },
+    "events": {
+      "noName": "Sense nom",
+      "noDescription": "Sense descripció",
+      "noLocation": "Sense ubicació"
+    },
     "photo": "Foto del perfil"
   }
 }

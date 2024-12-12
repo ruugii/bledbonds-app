@@ -6,13 +6,8 @@ import { useEffect, useState } from "react";
 import getAllEvents from "../../../../api/events/getAllEvents";
 import { FlatList, GestureHandlerRootView } from "react-native-gesture-handler";
 import EventCard from "../../../../components/EventCard";
-import Like from "../../../../Icons/Like";
-import Party from "../../../../Icons/Party";
-import CalendarIcon from "../../../../Icons/CalendarIcon";
-import Chat from "../../../../Icons/Chat";
-import CitasCiegas from "../../../../Icons/CitasCiegas";
 import useScreenMode from "../../../../utilities/screenMode";
-import menuEnabled from "../../../../api/menu/menuenabled";
+import { useTranslation } from "react-i18next";
 
 export default function EventsPage() {
   const { isLoggedIn } = useAuth();
@@ -28,83 +23,8 @@ export default function EventsPage() {
     fetchEventsData()
   }, [])
 
-  const [menuOptions, setMenuOptions] = useState([
-    {
-      id: 0,
-      text: "",
-      selected: false,
-      url: "",
-      icon: <></>,
-      active: false,
-    },
-  ]);
-
-  useEffect(() => {
-    const getMenu = async () => {
-      const matches = await menuEnabled({ key: 'matches' });
-      const events = await menuEnabled({ key: 'events' });
-      const calendar = await menuEnabled({ key: 'calendar' });
-      const chat = await menuEnabled({ key: 'chat' });
-      const citasCiegas = await menuEnabled({ key: 'ciegas' });
-      const aux = []
-      if (matches.Valor === '1') {
-        aux.push({
-          id: 1,
-          text: "MATCHES",
-          selected: false,
-          url: "/matches",
-          icon: <Like black />,
-          active: false,
-        });
-      }
-      if (events.Valor === '1') {
-        aux.push(
-          {
-            id: 2,
-            text: "EVENTS",
-            selected: true,
-            url: "/events",
-            icon: <Party black />,
-            active: true,
-          }
-        );
-      }
-      if (calendar.Valor === '1') {
-        aux.push({
-          id: 3,
-          text: "CALENDAR",
-          selected: false,
-          url: "/calendar",
-          icon: <CalendarIcon  black />,
-          active: false,
-        });
-      }
-      if (chat.Valor === '1') {
-        aux.push({
-          id: 4,
-          text: 'CHAT',
-          selected: false,
-          url: '/chat',
-          icon: <Chat black />,
-          active: false,
-        });
-      }
-      if (citasCiegas.Valor === '1') {
-        aux.push({
-          id: 5,
-          text: 'CITAS A CIEGAS',
-          selected: false,
-          url: '/citasCiegas',
-          icon: <CitasCiegas  black/>,
-          active: false,
-        });
-      }
-      setMenuOptions(aux);
-    };
-    getMenu();
-  }, []);
-
   const { mode } = useScreenMode()
+  const { t } = useTranslation()
 
   if (!isLoggedIn) {
     return <></>;
@@ -131,9 +51,9 @@ export default function EventsPage() {
                   numColumns={1}
                   renderItem={({ item }) => (
                     <EventCard
-                      name={item.event_name || 'No name'}
-                      description={item.event_description || 'No description'}
-                      location={item.event_location || 'No location'}
+                      name={item.event_name || t('screens.events.noName')}
+                      description={item.event_description || t('screens.events.noDescription')}
+                      location={item.event_location || t('screens.events.noLocation')}
                       url={[item.eventImageURL]}
                       id={item.id}
                     />
