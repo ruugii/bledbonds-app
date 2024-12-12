@@ -3,6 +3,7 @@ import { TouchableOpacity, StyleSheet, Image, View } from 'react-native';
 import { Colors } from '../../constants/Colors';
 import StyledText from '../../components/StyledText';
 import useScreenMode from '../../utilities/screenMode';
+import { useTranslation } from 'react-i18next';
 
 interface BtnProps {
   readonly title: string;
@@ -36,6 +37,8 @@ export default function Btn({ title, onPress, disabled, google, facebook, clicka
       return Colors.dark['palette-6'];
     }
   }
+
+  const { t } = useTranslation()
 
   if (clickable) {
     return (
@@ -72,7 +75,7 @@ export default function Btn({ title, onPress, disabled, google, facebook, clicka
         {google && <Image source={require('../../assets/google.png')} style={{ width: 20, height: 20, marginRight: 10 }} />}
         {facebook && <Image source={require('../../assets/facebook.png')} style={{ width: 20, height: 20, marginRight: 10 }} />}
         <StyledText button disabled={disabled}>
-          {`${title} ${disabled ? ' - inactivo' : ''}`}
+          {`${title} ${disabled ? t('boton.inactivo') : ''}`}
         </StyledText>
         {/* <Text style={[styles.buttonText, disabled && styles.disabledText]}>{`${title} ${disabled ? ' - inactivo' : ''}`}</Text> */}
       </View>

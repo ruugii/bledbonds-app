@@ -6,6 +6,9 @@
   "profile": "Perfil",
   "close": "Cerrar",
   "seeAll": "Ver todo",
+  "boton": {
+    "inactivo": "Inactivo"
+  },
   "menu": {
     "login": "Iniciar sesión",
     "register": "Registrate"

@@ -6,6 +6,9 @@
   "profile": "Perfil",
   "close": "Tanca",
   "seeAll": "Veure tot",
+  "boton": {
+    "inactivo": "Inactiu"
+  },
   "menu": {
     "login": "Inicia Sessió",
     "register": "Registrat"
