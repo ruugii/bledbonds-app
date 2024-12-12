@@ -5,13 +5,8 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Colors } from "../../../../constants/Colors";
 import StyledText from "../../../../components/StyledText";
 import Calendar from "../../../../components/Calendar/page";
-import Like from "../../../../Icons/Like";
-import Party from "../../../../Icons/Party";
-import CalendarIcon from "../../../../Icons/CalendarIcon";
-import Chat from "../../../../Icons/Chat";
-import CitasCiegas from "../../../../Icons/CitasCiegas";
 import useScreenMode from "../../../../utilities/screenMode";
-import menuEnabled from "../../../../api/menu/menuenabled";
+import { useTranslation } from "react-i18next";
 
 export default function CalendarPage() {
 
@@ -46,82 +41,7 @@ export default function CalendarPage() {
   }, [month, year])
 
   const { mode } = useScreenMode()
-
-  const [menuOptions, setMenuOptions] = useState([
-    {
-      id: 0,
-      text: "",
-      selected: false,
-      url: "",
-      icon: <></>,
-      active: false,
-    },
-  ]);
-
-  useEffect(() => {
-    const getMenu = async () => {
-      const matches = await menuEnabled({ key: 'matches' });
-      const events = await menuEnabled({ key: 'events' });
-      const calendar = await menuEnabled({ key: 'calendar' });
-      const chat = await menuEnabled({ key: 'chat' });
-      const citasCiegas = await menuEnabled({ key: 'ciegas' });
-      const aux = []
-      if (matches.Valor === '1') {
-        aux.push({
-          id: 1,
-          text: "MATCHES",
-          selected: false,
-          url: "/matches",
-          icon: <Like black />,
-          active: false,
-        });
-      }
-      if (events.Valor === '1') {
-        aux.push(
-          {
-            id: 2,
-            text: "EVENTS",
-            selected: false,
-            url: "/events",
-            icon: <Party black />,
-            active: false,
-          }
-        );
-      }
-      if (calendar.Valor === '1') {
-        aux.push({
-          id: 3,
-          text: "CALENDAR",
-          selected: true,
-          url: "/calendar",
-          icon: <CalendarIcon black />,
-          active: true,
-        });
-      }
-      if (chat.Valor === '1') {
-        aux.push({
-          id: 4,
-          text: 'CHAT',
-          selected: false,
-          url: '/chat',
-          icon: <Chat black />,
-          active: false,
-        });
-      }
-      if (citasCiegas.Valor === '1') {
-        aux.push({
-          id: 5,
-          text: 'CITAS A CIEGAS',
-          selected: false,
-          url: '/citasCiegas',
-          icon: <CitasCiegas black />,
-          active: false,
-        });
-      }
-      setMenuOptions(aux);
-    };
-    getMenu();
-  }, []);
+  const { t } = useTranslation()
 
   return (
     <>
@@ -140,7 +60,7 @@ export default function CalendarPage() {
             backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"]
           }]}>
             <StyledText title bold mayus>
-              Calendario de eventos
+              {t('screens.calendar.title')}
             </StyledText>
             <View style={{
               display: 'flex',

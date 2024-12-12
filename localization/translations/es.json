@@ -139,6 +139,9 @@
       "sendButton": "Enviar",
       "inputPlaceholder": "Escribe un mensaje"
     },
+    "calendar": {
+      "title": "Calendario"
+    },
     "photo": "Foto del perfil"
   }
 }
