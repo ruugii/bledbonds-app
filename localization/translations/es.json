@@ -11,7 +11,14 @@
   },
   "menu": {
     "login": "Iniciar sesión",
-    "register": "Registrate"
+    "register": "Registrate",
+    "matches": "Matches",
+    "chat": "Chat",
+    "events": "Eventos",
+    "calendar": "Calendario",
+    "citasCiegas": "Citas a ciegas",
+    "config": "Configuración",
+    "logout": "Cerrar sesión"
   },
   "screens": {
     "intro": {

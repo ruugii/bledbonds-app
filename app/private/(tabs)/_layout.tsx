@@ -1,5 +1,4 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
-import { NavigationContainer } from '@react-navigation/native';
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import useScreenMode from "../../../utilities/screenMode";
@@ -14,9 +13,6 @@ import Match from "./matches";
 import ChatPage from "./chat";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import ChatPagePerId from "./chat/[id]";
-import { createDrawerNavigator } from "@react-navigation/drawer";
-import StyledText from "../../../components/StyledText";
-import LoginPage from "../../(tabs)/login";
 import EventsPage from "./events";
 import CalendarPage from "./calendar";
 import CitasCiegasPage from "./citasCiegas";
@@ -55,7 +51,6 @@ function StackGroup() {
 
 function TabGroup() {
   const Tab = createBottomTabNavigator()
-  const Drawer = createDrawerNavigator()
   const { mode } = useScreenMode()
 
   const [showEffects, setShowEffects] = useState(false)
@@ -108,11 +103,11 @@ function TabGroup() {
         },
         tabBarActiveTintColor: mode === 'light' ? Colors.light["palette-10"] : Colors.dark["palette-10"],
       }}
-      initialRouteName={t('matches')}
+      initialRouteName={t('menu.matches')}
     >
       {showMatches && (
         <Tab.Screen
-          name={t('matches')}
+          name={t('menu.matches')}
           component={Match}
           options={{
             tabBarIcon: ({ focused }) => (
@@ -123,7 +118,7 @@ function TabGroup() {
       )}
       {showChat && (
         <Tab.Screen
-          name={t('chat')}
+          name={t('menu.chat')}
           component={ChatPage}
           options={{
             tabBarIcon: ({ focused }) => (
@@ -134,7 +129,7 @@ function TabGroup() {
       )}
       {showEffects && (
         <Tab.Screen
-          name={t('events')}
+          name={t('menu.events')}
           component={EventsPage}
           options={{
             tabBarIcon: ({ focused }) => (
@@ -145,7 +140,7 @@ function TabGroup() {
       )}
       {showCalendar && (
         <Tab.Screen
-          name={t('calendar')}
+          name={t('menu.calendar')}
           component={CalendarPage}
           options={{
             tabBarIcon: ({ focused }) => (
@@ -156,7 +151,7 @@ function TabGroup() {
       )}
       {showCitasACiegas && (
         <Tab.Screen
-          name={t('citasCiegas')}
+          name={t('menu.citasCiegas')}
           component={CitasCiegasPage}
           options={{
             tabBarIcon: ({ focused }) => (
@@ -166,7 +161,7 @@ function TabGroup() {
         />
       )}
       <Tab.Screen
-        name={t('config')}
+        name={t('menu.config')}
         component={ProfilePage}
         options={{
           tabBarIcon: ({ focused }) => (
@@ -175,7 +170,7 @@ function TabGroup() {
         }}
       />
       <Tab.Screen
-        name={t('logout')}
+        name={t('menu.logout')}
         component={LogoutPage}
         options={{
           tabBarIcon: ({ focused }) => (

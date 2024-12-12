@@ -11,7 +11,14 @@
   },
   "menu": {
     "login": "Inicia Sessió",
-    "register": "Registrat"
+    "register": "Registrat",
+    "matches": "Matches",
+    "chat": "Chat",
+    "events": "Events",
+    "calendar": "Calendari",
+    "citasCiegas": "Cites a cegues",
+    "config": "Configuració",
+    "logout": "Tanca Sessió"
   },
   "screens": {
     "intro": {
