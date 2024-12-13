@@ -1,4 +1,3 @@
-import { Stack } from "expo-router";
 import { ScrollView, StyleSheet, TextInput, View } from "react-native";
 import { Colors } from "../../constants/Colors";
 import StyledText from "../../components/StyledText";
@@ -133,7 +132,7 @@ export default function ProfilePage() {
     let aux = '';
     languageOptions.forEach((item) => {
       if (language.includes(item.id)) {
-        aux += item.text + ', ';
+        aux += `${t(`screens.profile.languageOptions.${item.id}`)} , `;
       }
     });
     setLanguageResponse(aux);
@@ -311,13 +310,13 @@ export default function ProfilePage() {
               marginTop: 20
             }}>
               <StyledText title bold mayus center>
-                Tu perfil - actualiza tu perfil
+                {t('screens.profile.title')}
               </StyledText>
             </View>
             {/* INDICA TU ESTADO CIVIL */}
             <DropDown
-              title="Relacion"
-              response={estadoCivilOptions.find((item) => item.id === estadoCivil)?.text}
+              title={t('screens.profile.estadoCivil')}
+              response={t(`screens.profile.estadoCivilOptions.${estadoCivil}`)}
             >
               {estadoCivilOptions.map((item, index) => (
                 <View
@@ -331,7 +330,7 @@ export default function ProfilePage() {
                     marginRight: 10,
                   }} />
                   <StyledText litle bold left>
-                    {item.text}
+                    {t(`screens.profile.estadoCivilOptions.${item.id}`)}
                   </StyledText>
                 </View>
               ))}
@@ -339,8 +338,8 @@ export default function ProfilePage() {
 
             {/* INDICA TU SEXUALIDAD */}
             <DropDown
-              title="Orientación"
-              response={sexualidadOptions.find((item) => item.id === sexualidad)?.text}
+              title={t('screens.profile.sexualidad')}
+              response={t(`screens.profile.sexualidadOptions.${sexualidad}`)}
             >
               {sexualidadOptions.map((item, index) => (
                 <View
@@ -354,7 +353,7 @@ export default function ProfilePage() {
                     marginRight: 10,
                   }} />
                   <StyledText litle bold left>
-                    {item.text}
+                    {t(`screens.profile.sexualidadOptions.${item.id}`)}
                   </StyledText>
                 </View>
               ))}
@@ -362,8 +361,8 @@ export default function ProfilePage() {
 
             {/* BEBES ALCOHOL */}
             <DropDown
-              title="¿bebes?"
-              response={drink === '1' ? 'En sociedad' : drink === '2' ? 'Nunca' : drink === '3' ? 'A menudo' : drink === '4' ? 'Me mantengo sobrio' : drink === '5' ? 'Preferiria no decirlo' : ''}
+              title={t('screens.profile.drink')}
+              response={t(`screens.profile.drinkOptions.${drink}`)}
             >
               <View
                 style={{
@@ -375,7 +374,7 @@ export default function ProfilePage() {
                   marginRight: 10,
                 }} />
                 <StyledText litle bold left>
-                  En sociedad
+                  {t('screens.profile.drinkOptions.1')}
                 </StyledText>
               </View>
               <View
@@ -388,7 +387,7 @@ export default function ProfilePage() {
                   marginRight: 10,
                 }} />
                 <StyledText litle bold left>
-                  Nunca
+                  {t('screens.profile.drinkOptions.2')}
                 </StyledText>
               </View>
               <View
@@ -401,7 +400,7 @@ export default function ProfilePage() {
                   marginRight: 10,
                 }} />
                 <StyledText litle bold left>
-                  A menudo
+                  {t('screens.profile.drinkOptions.3')}
                 </StyledText>
               </View>
               <View
@@ -414,7 +413,7 @@ export default function ProfilePage() {
                   marginRight: 10,
                 }} />
                 <StyledText litle bold left>
-                  Me mantengo sobrio
+                  {t('screens.profile.drinkOptions.4')}
                 </StyledText>
               </View>
               <View
@@ -427,14 +426,14 @@ export default function ProfilePage() {
                   marginRight: 10,
                 }} />
                 <StyledText litle bold left>
-                  Preferiria no decirlo
+                  {t('screens.profile.drinkOptions.5')}
                 </StyledText>
               </View>
             </DropDown>
 
             {/* Que idioma hablas? */}
             <DropDown
-              title="Que idioma hablas?"
+              title={t('screens.profile.language')}
               response={languageResponse}
             >
               {languageOptions.map((item, index) => (
@@ -449,7 +448,7 @@ export default function ProfilePage() {
                     marginRight: 10,
                   }} />
                   <StyledText litle bold left>
-                    {item.text}
+                    {t(`screens.profile.languageOptions.${item.id}`)}
                   </StyledText>
                 </View>
               ))}
@@ -457,8 +456,8 @@ export default function ProfilePage() {
 
             {/* SIGNO DEL ZODIACO */}
             <DropDown
-              title="Signo del zodiaco"
-              response={zodiacOptions.find((item) => item.id === zodiac)?.text}
+              title={t('screens.profile.zodiac')}
+              response={t(`screens.profile.zodiacOptions.${zodiac}`)}
             >
               {zodiacOptions.map((item, index) => (
                 <View
@@ -472,7 +471,7 @@ export default function ProfilePage() {
                     marginRight: 10,
                   }} />
                   <StyledText litle bold left>
-                    {item?.text?.split('-')[0]?.trim()}
+                    {t(`screens.profile.zodiacOptions.${item?.id}`)}
                   </StyledText>
                 </View>
               ))}
@@ -480,8 +479,8 @@ export default function ProfilePage() {
 
             {/* MASCOTAS */}
             <DropDown
-              title="Tienes mascotas?"
-              response={pets === '1' ? 'Si' : pets === '0' ? 'No' : ''}
+              title={t('screens.profile.pets')}
+              response={t(`screens.profile.petsOptions.${pets}`)}
             >
               <View
                 style={{
@@ -493,7 +492,7 @@ export default function ProfilePage() {
                   marginRight: 10,
                 }} />
                 <StyledText litle bold left>
-                  Si
+                  {t('screens.profile.petsOptions.1')}
                 </StyledText>
               </View>
               <View
@@ -506,14 +505,14 @@ export default function ProfilePage() {
                   marginRight: 10,
                 }} />
                 <StyledText litle bold left>
-                  No
+                  {t('screens.profile.petsOptions.0')}
                 </StyledText>
               </View>
             </DropDown>
 
             {/* Religion */}
             <DropDown
-              title="Religion"
+              title={t('screens.profile.religion')}
               response={religionOptions.find((item) => item.id === religion)?.text}
             >
               {religionOptions.map((item, index) => (
@@ -528,7 +527,7 @@ export default function ProfilePage() {
                     marginRight: 10,
                   }} />
                   <StyledText litle bold left>
-                    {item.text}
+                    {t(`screens.profile.religionOptions.${item.id}`)}
                   </StyledText>
                 </View>
               ))}
@@ -536,8 +535,8 @@ export default function ProfilePage() {
 
             {/* QUIERS AGREGAR INFORMACION DE TUS ESTUDIOS */}
             <DropDown
-              title="Quieres agregar información de tus estudios?"
-              response={studies === '1' ? 'Si' : studies === '0' ? 'No' : ''}
+              title={t('screens.profile.studies')}
+              response={t(`screens.profile.studiesOptions.${studies || '0'}`)}
             >
               <View
                 style={{
@@ -549,7 +548,7 @@ export default function ProfilePage() {
                   marginRight: 10,
                 }} />
                 <StyledText litle bold left>
-                  Si
+                  {t('screens.profile.studiesOptions.1')}
                 </StyledText>
               </View>
               <View
@@ -562,7 +561,7 @@ export default function ProfilePage() {
                   marginRight: 10,
                 }} />
                 <StyledText litle bold left>
-                  No
+                  {t('screens.profile.studiesOptions.0')}
                 </StyledText>
               </View>
             </DropDown>
@@ -571,7 +570,7 @@ export default function ProfilePage() {
               <>
                 {/* DONDE ESTUDIASTE */}
                 <DropDown
-                  title="Donde estudiaste"
+                  title={t('screens.profile.studyLocation')}
                   response={studyLocation}
                 >
                   <TextInput
@@ -580,14 +579,14 @@ export default function ProfilePage() {
                     }]}
                     onChangeText={setStudyLocation}
                     value={studyLocation}
-                    placeholder="Study location"
+                    placeholder={t('screens.profile.studyLocationPlaceholder')}
                   />
                 </DropDown>
 
                 {/* NIVEL DE ESTUDIO */}
                 <DropDown
-                  title="Nivel de estudio"
-                  response={studyLevel}
+                  title={t('screens.profile.studyLevel')}
+                  response={`screens.profile.studyLevelOptions.${studyLevel}`}
                 >
                   {studyLevelOptions.map((item, index) => (
                     <View
@@ -601,7 +600,7 @@ export default function ProfilePage() {
                         marginRight: 10,
                       }} />
                       <StyledText litle bold left>
-                        {item.text}
+                        {t(`screens.profile.studyLevelOptions.${item.id}`)}
                       </StyledText>
                     </View>
                   ))}
@@ -611,8 +610,8 @@ export default function ProfilePage() {
 
             {/* QUE BUSCAS */}
             <DropDown
-              title="Que buscas?"
-              response={findOptions.find((item) => item.id == find)?.text}
+              title={t('screens.profile.find')}
+              response={t(`screens.profile.findOptions.${find || '0'}`)}
             >
               {findOptions.map((item, index) => (
                 <View
@@ -626,7 +625,7 @@ export default function ProfilePage() {
                     marginRight: 10,
                   }} />
                   <StyledText litle bold left>
-                    {item.text}
+                    {t(`screens.profile.findOptions.${item.id}`)}
                   </StyledText>
                 </View>
               ))}
@@ -634,7 +633,7 @@ export default function ProfilePage() {
 
             {/* EXPLICA TUS MOTIVOS PARA ESTAR AQUI */}
             <DropDown
-              title="Explica tus motivos para estar aquí"
+              title={t('screens.profile.bio')}
               response={bio}
             >
               <TextInput
@@ -642,7 +641,7 @@ export default function ProfilePage() {
                   borderColor: mode === 'light' ? Colors.light['palette-1'] : Colors.dark['palette-1'],
                   marginTop: 10,
                 }]}
-                placeholder="Escribe aquí"
+                placeholder={t('screens.profile.bioPlaceholder')}
                 value={bio}
                 onChangeText={(text) => setBio(text)}
                 multiline
@@ -660,8 +659,8 @@ export default function ProfilePage() {
 
             {/* TRABAJO */}
             <DropDown
-              title="Trabajas actualmente?"
-              response={work === '1' ? 'Si' : work === '0' ? 'No' : ''}
+              title={t('screens.profile.work')}
+              response={t(`screens.profile.workOptions.${work}`)}
             >
               <View
                 style={{
@@ -673,7 +672,7 @@ export default function ProfilePage() {
                   marginRight: 10,
                 }} />
                 <StyledText litle bold left>
-                  Si
+                  {t('screens.profile.workOptions.1')}
                 </StyledText>
               </View>
               <View
@@ -686,7 +685,7 @@ export default function ProfilePage() {
                   marginRight: 10,
                 }} />
                 <StyledText litle bold left>
-                  No
+                  {t('screens.profile.workOptions.0')}
                 </StyledText>
               </View>
             </DropDown>
@@ -694,7 +693,7 @@ export default function ProfilePage() {
             {work === '1' && (
               <>
                 <DropDown
-                  title="De que trabajas actualmente"
+                  title={t('screens.profile.chargeWork')}
                   response={chargeWork}
                 >
                   <TextInput
@@ -703,25 +702,25 @@ export default function ProfilePage() {
                     }]}
                     onChangeText={setChargeWork}
                     value={chargeWork}
-                    placeholder="Charge work"
+                    placeholder={t('screens.profile.chargeWorkPlaceholder')}
                   />
                 </DropDown>
                 <DropDown
-                  title="Empresa en la que trabajas actualmente"
+                  title={t('screens.profile.enterprise')}
                   response={enterprise}
                 >
                   <TextInput
                     style={[styles.imput, { borderColor: mode === 'light' ? Colors.light['palette-1'] : Colors.dark['palette-1'] }]}
                     onChangeText={setEnterprise}
                     value={enterprise}
-                    placeholder="Enterprise"
+                    placeholder={t('screens.profile.enterprisePlaceholder')}
                   />
                 </DropDown>
               </>
             )}
 
             <DropDown
-              title="Fotos de tu perfil"
+              title={t('screens.profile.photos')}
             >
               <View
                 style={{
@@ -736,7 +735,7 @@ export default function ProfilePage() {
               >
                 {
                   photos.map((item, index) => (
-                    <ImagePreview key={index} photo={item} onDelete={() => {
+                    <ImagePreview key={index + 1} photo={item} onDelete={() => {
                       const deletePhoto = async () => {
                         await deletePhotoAPI({
                           token: await getToken() ?? '',
@@ -756,7 +755,7 @@ export default function ProfilePage() {
                 ) : (
                   <View>
                     <StyledText litle center>
-                      Con la version gratuita no puedes subir mas de {maxPhotos} fotos
+                      {t('screens.profile.photosMax', { maxPhotos })}
                     </StyledText>
                   </View>
                 )}
@@ -766,7 +765,7 @@ export default function ProfilePage() {
             <View style={{
               marginBottom: 20
             }}>
-              <Btn title="Actualizar el perfil" clickable onPress={() => {
+              <Btn title={t('screens.profile.updateProfile')} clickable onPress={() => {
                 const updateUser = async () => {
                   updateUserAPI(await getJsonToUpdate({}))
                 }
