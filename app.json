@@ -8,9 +8,8 @@
     "scheme": "bledbonds-app",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/logo.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "image": "./assets/splash.png",
+      "resizeMode": "contain"
     },
     "newArchEnabled": true,
     "ios": {
@@ -18,8 +17,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/logo_app.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/logo_app.png"
       },
       "package": "com.ruugii_31.bledbondsapp2"
     },

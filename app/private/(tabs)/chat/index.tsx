@@ -7,7 +7,6 @@ import useScreenMode from "../../../../utilities/screenMode";
 import getAllMatches from "../../../../api/user/getAllMatches";
 import useAuth from "../../../../utilities/login";
 import { useEffect, useState } from "react";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from "react-i18next";
 // import mobileAds, { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
@@ -88,9 +87,7 @@ export default function ChatPage() {
   // const adUnitId = __DEV__ ? TestIds.GAM_NATIVE : 'ca-app-pub-9151438107079869/8687398638'
   // const [isAdLoaded, setIsAdLoaded] = useState<boolean>(false);
 
-  const { t } = useTranslation()
   const { mode } = useScreenMode()
-  const Tab = createBottomTabNavigator()
   return (
     <>
       <Stack.Screen
@@ -104,11 +101,10 @@ export default function ChatPage() {
           { backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"], }
         ]
       }>
-        {matchList.length > 0 && (
+        {matchList?.length && matchList.length > 0 && (
           <View style={[
             styles.box,
             styles.box1,
-            // styles.menu,
             {
               display: 'flex',
               flexDirection: 'row',
@@ -128,8 +124,8 @@ export default function ChatPage() {
                     }}>
                       <View
                         style={{
-                          borderRadius: 25, // half of the width and height to make it fully circular
-                          overflow: 'hidden', // this ensures the image stays within the circle
+                          borderRadius: 25,
+                          overflow: 'hidden',
                           backgroundColor: mode === 'light' ? Colors.light['palette-5'] : Colors.dark['palette-5'],
                           marginVertical: 'auto',
                           marginHorizontal: 10,
@@ -163,7 +159,7 @@ export default function ChatPage() {
         <View style={[styles.box, styles.box2, {
           backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"],
           marginHorizontal: 20,
-          marginTop: matchList.length > 0 ? 0 : 10,
+          marginTop: matchList?.length && matchList.length > 0 ? 0 : 10,
         }]}>
           <View style={[styles.mailPage, {
             backgroundColor: (mode === 'light') ? Colors.light["palette-3"] : Colors.dark["palette-3"]
@@ -187,7 +183,7 @@ export default function ChatPage() {
                     onPress={() => {
                       navigate('chatId', { id: chat?.ID })
                     }}
-                    >
+                  >
                     <StyledText subtitle bold mayus>
                       {chat?.name}
                     </StyledText>
@@ -236,12 +232,12 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   linkStyle: {
-    textDecorationLine: 'none', // Elimina la decoración por defecto
-    display: 'flex', // Asegura que el Link use flex
-    justifyContent: 'center', // Centra el contenido verticalmente
-    alignItems: 'center', // Centra el contenido horizontalmente
-    width: '100%', // Ancho del 100%
-    marginTop: 10, // Margen superior de 10
+    textDecorationLine: 'none',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    marginTop: 10,
   },
   mailPage: {
     flex: 1,
@@ -277,7 +273,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignContent: 'center',
     justifyContent: 'center',
-    // borderBottomWidth: 1,
     width: '100%',
   },
 });

@@ -2,7 +2,6 @@ import { View } from "react-native";
 import StyledText from "../StyledText";
 import { Colors } from "../../constants/Colors";
 import useScreenMode from "../../utilities/screenMode";
-import { useEffect, useState } from "react";
 
 interface CalendarProps {
   readonly month: string;
@@ -91,14 +90,12 @@ export default function Calendar(props: CalendarProps) {
             <StyledText litle>{''}</StyledText>
           </View>
         )
-      } else {
-        if (date.getDate() === eventDate.getDate() && date.getMonth() === eventDate.getMonth() && date.getFullYear() === eventDate.getFullYear()) {
-          return (
-            <View style={[styles.day, { backgroundColor: mode === 'light' ? Colors.light["palette-11"] : Colors.dark["palette-11"] }]}>
-              <StyledText litle light>{date.getDate()}</StyledText>
-            </View>
-          )
-        }
+      } else if (date.getDate() === eventDate.getDate() && date.getMonth() === eventDate.getMonth() && date.getFullYear() === eventDate.getFullYear()) {
+        return (
+          <View style={[styles.day, { backgroundColor: mode === 'light' ? Colors.light["palette-11"] : Colors.dark["palette-11"] }]}>
+            <StyledText litle light>{date.getDate()}</StyledText>
+          </View>
+        )
       }
       return (
         <View style={styles.day}>
@@ -120,7 +117,7 @@ export default function Calendar(props: CalendarProps) {
             </View>
           )
         })}
-        {calendar.map((day, index) => dayNumber(day))}
+        {calendar.map((day, index) => dayNumber(day || new Date()))}
       </View>
     </View>
   );

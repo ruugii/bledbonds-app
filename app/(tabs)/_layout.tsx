@@ -26,14 +26,14 @@ export default function TabsLayout() {
         name="login/index"
         options={{
           title: t('menu.login'),
-          tabBarIcon: (() => <Login />)
+          tabBarIcon: (Login)
         }}
       />
       <Tabs.Screen
         name="register/index"
         options={{
           title: t('menu.register'),
-          tabBarIcon: (() => <Register />)
+          tabBarIcon: (Register)
         }}
       />
     </Tabs>

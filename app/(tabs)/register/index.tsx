@@ -1,9 +1,9 @@
-import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 import StyledText from "../../../components/StyledText";
 import Btn from "../../../ux/Btn";
 import { useCallback, useEffect, useState } from "react";
 import { Colors } from "../../../constants/Colors";
-import { Link, router, Stack } from "expo-router";
+import { Link, router } from "expo-router";
 import { SelectList } from "react-native-dropdown-select-list";
 import getGenderAPI from "../../../api/gender/getGenders";
 import registerAPI from "../../../api/register";
@@ -103,7 +103,7 @@ function NameInput({ name, setName, nameError, mode }: { readonly name: string, 
   );
 }
 
-function FechaInput({ birthdate, setBirthdate, mode, showDatePicker, setShowDatePicker, isMayorEdad }: { readonly birthdate: Date, readonly setBirthdate: React.Dispatch<React.SetStateAction<Date>>, readonly mode: string, readonly showDatePicker: boolean, readonly setShowDatePicker: React.Dispatch<React.SetStateAction<boolean>>, isMayorEdad: boolean }) {
+function FechaInput({ birthdate, setBirthdate, mode, showDatePicker, setShowDatePicker, isMayorEdad }: { readonly birthdate: Date, readonly setBirthdate: React.Dispatch<React.SetStateAction<Date>>, readonly mode: string, readonly showDatePicker: boolean, readonly setShowDatePicker: React.Dispatch<React.SetStateAction<boolean>>, readonly isMayorEdad: boolean }) {
   const { t } = useTranslation();
   return (
     <View style={{ marginTop: 10 }}>
@@ -122,7 +122,7 @@ function FechaInput({ birthdate, setBirthdate, mode, showDatePicker, setShowDate
   );
 }
 
-function CodeInput({ code, setCode, codeError, mode, showPassword, setShowPassword, showDatePicker }: { readonly code: string, readonly setCode: React.Dispatch<React.SetStateAction<string>>, readonly codeError: boolean, readonly mode: string, readonly showPassword: boolean, readonly setShowPassword: React.Dispatch<React.SetStateAction<boolean>>, showDatePicker?: boolean }) {
+function CodeInput({ code, setCode, codeError, mode, showPassword, setShowPassword, showDatePicker }: { readonly code: string, readonly setCode: React.Dispatch<React.SetStateAction<string>>, readonly codeError: boolean, readonly mode: string, readonly showPassword: boolean, readonly setShowPassword: React.Dispatch<React.SetStateAction<boolean>>, readonly showDatePicker?: boolean }) {
 
   const { t } = useTranslation();
 
@@ -162,7 +162,7 @@ function CodeInput({ code, setCode, codeError, mode, showPassword, setShowPasswo
   );
 }
 
-function CodeRepeatInput({ code, setCode, codeError, mode, showPassword, setShowPassword, showDatePicker }: { readonly code: string, readonly setCode: React.Dispatch<React.SetStateAction<string>>, readonly codeError: boolean, readonly mode: string, readonly showPassword: boolean, readonly setShowPassword: React.Dispatch<React.SetStateAction<boolean>>, showDatePicker?: boolean }) {
+function CodeRepeatInput({ code, setCode, codeError, mode, showPassword, setShowPassword, showDatePicker }: { readonly code: string, readonly setCode: React.Dispatch<React.SetStateAction<string>>, readonly codeError: boolean, readonly mode: string, readonly showPassword: boolean, readonly setShowPassword: React.Dispatch<React.SetStateAction<boolean>>, readonly showDatePicker?: boolean }) {
 
   const { t } = useTranslation();
 
@@ -202,8 +202,32 @@ function CodeRepeatInput({ code, setCode, codeError, mode, showPassword, setShow
   );
 }
 
-function SelectGenderDropdown({ setGender, mode, genderList, genderError }: { setGender: any, mode: string, genderList: GenderInterface[], genderError: boolean }) {
+function SelectGenderDropdown({ setGender, mode, genderList, genderError }: { readonly setGender: any, readonly mode: string, readonly genderList: GenderInterface[], readonly genderError: boolean }) {
   const { t } = useTranslation();
+
+  const calcBorderColorNotError = () => {
+    if (mode === 'light') {
+      return Colors.light["palette-1"];
+    } else if (mode === 'dark') {
+      return Colors.dark["palette-1"];
+    }
+  }
+
+  const calcBorderColorError = () => {
+    return 'red';
+  }
+
+  const getGenderError = () => {
+    return genderError
+  }
+
+  const calcBorderColor = () => {
+    if (getGenderError()) {
+      return calcBorderColorError();
+    } else {
+      return calcBorderColorNotError();
+    }
+  }
 
   return (
     <View style={{ marginTop: 10 }}>
@@ -211,7 +235,7 @@ function SelectGenderDropdown({ setGender, mode, genderList, genderError }: { se
       <SelectList
         setSelected={setGender}
         data={genderList?.map((v) => v.genre_name)}
-        boxStyles={{ borderColor: genderError ? 'red' : mode === 'light' ? Colors.light["palette-1"] : Colors.dark["palette-1"] }}
+        boxStyles={{ borderColor: calcBorderColor() }}
         inputStyles={{ color: mode === 'light' ? Colors.light["palette-11"] : Colors.dark["palette-11"] }}
         searchicon={<></>}
         closeicon={<UpArrowIcon />}
@@ -241,7 +265,6 @@ export default function RegisterPage() {
   const [genderList, setGenderList] = useState<GenderInterface[]>([]);
   const [latitude, setLatitude] = useState<number>(0);
   const [longitude, setLongitude] = useState<number>(0);
-  const { login } = useAuth();
 
   useEffect(() => {
     const getLocation = async () => {
@@ -287,8 +310,6 @@ export default function RegisterPage() {
   }, [password, repeatPassword]);
 
   const { mode } = useScreenMode()
-
-  const headerTitle = () => <StyledText litle full center bold mayus>REGISTRO</StyledText>
 
   const [showPassword, setShowPassword] = useState(true)
   const [showRepeatPassword, setShowRepeatPassword] = useState(true)
@@ -419,7 +440,7 @@ export default function RegisterPage() {
               <CodeRepeatInput
                 code={repeatPassword}
                 setCode={setRepeatPassword}
-                codeError={(password === repeatPassword && password.length > 0) ? false : true}
+                codeError={!(password === repeatPassword && password.length > 0)}
                 mode={mode}
                 showPassword={showRepeatPassword}
                 setShowPassword={setShowRepeatPassword}

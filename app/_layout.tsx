@@ -1,21 +1,14 @@
-// import { router, Stack } from "expo-router";
-import { Pressable, StatusBar, StyleSheet, TouchableOpacity, View } from "react-native";
+import { StatusBar, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Colors } from "../constants/Colors";
 import Logo from "../components/Logo";
 import useAuth from "../utilities/login";
 import StyledText from "../components/StyledText";
-import Config from "../Icons/Config";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { enableScreens } from "react-native-screens";
 import useScreenMode from "../utilities/screenMode";
 import '../localization/i18n'
 import { useTranslation } from "react-i18next";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import LoginPage from "./(tabs)/login";
-import Logout from "./private/Logout";
 import { router, Stack } from "expo-router";
-import Register from "../Icons/Register";
-import RegisterPage from "./(tabs)/register";
 
 interface HeaderRightProps {
   isLoggedIn: boolean;

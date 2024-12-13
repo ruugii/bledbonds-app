@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 import StyledText from "../../../components/StyledText";
 import Btn from "../../../ux/Btn";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import loginByCode from "../../../api/login/loginCode";
 import { Colors } from "../../../constants/Colors";
 import useAuth from "../../../utilities/login";
-import { Link, router, Stack, Tabs } from "expo-router";
+import { Link, router, Tabs } from "expo-router";
 import useScreenMode from "../../../utilities/screenMode";
 import EyeOpen from "../../../Icons/EyeOpen";
 import EyeClose from "../../../Icons/EyeClose";
@@ -172,6 +172,7 @@ export default function LoginPage() {
     try {
       const user = { email, phone, password: code };
       const resp = await loginAPI(user);
+      console.log(resp);
       if (resp.token) {
         await AsyncStorage.setItem('token', resp.token ?? '');
         await AsyncStorage.setItem('isLoggedIn', JSON.stringify(true));

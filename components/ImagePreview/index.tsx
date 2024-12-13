@@ -1,4 +1,4 @@
-import { Image, ImageBackground, Modal, Text, TouchableOpacity, View } from "react-native";
+import { Image, ImageBackground, Modal, TouchableOpacity, View } from "react-native";
 import StyledText from "../StyledText";
 import { useState } from "react";
 import CloseIcon from "../../Icons/Close";
