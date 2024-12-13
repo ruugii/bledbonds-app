@@ -1,4 +1,4 @@
-import { View, StyleSheet, Appearance } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { Link, router } from "expo-router";
 import StyledText from "../components/StyledText";
 import { useEffect } from "react";
@@ -61,7 +61,7 @@ export default function IndexPage() {
               backgroundColor: (mode === 'dark') ? Colors.dark["palette-3"] : Colors.light["palette-3"]
             }]}>
               <StyledText title bold>
-                ESTA ES LA PÁGINA DE INICIO CON LOGIN
+                {t('screens.intro.text.introTextLogin')}
               </StyledText>
             </View>
           </View>

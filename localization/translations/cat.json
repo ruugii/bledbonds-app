@@ -25,7 +25,8 @@
       "text": {
         "introText": "Tot comença amb un simple ",
         "option1": "M'AGRADA",
-        "option2": "LIKE"
+        "option2": "LIKE",
+        "introTextLogin": "AQUESTA ES LA PAGINA DE INICI AMB LOGIN"
       },
       "terms": {
         "startText": "Al pulsar \"Iniciar sesión\", estás aceptando nuestros ",
