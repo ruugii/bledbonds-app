@@ -66,6 +66,7 @@ export default function CompleteProfilePage() {
     type: string;
     name: string;
   }>();
+
   const [bio, setBio] = useState('');
   const [maxCharBio] = useState(200);
 
@@ -218,13 +219,26 @@ export default function CompleteProfilePage() {
               </StyledText>
             </View>
           </View>
-          <GeneratePhoto setPhoto={setPhoto} />
+          <View style={{
+            flexDirection: 'column',
+            gap: 10,
+          }}
+          >
+            <StyledText litle bold left>
+              {t('screens.complete_profile.text.add_image')}
+            </StyledText>
+            <StyledText xsmall bold left>
+              {t('screens.complete_profile.text.add_image_extra_info')}
+            </StyledText>
+            <UploadImage
+              setPhoto={setPhoto}
+            />
+          </View>
           <Btn
             title={t('screens.complete_profile.button.title')}
             onPress={() => {
               const updateUser = async () => {
                 let data = ''
-
                 if (photo) {
                   const imageURL = await uploadImageV2(photo.uri, photo.type, photo.name)
                   const token = await getToken() ?? '';
