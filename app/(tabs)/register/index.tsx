@@ -449,8 +449,6 @@ export default function RegisterPage() {
                     const register = async () => {
                       const data = await registerAPI(user)
                       if (data) {
-                        console.log(data);
-                        console.log(data.errors)
                         router.replace('/');
                       }
                     }
